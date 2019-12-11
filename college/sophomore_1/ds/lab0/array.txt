@@ -1,0 +1,7 @@
+type arrayname[arraysize];
+
+double balance[5] = {1.0, 2.0, 3.0, 4.0, 5.0};
+
+balance[4] = 50.0;
+
+

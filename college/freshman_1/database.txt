@@ -1,0 +1,3 @@
+Collin,male,18,170,67,1,
+John,female,20,200,60,5,
+Example,male,22,150,72,4,

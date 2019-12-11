@@ -1,0 +1,3 @@
+while ((n < Maxlist) && (cin >> CurrentInput)){
+        A[n] = currentInput;
+}
