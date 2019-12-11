@@ -1,2 +1,0 @@
-assert(arr_size >= 1);
-// checks if arr size is big enough to loop over
