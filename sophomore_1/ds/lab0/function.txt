@@ -1,6 +1,0 @@
-return_Type function_name(parameter list);
-
-return_type function_name(parameter list);
-{
-	funciton body;
-}
