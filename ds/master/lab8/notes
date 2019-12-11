@@ -1,0 +1,47 @@
+create another adj list that contains only the edge weight information
+
+or use a hash table, using names of nodes or ids , every time you need
+an edge weight you know the two nodes, go into hash table and get back
+
+weight can be any real number, not negatives. but prog shouldnt crash when
+inputing negative weights.. just isnt' correct
+
+modify random_graoh.R to randomly generate large positive weighted graphs
+
+
+abs(rnorm(20))
+	gives 20 non negative values, to use as weights
+
+diff between list and vector?
+	list cant get direct access to elemnt in middle
+use list iterator to find minimum element
+list::erase()
+
+make_heap() in cpp STL makes a max heap, not a min heap.
+we can compare the comparison from greater than to smaller than,
+or we can use negative of distance (then max becomes minimum)
+key becomes negation of distance
+
+in min heap, have to also save node index in graph data structure so that
+we know which node to process
+
+have to maintain heap index in node data structure, so we know position
+in heap
+
+all nodes should beinit to infinity except source node (0). cpp infinity
+
+example graph:
+	a	d	1.2
+	b	e	2.7
+	e	a	1.5
+
+to read in double, double w; cin >> w
+
+undirected graph:
+	a	d	1.2
+	d	a	1.2
+	etc
+
+
+11-29-19
+	cant initalize a reference, maybe use a pointer?
