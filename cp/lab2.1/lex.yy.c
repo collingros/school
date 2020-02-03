@@ -471,20 +471,28 @@ char yytext[YYLMAX];
 char *yytext_ptr;
 #line 1 "lab2remove.l"
 #line 2 "lab2remove.l"
-         /* simple lex program which removes comments from a source program
-            The main key is that a variable "comment" is set when the start of a comment
-            is seen and then unset when the ending set is seen.  It is possible to have
-            two starts closed by on end.
+ /*
+	simple lex program which removes comments from a source program
+	The main key is that a variable "comment" is set when the start of a comment
+	is seen and then unset when the ending set is seen.  It is possible to have
+	two starts closed by on end.
 
-            Shaun Cooper
-            January 2015
- 
-         */
-        int comment = 0;
-	int line_count = 1;
-        int debug=1;  /* prints out debug statements if desired */
-#line 486 "lex.yy.c"
-#line 487 "lex.yy.c"
+	Shaun Cooper
+	January 2015
+
+	collin gros
+	02/03/2020
+
+	i added a variable to count the number of lines in the input file,
+	changed the fprintf statement at line 28 to print the line number,
+	and incremented the line count every time "\n" is encountered.
+
+ */
+int comment = 0;
+int line_count = 1;
+int debug=1;  /* prints out debug statements if desired */
+#line 494 "lex.yy.c"
+#line 495 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -701,10 +709,10 @@ YY_DECL
 		}
 
 	{
-#line 16 "lab2remove.l"
+#line 24 "lab2remove.l"
 
 
-#line 707 "lex.yy.c"
+#line 715 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -773,7 +781,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 18 "lab2remove.l"
+#line 26 "lab2remove.l"
 {
 	if (comment && debug) {
 		fprintf(stderr, " >>>>>>>> line %d: Possible Nested comment <<<<<<<<<<\n",
@@ -785,14 +793,14 @@ YY_RULE_SETUP
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 27 "lab2remove.l"
+#line 35 "lab2remove.l"
 {
 	comment = 0;
 	}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 31 "lab2remove.l"
+#line 39 "lab2remove.l"
 {
 	if (!comment) printf("%s",yytext);
 	}
@@ -800,17 +808,17 @@ YY_RULE_SETUP
 case 4:
 /* rule 4 can match eol */
 YY_RULE_SETUP
-#line 35 "lab2remove.l"
+#line 43 "lab2remove.l"
 {
 	line_count++;
 	}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 39 "lab2remove.l"
+#line 47 "lab2remove.l"
 ECHO;
 	YY_BREAK
-#line 813 "lex.yy.c"
+#line 821 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1827,7 +1835,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 39 "lab2remove.l"
+#line 47 "lab2remove.l"
 
 
 int yywrap(void)

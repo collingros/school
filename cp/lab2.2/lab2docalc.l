@@ -1,13 +1,20 @@
-/*                 Small LEX routine which returns two formal tokens (INTEGER and VARIABLE)
-                   along with single string elements like '+'.
- 
-                    This LEX definition is the companion to the docalc.y YACC routine which
-                   is a simple calculator
-
-                    Shaun Cooper
-                    January 2015
-*/
 %{
+/*
+	Small LEX routine which returns two formal tokens (INTEGER and VARIABLE)
+	along with single string elements like '+'.
+
+	This LEX definition is the companion to the docalc.y YACC routine which
+	is a simple calculator
+
+	Shaun Cooper
+	January 2015
+
+
+	collin gros
+	02/03/2020
+
+	changed line 30 to include parenthesis.
+*/
 
 int mydebug=0;
 #include "y.tab.h"

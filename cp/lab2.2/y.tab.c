@@ -77,22 +77,36 @@
  *
  */
 
-/* This calculator depends on a LEX description which outputs either VARIABLE or INTEGER.
-   The return type via yylval is integer 
+/*
+	This calculator depends on a LEX description which outputs either VARIABLE or INTEGER.
+	The return type via yylval is integer 
 
-   When we need to make yylval more complicated, we need to define a pointer type for yylval 
-   and to instruct YACC to use a new type so that we can pass back better values
+	When we need to make yylval more complicated, we need to define a pointer type for yylval 
+	and to instruct YACC to use a new type so that we can pass back better values
  
-   The registers are based on 0, so we substract 'a' from each single letter we get.
+	The registers are based on 0, so we substract 'a' from each single letter we get.
 
-   based on context, we have YACC do the correct memmory look up or the storage depending
-   on position
+	based on context, we have YACC do the correct memmory look up or the storage depending
+	on position
 
-   Shaun Cooper
-    January 2015
+	Shaun Cooper
+	 January 2015
 
-   problems  fix unary minus, fix parenthesis, add multiplication
-   problems  make it so that verbose is on and off with an input argument instead of compiled in
+	problems  fix unary minus, fix parenthesis, add multiplication
+	problems  make it so that verbose is on and off with an input argument instead of compiled in
+
+
+	collin gros
+	01/31/2020
+
+	i changed the lex file to pass the symbols, '(' and ')' as tokens to
+	yacc. this solved the paranthesis issue.
+
+	i added an expression for handling the '*' token. this solved the
+	multiplication issue.
+
+	i deleted the 'expr' right before the '-' token under the unary minus
+	rule. this solved the unary minus issue.
 */
 
 
@@ -104,15 +118,15 @@
 int regs[26];
 int base, debugsw = 0;
 
-void yyerror (s)  /* Called by yyparse on error */
-     char *s;
+void yyerror (s)	/* Called by yyparse on error */
+	  char *s;
 {
   printf ("%s\n", s);
 }
 
 
 
-#line 116 "y.tab.c"
+#line 130 "y.tab.c"
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus
@@ -466,8 +480,8 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    62,    62,    63,    64,    68,    72,    76,    78,    80,
-      82,    84,    86,    88,    90,    92,    94,    98
+       0,    76,    76,    77,    78,    82,    86,    90,    92,    94,
+      96,    98,   100,   102,   104,   106,   108,   112
 };
 #endif
 
@@ -1268,97 +1282,97 @@ yyreduce:
   switch (yyn)
     {
   case 4:
-#line 65 "lab2docalc.y"
+#line 79 "lab2docalc.y"
     { yyerrok; }
-#line 1274 "y.tab.c"
-    break;
-
-  case 5:
-#line 69 "lab2docalc.y"
-    {
-			fprintf(stderr,"the anwser is%d\n", yyvsp[0]); 
-			}
-#line 1282 "y.tab.c"
-    break;
-
-  case 6:
-#line 73 "lab2docalc.y"
-    { regs[yyvsp[-2]] = yyvsp[0]; }
 #line 1288 "y.tab.c"
     break;
 
+  case 5:
+#line 83 "lab2docalc.y"
+    {
+			fprintf(stderr,"the anwser is %d\n", yyvsp[0]); 
+			}
+#line 1296 "y.tab.c"
+    break;
+
+  case 6:
+#line 87 "lab2docalc.y"
+    { regs[yyvsp[-2]] = yyvsp[0]; }
+#line 1302 "y.tab.c"
+    break;
+
   case 7:
-#line 77 "lab2docalc.y"
+#line 91 "lab2docalc.y"
     { yyval = yyvsp[-1]; }
-#line 1294 "y.tab.c"
+#line 1308 "y.tab.c"
     break;
 
   case 8:
-#line 79 "lab2docalc.y"
+#line 93 "lab2docalc.y"
     { yyval = -yyvsp[0]; }
-#line 1300 "y.tab.c"
+#line 1314 "y.tab.c"
     break;
 
   case 9:
-#line 81 "lab2docalc.y"
+#line 95 "lab2docalc.y"
     { yyval = yyvsp[-2] - yyvsp[0]; }
-#line 1306 "y.tab.c"
+#line 1320 "y.tab.c"
     break;
 
   case 10:
-#line 83 "lab2docalc.y"
+#line 97 "lab2docalc.y"
     { yyval = yyvsp[-2] + yyvsp[0]; }
-#line 1312 "y.tab.c"
+#line 1326 "y.tab.c"
     break;
 
   case 11:
-#line 85 "lab2docalc.y"
+#line 99 "lab2docalc.y"
     { yyval = yyvsp[-2] * yyvsp[0]; }
-#line 1318 "y.tab.c"
+#line 1332 "y.tab.c"
     break;
 
   case 12:
-#line 87 "lab2docalc.y"
+#line 101 "lab2docalc.y"
     { yyval = yyvsp[-2] / yyvsp[0]; }
-#line 1324 "y.tab.c"
+#line 1338 "y.tab.c"
     break;
 
   case 13:
-#line 89 "lab2docalc.y"
+#line 103 "lab2docalc.y"
     { yyval = yyvsp[-2] % yyvsp[0]; }
-#line 1330 "y.tab.c"
+#line 1344 "y.tab.c"
     break;
 
   case 14:
-#line 91 "lab2docalc.y"
+#line 105 "lab2docalc.y"
     { yyval = yyvsp[-2] & yyvsp[0]; }
-#line 1336 "y.tab.c"
-    break;
-
-  case 15:
-#line 93 "lab2docalc.y"
-    { yyval = yyvsp[-2] | yyvsp[0]; }
-#line 1342 "y.tab.c"
-    break;
-
-  case 16:
-#line 95 "lab2docalc.y"
-    { yyval = regs[yyvsp[0]];
-				{ if (debugsw) fprintf(stderr,"found a variable value =%d\n",yyvsp[0]); }
-			}
 #line 1350 "y.tab.c"
     break;
 
-  case 17:
-#line 98 "lab2docalc.y"
-    {yyval=yyvsp[0];
-				{ if (debugsw) fprintf(stderr,"found an integer\n");}
+  case 15:
+#line 107 "lab2docalc.y"
+    { yyval = yyvsp[-2] | yyvsp[0]; }
+#line 1356 "y.tab.c"
+    break;
+
+  case 16:
+#line 109 "lab2docalc.y"
+    { yyval = regs[yyvsp[0]];
+				{ fprintf(stderr,"found a variable value =%d\n",yyvsp[0]); }
 			}
-#line 1358 "y.tab.c"
+#line 1364 "y.tab.c"
+    break;
+
+  case 17:
+#line 112 "lab2docalc.y"
+    {yyval=yyvsp[0];
+				{ fprintf(stderr,"found an integer\n");}
+			}
+#line 1372 "y.tab.c"
     break;
 
 
-#line 1362 "y.tab.c"
+#line 1376 "y.tab.c"
 
       default: break;
     }
@@ -1590,13 +1604,10 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 105 "lab2docalc.y"
+#line 119 "lab2docalc.y"
 	/* end of rules, start of program */
 
 int main(int argc, char* argv)
 {
-	if (argc > 1)
-		debugsw = 1;
-
 	yyparse();
 }

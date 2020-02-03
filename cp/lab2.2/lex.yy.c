@@ -471,21 +471,28 @@ int yy_flex_debug = 0;
 char yytext[YYLMAX];
 char *yytext_ptr;
 #line 1 "lab2docalc.l"
-/*                 Small LEX routine which returns two formal tokens (INTEGER and VARIABLE)
-                   along with single string elements like '+'.
- 
-                    This LEX definition is the companion to the docalc.y YACC routine which
-                   is a simple calculator
+#line 2 "lab2docalc.l"
+/*
+	Small LEX routine which returns two formal tokens (INTEGER and VARIABLE)
+	along with single string elements like '+'.
 
-                    Shaun Cooper
-                    January 2015
+	This LEX definition is the companion to the docalc.y YACC routine which
+	is a simple calculator
+
+	Shaun Cooper
+	January 2015
+
+
+	collin gros
+	02/03/2020
+
+	changed line 30 to include parenthesis.
 */
-#line 11 "lab2docalc.l"
 
 int mydebug=0;
 #include "y.tab.h"
-#line 487 "lex.yy.c"
-#line 488 "lex.yy.c"
+#line 494 "lex.yy.c"
+#line 495 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -702,10 +709,10 @@ YY_DECL
 		}
 
 	{
-#line 17 "lab2docalc.l"
+#line 24 "lab2docalc.l"
 
 
-#line 708 "lex.yy.c"
+#line 715 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -774,40 +781,40 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 19 "lab2docalc.l"
+#line 26 "lab2docalc.l"
 {if (mydebug) fprintf(stderr,"Letter found\n"); 
                        yylval=*yytext-'a'; return(VARIABLE);}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 21 "lab2docalc.l"
+#line 28 "lab2docalc.l"
 {if (mydebug) fprintf(stderr,"Digit found\n"); 
                        yylval=atoi((const char *)yytext); return(INTEGER);}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 23 "lab2docalc.l"
+#line 30 "lab2docalc.l"
 {if (mydebug) fprintf(stderr,"Whitespace found\n");}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 24 "lab2docalc.l"
+#line 31 "lab2docalc.l"
 { if (mydebug) fprintf(stderr,"return a token %c\n",*yytext); 
                        return (*yytext);}
 	YY_BREAK
 case 5:
 /* rule 5 can match eol */
 YY_RULE_SETUP
-#line 26 "lab2docalc.l"
+#line 33 "lab2docalc.l"
 { if (mydebug) fprintf(stderr,"cariage return %c\n",*yytext); 
                        return (*yytext);}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 29 "lab2docalc.l"
+#line 36 "lab2docalc.l"
 ECHO;
 	YY_BREAK
-#line 810 "lex.yy.c"
+#line 817 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1824,7 +1831,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 29 "lab2docalc.l"
+#line 36 "lab2docalc.l"
 
 
 int yywrap(void)

@@ -107,10 +107,10 @@ expr	:	'(' expr ')'
 			{ $$ = $1 | $3; }
 	|	VARIABLE
 			{ $$ = regs[$1];
-				{ if (debugsw) fprintf(stderr,"found a variable value =%d\n",$1); }
+				{ fprintf(stderr,"found a variable value =%d\n",$1); }
 			}
 	|	INTEGER {$$=$1;
-				{ if (debugsw) fprintf(stderr,"found an integer\n");}
+				{ fprintf(stderr,"found an integer\n");}
 			}
 	;
 
@@ -120,8 +120,5 @@ expr	:	'(' expr ')'
 
 int main(int argc, char* argv)
 {
-	if (argc > 1)
-		debugsw = 1;
-
 	yyparse();
 }
