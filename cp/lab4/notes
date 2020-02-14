@@ -1,0 +1,25 @@
+int i
+A[i]
+
+char *c
+A[c]
+
+ /*
+[a-z]+
+		yylval.string=strdup(yytex);
+ */
+
+change sym tab to no longer have a label
+change sym tab to no longer have a main
+search
+fetch address
+decide search if it's there, insert, search and fetch
+modify
+delete
+
+
+tasklist
+1. add rules to yacc (enhance yacc to allow syntax)
+2. fix symtab, and test them without having yacc (use c to test, with main)
+3. enhance lex (strdup, return string pointers instead of just a number)
+4. semantic action in yacc
