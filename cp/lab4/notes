@@ -23,3 +23,28 @@ tasklist
 2. fix symtab, and test them without having yacc (use c to test, with main)
 3. enhance lex (strdup, return string pointers instead of just a number)
 4. semantic action in yacc
+
+
+search and insert are things that need major work
+instead of main they gave you,
+printf search returns (search myfirst)
+insert(myfirst, 0)
+insert("mysecond", 1)
+insert("mythird", 2)
+prtinf("search returns ", search("myfirst"))
+display
+
+
+int Searc(char *sym)
+{
+		if (strcmp(p->symbol, sym) == 0)
+}
+
+void insert(char *sym, int offset)
+{
+	else {
+		p->symbol = strdup(Sym);
+		p->addr = offset;
+}
+
+delete modify

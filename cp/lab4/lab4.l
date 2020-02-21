@@ -13,50 +13,55 @@
 	collin gros
 */
 
-int mydebug=1;
 #include "y.tab.h"
+
+#include <stdio.h>
+#include <string.h>
+
+
+int mydebug=1;
 %}
 
 
 %%
-
 int {
 	if (mydebug) {
-		fprintf(stderr, "\"int\" found!\n");
+		fprintf(stderr, "INT found!\n");
 	}
 
 	return(INT);
 }
-[a-z]+[0-9]* {
+[a-zA-Z]+[a-zA-Z0-9]* {
 	if (mydebug) {
-		fprintf(stderr, "identifier found!\n");
+		fprintf(stderr, "ID found!\n");
 	}
 
+	yylval.string = strdup(yytext);
 	return(ID);
 }
 [0-9][0-9]* {
 	if (mydebug) {
-		fprintf(stderr, "digit found\n"); 
+		fprintf(stderr, "INTEGER found!\n"); 
 	}
 
-	yylval=atoi((const char *)yytext);
+	yylval.number = atoi(yytext);
 	return(INTEGER);
 }
 [ \t] {
 	if (mydebug) {
-		fprintf(stderr,"Whitespace found\n");
+		fprintf(stderr, "whitespace found!\n");
 	}
 }
 [=\-+*/%&|();] {
 	if (mydebug) {
-		fprintf(stderr,"return a token %c\n",*yytext);
+		fprintf(stderr, "found a token!\n");
 	}
 
 	return (*yytext);
 }
 \n {
 	if (mydebug) {
-		fprintf(stderr,"cariage return %c\n",*yytext); 
+		fprintf(stderr, "found carriage return!\n"); 
 	}
 
 	return (*yytext);
