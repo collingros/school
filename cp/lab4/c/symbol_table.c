@@ -15,6 +15,11 @@
 #include "symbol_table.h"
 
 
+struct SymbolTable *first = NULL;
+struct SymbolTable *last = NULL;
+int size = 0;
+int debug = 1;
+
 int search(char *symbol)
 {
 	// iterate the entire list
@@ -35,7 +40,7 @@ int search(char *symbol)
 
 int insertSymbol(char *symbol, int offset)
 {
-	if (search(symbol) == -1) {
+	if (search(symbol) != -1) {
 		if (debug) {
 			printf("ERROR: the symbol \"%s\" already exists in the "
 				   "symbol table!\n", symbol);

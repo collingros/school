@@ -89,6 +89,7 @@ void yyerror (s)	/* Called by yyparse on error */
 	 char *s;
 {
 	printf ("%s\n", s);
+	exit(1);
 }
 
 // our SymbolTable's memory
@@ -96,7 +97,7 @@ int regs[MAX_SIZE];
 // where we are in regs[]
 int offset = 0;
 
-#line 100 "y.tab.c"
+#line 101 "y.tab.c"
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus
@@ -151,12 +152,12 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 37 "lab4.y"
+#line 38 "lab4.y"
 
 	int number;
 	char *string;
 
-#line 160 "y.tab.c"
+#line 161 "y.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -462,9 +463,9 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    54,    54,    57,    58,    61,    77,    78,    79,    83,
-      90,    95,   100,   105,   110,   115,   120,   125,   130,   135,
-     140
+       0,    55,    55,    58,    59,    62,    81,    82,    83,    87,
+      94,    99,   104,   109,   114,   119,   124,   129,   134,   139,
+     144
 };
 #endif
 
@@ -1266,8 +1267,10 @@ yyreduce:
   switch (yyn)
     {
   case 5:
-#line 62 "lab4.y"
+#line 63 "lab4.y"
     {
+			printf("YACC: declaration!\n");
+
 			if (insertSymbol((yyvsp[-2].string), offset)) {
 				printf("ERROR: insertion of new variable failed!\n");
 				exit(1);
@@ -1277,117 +1280,118 @@ yyreduce:
 				exit(1);
 			}
 			else {
+				printf("YACC: successfully inserted! offset: %d\n", offset);
 				++offset;
 			}
 		}
-#line 1284 "y.tab.c"
+#line 1288 "y.tab.c"
     break;
 
   case 8:
-#line 80 "lab4.y"
+#line 84 "lab4.y"
     { yyerrok; }
-#line 1290 "y.tab.c"
+#line 1294 "y.tab.c"
     break;
 
   case 9:
-#line 84 "lab4.y"
+#line 88 "lab4.y"
     {
 			/* assign the r-value for $1 */
 			regs[search((yyvsp[-2].string))] = (yyvsp[0].number);
 		}
-#line 1299 "y.tab.c"
+#line 1303 "y.tab.c"
     break;
 
   case 10:
-#line 91 "lab4.y"
+#line 95 "lab4.y"
     {
 			(yyval.number) = (yyvsp[-1].number);
 		}
-#line 1307 "y.tab.c"
+#line 1311 "y.tab.c"
     break;
 
   case 11:
-#line 96 "lab4.y"
+#line 100 "lab4.y"
     {
 			(yyval.number) = -(yyvsp[0].number);
 		}
-#line 1315 "y.tab.c"
+#line 1319 "y.tab.c"
     break;
 
   case 12:
-#line 101 "lab4.y"
+#line 105 "lab4.y"
     {
 			(yyval.number) = (yyvsp[-2].number) - (yyvsp[0].number);
 		}
-#line 1323 "y.tab.c"
+#line 1327 "y.tab.c"
     break;
 
   case 13:
-#line 106 "lab4.y"
+#line 110 "lab4.y"
     {
 			(yyval.number) = (yyvsp[-2].number) + (yyvsp[0].number);
 		}
-#line 1331 "y.tab.c"
+#line 1335 "y.tab.c"
     break;
 
   case 14:
-#line 111 "lab4.y"
+#line 115 "lab4.y"
     {
 			(yyval.number) = (yyvsp[-2].number) * (yyvsp[0].number);
 		}
-#line 1339 "y.tab.c"
+#line 1343 "y.tab.c"
     break;
 
   case 15:
-#line 116 "lab4.y"
+#line 120 "lab4.y"
     {
 			(yyval.number) = (yyvsp[-2].number) / (yyvsp[0].number);
 		}
-#line 1347 "y.tab.c"
+#line 1351 "y.tab.c"
     break;
 
   case 16:
-#line 121 "lab4.y"
+#line 125 "lab4.y"
     {
 			(yyval.number) = (yyvsp[-2].number) % (yyvsp[0].number);
 		}
-#line 1355 "y.tab.c"
+#line 1359 "y.tab.c"
     break;
 
   case 17:
-#line 126 "lab4.y"
+#line 130 "lab4.y"
     {
 			(yyval.number) = (yyvsp[-2].number) & (yyvsp[0].number);
 		}
-#line 1363 "y.tab.c"
+#line 1367 "y.tab.c"
     break;
 
   case 18:
-#line 131 "lab4.y"
+#line 135 "lab4.y"
     {
 			(yyval.number) = (yyvsp[-2].number) | (yyvsp[0].number);
 		}
-#line 1371 "y.tab.c"
+#line 1375 "y.tab.c"
     break;
 
   case 19:
-#line 136 "lab4.y"
+#line 140 "lab4.y"
     {
 			(yyval.number) = regs[search((yyvsp[0].string))];
 		}
-#line 1379 "y.tab.c"
+#line 1383 "y.tab.c"
     break;
 
   case 20:
-#line 141 "lab4.y"
+#line 145 "lab4.y"
     {
 			(yyval.number) = (yyvsp[0].number);
 		}
-#line 1387 "y.tab.c"
+#line 1391 "y.tab.c"
     break;
 
 
-#line 1391 "y.tab.c"
+#line 1395 "y.tab.c"
 
       default: break;
     }
@@ -1619,7 +1623,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 146 "lab4.y"
+#line 150 "lab4.y"
 	/* end of rules, start of program */
 
 int main(int argc, char** argv)

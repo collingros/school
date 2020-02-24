@@ -22,12 +22,12 @@ struct SymbolTable {
 
 
 /// point to the first and last symbols in our symbol table..
-struct SymbolTable *first = NULL;
-struct SymbolTable *last = NULL;
+extern struct SymbolTable *first;
+extern struct SymbolTable *last;
 /// how many SymbolTables we have in our list of SymbolTable(s)
-int size = 0;
+extern int size;
 /// if we want to see debug messages
-int debug = 0;
+extern int debug;
 
 
 /// insert a new symbol into our symbol table

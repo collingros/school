@@ -20,6 +20,7 @@ void yyerror (s)	/* Called by yyparse on error */
 	 char *s;
 {
 	printf ("%s\n", s);
+	exit(1);
 }
 
 // our SymbolTable's memory
@@ -60,6 +61,8 @@ decls	:	/* empty */
 
 decl	:	INT VARIABLE ';' '\n'
 		{
+			printf("YACC: declaration!\n");
+
 			if (insertSymbol($2, offset)) {
 				printf("ERROR: insertion of new variable failed!\n");
 				exit(1);
@@ -69,6 +72,7 @@ decl	:	INT VARIABLE ';' '\n'
 				exit(1);
 			}
 			else {
+				printf("YACC: successfully inserted! offset: %d\n", offset);
 				++offset;
 			}
 		}
