@@ -11,6 +11,7 @@
 
 
 	collin gros
+	02/24/2020
 */
 
 #include "y.tab.h"
@@ -18,52 +19,27 @@
 #include <stdio.h>
 #include <string.h>
 
-
-int mydebug=1;
 %}
 
 
 %%
 int {
-	if (mydebug) {
-		fprintf(stderr, "INT found!\n");
-	}
-
 	return(INT);
 }
-[a-zA-Z]+[a-zA-Z0-9]* {
-	if (mydebug) {
-		fprintf(stderr, "ID found!\n");
-	}
-
+[a-zA-Z][a-zA-Z0-9]* {
 	yylval.string = strdup(yytext);
-	return(ID);
+	return(VARIABLE);
 }
 [0-9][0-9]* {
-	if (mydebug) {
-		fprintf(stderr, "INTEGER found!\n"); 
-	}
-
 	yylval.number = atoi(yytext);
 	return(INTEGER);
 }
 [ \t] {
-	if (mydebug) {
-		fprintf(stderr, "whitespace found!\n");
-	}
 }
 [=\-+*/%&|();] {
-	if (mydebug) {
-		fprintf(stderr, "found a token!\n");
-	}
-
 	return (*yytext);
 }
 \n {
-	if (mydebug) {
-		fprintf(stderr, "found carriage return!\n"); 
-	}
-
 	return (*yytext);
 }
 %%

@@ -1,16 +1,17 @@
 %{
-
 /*
 	collin gros
 	02/21/20
 
-	yacc file for parsing a calculator
+	yacc program for parsing a calculator
 */
 
 #include <stdio.h>
 #include <ctype.h>
 
-#include "symbol_table.h"
+#include "./c/symbol_table.h"
+
+#define MAX_SIZE 3
 
 
 int yylex();
@@ -22,6 +23,8 @@ void yyerror (s)	/* Called by yyparse on error */
 }
 
 // our SymbolTable's memory
+int regs[MAX_SIZE];
+// where we are in regs[]
 int offset = 0;
 %}
 
@@ -37,7 +40,8 @@ int offset = 0;
 }
 
 %token <number> INTEGER;
-%token <string> ID;
+%token <string> VARIABLE;
+%type <number> expr;
 
 %left '|'
 %left '&'
@@ -45,20 +49,24 @@ int offset = 0;
 %left '*' '/' '%'
 %left UMINUS
 
-
 %%	/* end specs, begin rules */
 
-program	:	DECLS list
+program	:	decls list
 ;
 
-DECLS	:	/* empty */
-		| DEC DECLS
+decls	:	/* empty */
+		| decls decl
 ;
 
-DEC	:	INT	ID ';'	'\n'
+decl	:	INT VARIABLE ';' '\n'
 		{
 			if (insertSymbol($2, offset)) {
-				fprintf(stderr, "ERROR: failed to insert!\n");
+				printf("ERROR: insertion of new variable failed!\n");
+				exit(1);
+			}
+			else if (offset >= MAX_SIZE) {
+				printf("ERROR: maximum size for regs[] reached!\n");
+				exit(1);
 			}
 			else {
 				++offset;
@@ -72,42 +80,68 @@ list	:	/* empty */
 			{ yyerrok; }
 ;
 
-stat	:	expr
-			{
-			fprintf(stderr,"the anwser is %d\n", $1); 
-			}
-	|	VARIABLE '=' expr
-			{ regs[$1] = $3; }
-	;
+stat	:	VARIABLE '=' expr
+		{
+			/* assign the r-value for $1 */
+			regs[search($1)] = $3;
+		}
+;
 
 expr	:	'(' expr ')'
-			{ $$ = $2; }
-	|	'-' expr	%prec UMINUS
-			{ $$ = -$2; }
-	|	expr '-' expr
-			{ $$ = $1 - $3; }
-	|	expr '+' expr
-			{ $$ = $1 + $3; }
-	|	expr '*' expr
-			{ $$ = $1 * $3; }
-	|	expr '/' expr
-			{ $$ = $1 / $3; }
-	|	expr '%' expr
-			{ $$ = $1 % $3; }
-	|	expr '&' expr
-			{ $$ = $1 & $3; }
-	|	expr '|' expr
-			{ $$ = $1 | $3; }
-	|	VARIABLE
-			{ $$ = regs[$1];
-				{ fprintf(stderr,"found a variable value =%d\n",$1); }
-			}
-	|	INTEGER {$$=$1;
-				{ fprintf(stderr,"found an integer\n");}
-			}
-	;
+		{
+			$$ = $2;
+		}
 
+		|	'-' expr	%prec UMINUS
+		{
+			$$ = -$2;
+		}
 
+		|	expr '-' expr
+		{
+			$$ = $1 - $3;
+		}
+
+		|	expr '+' expr
+		{
+			$$ = $1 + $3;
+		}
+
+		|	expr '*' expr
+		{
+			$$ = $1 * $3;
+		}
+
+		|	expr '/' expr
+		{
+			$$ = $1 / $3;
+		}
+
+		|	expr '%' expr
+		{
+			$$ = $1 % $3;
+		}
+
+		|	expr '&' expr
+		{
+			$$ = $1 & $3;
+		}
+
+		|	expr '|' expr
+		{
+			$$ = $1 | $3;
+		}
+
+		|	VARIABLE
+		{
+			$$ = regs[search($1)];
+		}
+
+		|	INTEGER
+		{
+			$$ = $1;
+		}
+;
 
 %%	/* end of rules, start of program */
 

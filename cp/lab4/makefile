@@ -3,13 +3,23 @@
 
 # makefile for lab4
 
-all:
+all: symbol_table yacc lex 
+	gcc -Wall -o run.gitignoreme lex.yy.o y.tab.o symbol_table.o
+
+yacc: lab4.y
 	yacc -d lab4.y
+	gcc -c y.tab.c
+
+lex: lab4.l
 	lex lab4.l
-	gcc -Wall -o run lex.yy.c y.tab.c
+	gcc -c lex.yy.c
+
+symbol_table: ./c/symbol_table.c ./c/symbol_table.h
+	gcc -c ./c/symbol_table.c ./c/symbol_table.h
 
 clean:
-	rm *.yy.c
-	rm *tab.c
-	rm *tab.h
-	rm run
+	rm -f *.yy.c
+	rm -f *tab.c
+	rm -f *tab.h
+	rm -f run.gitignoreme
+	rm -f *.o

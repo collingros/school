@@ -15,25 +15,27 @@
 #include "symbol_table.h"
 
 
-int symbolExists(char *symbol, struct SymbolTable *p)
+int search(char *symbol)
 {
-	// if we reach the end of the list
-	if (p == NULL) {
-		return 0;
+	// iterate the entire list
+	struct SymbolTable *p = first;
+	while (p != NULL) {
+		if (strcmp(symbol, p->symbol) == 0) {
+			// our symbol was found! return its address!
+			return p->address;
+		}
+
+		p = p->next;
 	}
 
-	// if we found our symbol
-	if (strcmp(symbol, p->symbol) == 0) {
-		return 1;
-	}
-
-	return symbolExists(symbol, p->next);
+	// symbol does not exist
+	return -1;
 }
 
 
 int insertSymbol(char *symbol, int offset)
 {
-	if (symbolExists(symbol, first)) {
+	if (search(symbol) == -1) {
 		if (debug) {
 			printf("ERROR: the symbol \"%s\" already exists in the "
 				   "symbol table!\n", symbol);
