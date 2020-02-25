@@ -10,8 +10,15 @@
 	January 2015
 
 
+--------------------------------------------------------------------------------
 	collin gros
 	02/24/2020
+
+	added support for longer variable names, as well as multiple types
+	for use with variable names and integers (yacc %UNION)
+
+	made sure to use strdup to avoid using the same memory address as is
+	pointed to by yytext.
 */
 
 #include "y.tab.h"
