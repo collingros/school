@@ -48,9 +48,23 @@ void getLeftHalf(int *leftHalf, int *src)
 }
 
 
-void concatArrays(int *arr1, int *arr2, int *res)
+// concatenate the left and right parts of a binary number to res
+void concatBinaryArrays(int *arr1, int *arr2, int *res)
 {
-	//
+	for (size_t i = 0; i < 8; ++i) {
+		int curVal;
+		// concatenate the left side first, then the right side
+		if (i < 4) {
+			curVal = arr1[i];
+		}
+		else {
+			// because the right half starts at 0 and goes up to 4
+			int actualIndex = i - 4;
+			curVal = arr2[actualIndex];
+		}
+
+		res[i] = curVal;
+	}
 }
 
 
@@ -85,8 +99,6 @@ void roundFunction(int *oldRightHalf, int *subKey, int *res) {
 int feistel(int *plaintext, int *ciphertext,
 			int subkeyTable[4][4], size_t numRounds)
 {
-	printArray(plaintext, 8);
-
 	// keep track of the old left, right and new left, right halves
 	// through the rounds
 	int *oldLeftHalf, *oldRightHalf;
@@ -94,7 +106,7 @@ int feistel(int *plaintext, int *ciphertext,
 
 	// repeat for every round
 	for (size_t i = 0; i < numRounds; ++i) {
-		printf("ROUND: %d\n", i);
+		printf("\nROUND: %d\n", i);
 
 		// if this is our first round, we want to use the plaintext's
 		// halves
@@ -104,25 +116,12 @@ int feistel(int *plaintext, int *ciphertext,
 
 			getLeftHalf(oldLeftHalf, plaintext);
 			getRightHalf(oldRightHalf, plaintext);
-
-			printf("initial getLeftHalf: ");
-			printArray(oldLeftHalf, 4);
-			printf("initial getRightHalf: ");
-			printArray(oldRightHalf, 4);
 		}
-
-
-		printf("\n");
 
 
 		// grab our subkey for the round out of our subkeys table
 		// (Ki)
 		int *currentSubkey = subkeyTable[i];
-		printf("currentSubkey: ");
-		printArray(currentSubkey, 4);
-
-
-		printf("\n");
 
 
 		// GETTING NEW LEFT HALF
@@ -130,33 +129,15 @@ int feistel(int *plaintext, int *ciphertext,
 		newLeftHalf = malloc(4);
 		memcpy(newLeftHalf, oldRightHalf, sizeof(int) * 4);
 
-		printf("newLeftHalf: ");
-		printArray(newLeftHalf, 4);
-
-
-		printf("\n");
-
 
 		// GETTING NEW RIGHT HALF 
 		int result[4];
 		// get result of round function with oldRightHalf and current subkey
 		roundFunction(oldRightHalf, currentSubkey, result);
 
-		printf("result of round function: ");
-		printArray(result, 4);
-
 		newRightHalf = malloc(4);
 		// XOR oldLeftHalf with result of round function
 		xorArrays(oldLeftHalf, result, newRightHalf);
-		printf("result of XOR with oldLeftHalf and result of round: ");
-		printArray(newRightHalf, 4);
-
-		printf("newRightHalf: ");
-		printArray(newRightHalf, 4);
-
-
-		printf("\n");
-
 
 		// set newHalves to be oldHalves, and free oldHalves
 		free(oldLeftHalf);
@@ -166,14 +147,14 @@ int feistel(int *plaintext, int *ciphertext,
 		oldRightHalf = newRightHalf;
 
 
-		printf("\n");
+		printf("Li: ");
+		printArray(oldLeftHalf, 4);
+		printf("Ri: ");
+		printArray(oldRightHalf, 4);
 	}
 
-	printf("oldLeftHalf: ");
-	printArray(oldLeftHalf, 4);
 	// set our ciphertext to last left and right halves
-	getLeftHalf(ciphertext, oldLeftHalf);
-	getRightHalf(ciphertext, oldRightHalf);
+	concatBinaryArrays(oldLeftHalf, oldRightHalf, ciphertext);
 }
 
 
