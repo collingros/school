@@ -1,0 +1,85 @@
+declaration-list -> declaration { declaration }
+DL -> DEC
+	| DEC DL
+
+declaration -> var-declaration | fun-declaration
+DEC -> VARLIST | FUNDEC
+
+BOLD FACE = token from LEX
+some come with companion value (ID)
+[ or ] don't come with a companion value
+
+, IS A BOLD FACE (retrieved from lEX)
+'if you find any of these characters, give it back:
+	(in lex, add commas to the rule with *+-, etc)
+	[],+*()'
+
+type-specifier -> int | void | boolean
+int return an int void return a void etc
+
+parameter-list
+PL -> P
+	| p ',' PL
+
+
+lex needs global variables
+(in %{ %} section)
+	int linecount = 1;
+
+in yacc, do extern int linecount;
+
+
+yacc can NOT match "<=" sign
+when lex sees <= return LE or GE >= EQ NE
+
+
+[0-9][0-9[*
+	yyval.value = atoi((const char*) yytext) return NUM
+
+NOW A NUMBER INSTEAD OF AN INTEGER
+
+
+special characters, have to \ in lex 
+	[\[\]=\-+*/%&|;(),]
+
+
+yyerror in yacc (s)
+	char *s;
+{
+	printf("%s on line %d\n", s, linecount);
+}
+
+
+yyac
+
+%union {
+	int value;
+	char *String;
+}
+
+%token AND OR NOT INT VOID WHILE DO IF THEN ELSE READ WRITE FOR RETURN LE GE NE MYBEGIN END OF BOOLEAN TRUE FALSE
+%token <Value> NUM
+%token <String> ID
+
+
+DELETE ALL OF THE %left STUFF
+
+VARDEC : typespec var_list ';'
+
+var_list: ID
+	| ID '[' NUM ']'
+	| ID ',' var_list
+	| ID '[' NUM ']' ',' var_list
+	;
+typespec: INT
+		| VOID	
+		| BOOLEAN
+
+param: typespec ID
+	|	typespec ID '[' ']'
+	;
+
+compoundstmt : MYBEGIN localdeclarations statementlist END
+
+line 22. var -> ID 
+	ignore the plus (means multiple dimensions)
