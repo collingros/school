@@ -1,18 +1,14 @@
 %{
 /*
-	Small LEX routine which returns two formal tokens (INTEGER and VARIABLE)
-	along with single string elements like '+'.
-
-	This LEX definition is the companion to the docalc.y YACC routine which
-	is a simple calculator
-
-	Shaun Cooper
-	January 2015
-
-
 	collin gros
 	02/28/2020
 
+	lex routine for dealing sending the necessary tokens for YACC
+	to handle 'Extended BNF Grammer for C-Algol' rules
+
+	NOTE: \n is only used for linecounting, whitespace is ignored otherwise
+
+		  linecount is used in YACC
 */
 
 #include "y.tab.h"
@@ -25,6 +21,7 @@ int linecount = 1;
 
 
 %%
+ /* keywords */
 int {
 	return(INT);
 }
@@ -80,6 +77,7 @@ return {
 	return (MYRETURN);
 }
 
+ /* yacc can't handle two-character matching like this */
 "<=" {
 	return (LE);
 }
@@ -93,14 +91,14 @@ return {
 	return (NEQ);
 }
 
-mybegin {
+begin {
 	return (MYBEGIN);
 }
 end {
 	return (END);
 }
 
-
+ /* variable and number rules */
 [a-zA-Z][a-zA-Z0-9]* {
 	yylval.string = strdup(yytext);
 	return(VARIABLE);
@@ -109,11 +107,17 @@ end {
 	yylval.number = atoi(yytext);
 	return(NUMBER);
 }
+
+ /* we ignore whitespace */
 [ \t] {
 }
-[,\[\]()=<>+\-*/] {
+
+ /* all the literal characters we can use in yacc */
+[,\[\]()=<>+\-*/;] {
 	return (*yytext);
 }
+
+ /* carrige returns only for line counting */
 \n {
 	++linecount;
 }

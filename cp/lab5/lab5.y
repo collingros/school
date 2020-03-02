@@ -2,6 +2,13 @@
 /*
 	collin gros
 	02/28/20
+
+	YACC program for handling code in 'Extended BNF Grammar for C-Algol'
+	format.
+
+	all rules were copied from the above grammar.
+
+	NOTE: can't handle any semantics yet, only syntax
 */
 
 #include <stdio.h>
@@ -15,16 +22,10 @@
 int yylex();
 extern int linecount;
 
-// our SymbolTable's memory
-int regs[MAX_SIZE];
-// where we are in regs[]
-int offset = 0;
-
 void yyerror (s)	/* Called by yyparse on error */
 	 char *s;
 {
-	printf ("%s on line %d\n", s, linecount);
-	exit(1);
+	fprintf (stderr, "%s on line %d\n", s, linecount);
 }
 %}
 
@@ -44,7 +45,8 @@ void yyerror (s)	/* Called by yyparse on error */
 
 %%
 /* program -> declaration-list */
-program	: decList;
+program	: decList
+		;
 
 /* declaration-list -> declaration { declaration } */
 decList	: dec
@@ -52,12 +54,12 @@ decList	: dec
 		;
 
 /* declaration -> var-declaration | fun-declaration */
-decl	: varDec
-		| funDec
-		;
+dec	: varDec
+	| funDec
+	;
 
 /* var-declaration -> type-specifier var-list ; */
-varDec	: typeSpec varList
+varDec	: typeSpec varList ';'
 		;
 
 /* var-list -> ID | ID [ NUM ] | ID , var-list | ID [ NUM ] , var-list */
@@ -93,12 +95,12 @@ param	: typeSpec VARIABLE '[' ']'
 		;
 
 /* compound-stmt -> begin local-declarations statement-list end */
-compoundStmt	: MYBEGIN localDecs stmtList END
+compoundStmt	: MYBEGIN localDec stmtList END
 				;
 
 /* local-declarations -> { var-declarations } */
-localDecs	: /* empty */
-			| varDecs localDecs
+localDec	: /* empty */
+			| varDec localDec 
 			;
 
 /* statement-list -> { statement } */
@@ -147,7 +149,7 @@ writeStmt	: WRITE expr ';'
 			;
 
 /* assignment-stmt -> var = simple-expression; */
-assignmentStmt	: VARIABLE '=' simpleExpr ';'
+assignmentStmt	: var '=' simpleExpr ';'
 				;
 
 /* expression -> simple-expression; */
@@ -156,13 +158,14 @@ expr	: simpleExpr
 
 /* var -> ID [ [ expression ] ]+ */
 /* NOTE: we aren't dealing with multi dimensional arrays */
-var	: VARIABLE '[' expr ']'
+var	: VARIABLE
+	| VARIABLE '[' expr ']'
 	;
 
 /* simple-expression -> additive-expression [ relop additive-expression ]+
    */
 simpleExpr	: additiveExpr
-			| additiveExpr relop additiveExpr
+			| simpleExpr relop additiveExpr
 			;
 
 /* relop -> <= | < | > | >= | == | != */
@@ -176,7 +179,7 @@ relop	: LE
 
 /* additive-expression -> term { addop term } */
 additiveExpr	: term
-				| term addop term
+				| term addop additiveExpr 
 				;
 
 /* addop -> + | - */
@@ -185,6 +188,11 @@ addop	: '+'
 		;
 
 /* term -> factor { multop factor } */
+term	: factor
+		| multop term
+		;
+
+/* multop -> factor { multop factor } */
 multop	: '*'
 		| '/'
 		| AND
@@ -219,5 +227,11 @@ argList	: expr
 
 int main(int argc, char** argv)
 {
-	yyparse();
+	if (yyparse()) {
+		fprintf(stderr, "yyparse() failed!\n");
+		exit(1);
+	}
+	printf("yyparse() was successful!\n");
+
+	exit(0);
 }

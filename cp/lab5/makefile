@@ -3,14 +3,14 @@
 
 # makefile for lab5
 #
-# compile lacc, lex, and symbol_table files seperately,
+# compile lex, and yacc files seperately,
 # then link them all together!
 #
 # creates a ./run.gitignoreme executable
 
 # compile all seperately, then link them together
-all: symbol_table yacc lex 
-	gcc -Wall -o run.gitignoreme lex.yy.o y.tab.o symbol_table.o
+all: yacc lex 
+	gcc -Wall -o run.gitignoreme lex.yy.o y.tab.o
 
 # compile yacc file
 yacc: lab5.y
@@ -22,10 +22,6 @@ lex: lab5.l
 	lex lab5.l
 	gcc -c lex.yy.c
 
-# compile symbol_table code
-symbol_table: ./c/symbol_table.c ./c/symbol_table.h
-	gcc -c ./c/symbol_table.c ./c/symbol_table.h
-
 # get rid of all generated crap
 clean:
 	rm -f *.yy.c
@@ -33,4 +29,3 @@ clean:
 	rm -f *tab.h
 	rm -f run.gitignoreme
 	rm -f *.o
-	rm -f ./c/*.gch
