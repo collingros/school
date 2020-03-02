@@ -13,8 +13,7 @@
 
 #include <stdio.h>
 #include <ctype.h>
-
-#include "./c/symbol_table.h"
+#include <stdlib.h>
 
 #define MAX_SIZE 3
 
