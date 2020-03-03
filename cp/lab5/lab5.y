@@ -63,9 +63,16 @@ varDec	: typeSpec varList ';'
 
 /* var-list -> ID | ID [ NUM ] | ID , var-list | ID [ NUM ] , var-list */
 varList	: VARIABLE
-		| VARIABLE '[' NUMBER ']'
+		| VARIABLE '[' NUMBER ']' {
+			printf("found variable with \"%d\" in the brackets!\n",
+				   $3);
+		}
 		| VARIABLE ',' varList
-		| VARIABLE '[' NUMBER ']' ',' varList
+		| VARIABLE '[' NUMBER ']' ',' varList {
+			printf("found variable with \"%d\" in the brackets, in a "
+				   "list of declarations!\n",
+				   $3);
+		}
 		;
 
 /* type-specifier -> int | void | boolean */
@@ -201,7 +208,9 @@ multop	: '*'
 /* factor -> ( expression ) | NUM | var | call | TRUE | FALSE | NOT factor
    */
 factor	: '(' expr ')'
-		| NUMBER
+		| NUMBER {
+			printf("found a number \"%d\"!\n", $1);
+		}
 		| var
 		| call
 		| TRUE
