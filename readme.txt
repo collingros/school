@@ -8,6 +8,3 @@ branches:
 	sophomore_2:	fourth semester in college
 	junior_1:	fifth semester in college
 	junior_2:	sixth semester in college
-
-	inca:		fifth/sixth semester in college/job
-			with research team at nmsu
