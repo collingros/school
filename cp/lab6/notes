@@ -1,0 +1,21 @@
+don't add the symbol table
+
+add global var to pass result from yacc to the printer
+
+
+we have a decl and a list of decls
+$1
+[]
+	$2
+	[]->[]->[]
+	next->next
+
+$1->next = $2
+$1	$2
+[]->[]->[]->[]
+	next->next
+
+
+"true for everything except varlist because it needs to connect to other
+variable declarations"?
+
