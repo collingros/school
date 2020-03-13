@@ -3,19 +3,18 @@
 
 # makefile for compiling decrypt.c
 
-all: decrypt_helper.o decrypt.o hash.o
-	gcc decrypt_helper.o decrypt.o hash.o -o decrypt
+CC=g++
+SRC_DIR=./src
+OBJ_DIR=./obj
 
-decrypt_helper.o: decrypt_helper.c decrypt_helper.h
-	gcc -c decrypt_helper.c
+SRC_FILES=$(wildcard $(SRC_DIR)/*.c))
 
-decrypt.o: decrypt.c
-	gcc -c decrypt.c
+$(info $(SRC_FILES))
+OBJ_FILES=$($(SRC_FILES):.c=.o)
 
-hash.o: hash.c
-	gcc -c hash.c
-
+decrypt: $(OBJ_FILES)
+	$(CC) -o $@ $^
 
 clean:
-	rm -f *.o
-	rm -f decrypt
+	rm -rf $(OBJ_DIR) decrypt
+
