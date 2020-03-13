@@ -39,6 +39,8 @@ void yyerror (s)	/* Called by yyparse on error */
 {
 	int number;
 	char *string;
+	enum DATATYPE datatype;
+	enum OPERATOR op;
 	struct ASTNodeType *node;
 }
 
@@ -47,7 +49,13 @@ void yyerror (s)	/* Called by yyparse on error */
 %token <number> NUMBER;
 %token <string> VARIABLE;
 
-%type <node> varList varDec dec decList
+%type <node> varList varDec dec decList funDec
+%type <node> params paramList param
+%type <node> compoundStmt stmtList stmt localDec writeStmt
+%type <node> expr simpleExpr additiveExpr term factor
+
+%type <datatype> typeSpec 
+%type <op> addop
 
 %%
 /* program -> declaration-list */
@@ -65,8 +73,9 @@ decList	: dec {
 		| dec decList {
 			/* chain the declaration to the other declarations */
 			printf("decl list!\n");
-			printf("\t$1: %p\t$2: %p\n", $1, $2);
 			$1->next = $2;
+			printf("\tname: %s\tname: %s\n", $1->name, $2);
+			$$ = $1;
 		}
 		;
 
@@ -75,7 +84,7 @@ dec	: varDec {
 		$$ = $1;
 	}
 	| funDec {
-		$$ = NULL;
+		$$ = $1;
 	}
 	;
 
@@ -99,67 +108,139 @@ varList	: VARIABLE {
 		| VARIABLE ',' varList {
 			$$ = ASTcreateNode(VARDEC);
 			$$->name = $1;
-			printf("\tname: %s\n", $$->name);
 			$$->next = $3;
+			printf("\tname: %s\tnext: %s\n", $$->name, $3->name);
 		}
 		| VARIABLE '[' NUMBER ']' ',' varList {
 			$$ = ASTcreateNode(VARDEC);
 			$$->name = $1;
-			printf("\tname: %s\n", $$->name);
 			$$->next = $6;
+			printf("\tname: %s\tnext: %s\n", $$->name, $6->name);
 		}
 		;
 
 /* type-specifier -> int | void | boolean */
-typeSpec	: INT
-			| VOID
-			| BOOLEAN
+typeSpec	: INT {
+				$$ = INTTYPE;
+			}
+			| VOID {
+				$$ = VOIDTYPE;
+			}
+			| BOOLEAN {
+				$$ = BOOLEANTYPE;
+			}
 			;
 
 /* fun-declaration -> type-specifier ID ( params ) compound-stmt */
-funDec	: typeSpec VARIABLE '(' params ')' compoundStmt
+funDec	: typeSpec VARIABLE '(' params ')' compoundStmt {
+			$$ = ASTcreateNode(FUNDEC);
+			$$->name = $2;
+			$$->dt = $1;
+			$$->s1 = $4;
+			$$->s2 = $6;
+		}
 		;
 
 /* params -> void | param-list */
-params	: VOID
-		| paramList
+params	: VOID {
+			$$ = NULL;
+		}
+		| paramList {
+			$$ = $1;
+		}
 		;
 
 /* param-list -> param { , param } */
-paramList	: param
-			| param ',' paramList
+paramList	: param {
+				$$ = $1;
+			}
+			| param ',' paramList {
+				$1->next = $3;
+				$$ = $1;
+			}
 			;
 
 /* param -> type-specifier ID [ [] ] */
-param	: typeSpec VARIABLE '[' ']'
-		| typeSpec VARIABLE
+param	: typeSpec VARIABLE '[' ']' {
+			$$ = ASTcreateNode(PARAM);
+			$$->dt = $1;
+			$$->name = $2;
+			$$->size = 0;
+		}
+		| typeSpec VARIABLE {
+			$$ = ASTcreateNode(PARAM);
+			$$->dt = $1;
+			$$->name = $2;
+			$$->size = -1;
+		}
 		;
 
 /* compound-stmt -> begin local-declarations statement-list end */
-compoundStmt	: MYBEGIN localDec stmtList END
+compoundStmt	: MYBEGIN localDec stmtList END {
+					$$ = ASTcreateNode(BLOCK);
+					$$->s1 = $2;
+					$$->s2 = $3;
+				}
 				;
 
 /* local-declarations -> { var-declarations } */
-localDec	: /* empty */
-			| varDec localDec 
+localDec	: /* empty */ {
+				$$ = NULL;
+			}
+			| varDec localDec  {
+				if ($1 == NULL) {
+					$$ = $2;
+				}
+				else {
+					$1->next = $2;
+					$$ = $1;
+				}
+			}
 			;
 
 /* statement-list -> { statement } */
-stmtList	: /* empty */
-			| stmt stmtList
+stmtList	: /* empty */ {
+				$$ = NULL;
+			}
+			| stmt stmtList {
+				if ($1 == NULL) {
+					$$ = $2;
+				}
+				else {
+					$1->next = $2;
+					$$ = $1;
+				}
+			}
 			;
 
 /* statement -> expression-stmt | compount-stmt | selection-stmt
 				| iteration-stmt | assignment-stmt | return-stmt
 				| read-stmt | write-stmt */
-stmt	: exprStmt
-		| compoundStmt
-		| selectionStmt
-		| iterationStmt
-		| assignmentStmt
-		| returnStmt
-		| readStmt
-		| writeStmt
+stmt	: exprStmt {
+			/* WILL EVENTUALLY WRITE $$ = $1 */
+			$$ = NULL;
+		}
+		| compoundStmt {
+			$$ = $1;
+		}
+		| selectionStmt {
+			$$ = NULL;
+		}
+		| iterationStmt {
+			$$ = NULL;
+		}
+		| assignmentStmt {
+			$$ = NULL;
+		}
+		| returnStmt {
+			$$ = NULL;
+		}
+		| readStmt {
+			$$ = NULL;
+		}
+		| writeStmt {
+			$$ = $1;
+		}
 		;
 
 /* expression-stmt -> expression ; | ; */
@@ -186,7 +267,10 @@ readStmt	: READ VARIABLE ';'
 			;
 
 /* write-stmt -> write expr; */
-writeStmt	: WRITE expr ';'
+writeStmt	: WRITE expr ';' {
+				$$ = ASTcreateNode(MYWRITE);
+				$$->s1 = $2;
+			}
 			;
 
 /* assignment-stmt -> var = simple-expression; */
@@ -194,7 +278,9 @@ assignmentStmt	: var '=' simpleExpr ';'
 				;
 
 /* expression -> simple-expression; */
-expr	: simpleExpr
+expr	: simpleExpr {
+			$$ = $1;
+		}
 		;
 
 /* var -> ID [ [ expression ] ]+ */
@@ -205,8 +291,12 @@ var	: VARIABLE
 
 /* simple-expression -> additive-expression [ relop additive-expression ]+
    */
-simpleExpr	: additiveExpr
-			| simpleExpr relop additiveExpr
+simpleExpr	: additiveExpr {
+				$$ = $1;
+			}
+			| simpleExpr relop additiveExpr {
+				$$ = NULL;
+			}
 			;
 
 /* relop -> <= | < | > | >= | == | != */
@@ -219,18 +309,33 @@ relop	: LE
 		;
 
 /* additive-expression -> term { addop term } */
-additiveExpr	: term
-				| term addop additiveExpr 
+additiveExpr	: term {
+					$$ = $1;
+				}
+				| term addop additiveExpr  {
+					/* all of our multi-expr stuff is EXPR */
+					$$ = ASTcreateNode(EXPR);
+					$$-> s1 = $1;
+					$$-> s2 = $3;
+				}
 				;
 
 /* addop -> + | - */
-addop	: '+'
-		| '-'
+addop	: '+' {
+			$$ = PLUS;
+		}
+		| '-' {
+			$$ = MINUS;
+		}
 		;
 
 /* term -> factor { multop factor } */
-term	: factor
-		| multop term
+term	: factor {
+			$$ = $1;
+		}
+		| multop term {
+			$$ = NULL;
+		}
 		;
 
 /* multop -> factor { multop factor } */
@@ -242,15 +347,28 @@ multop	: '*'
 
 /* factor -> ( expression ) | NUM | var | call | TRUE | FALSE | NOT factor
    */
-factor	: '(' expr ')'
-		| NUMBER {
-			fprintf(stderr, "found a number \"%d\"!\n", $1);
+factor	: '(' expr ')' {
+			$$ = NULL;
 		}
-		| var
-		| call
-		| TRUE
-		| FALSE
-		| NOT factor
+		| NUMBER {
+			$$ = ASTcreateNode(MYNUM);
+			$$->value = $1;
+		}
+		| var {
+			$$ = NULL;
+		}
+		| call {
+			$$ = NULL;
+		}
+		| TRUE {
+			$$ = NULL;
+		}
+		| FALSE {
+			$$ = NULL;
+		}
+		| NOT factor {
+			$$ = NULL;
+		}
 		;
 
 /* call -> ID ( args ) */

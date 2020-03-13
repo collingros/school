@@ -1,0 +1,5 @@
+int main(int x, int y)
+begin
+	int x, y;
+	write 5;
+end

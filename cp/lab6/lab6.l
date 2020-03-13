@@ -11,6 +11,7 @@
 		  linecount is used in YACC
 */
 
+#include "c/ast.h"
 #include "y.tab.h"
 
 #include <stdio.h>

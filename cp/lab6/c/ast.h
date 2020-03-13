@@ -11,13 +11,38 @@
 // types of nodes in our tree
 enum NODETYPE {
 	VARDEC,
-	FUNDEC
+	FUNDEC,
+	PARAM,
+	BLOCK,
+	MYWRITE,
+	MYNUM,
+	EXPR
+};
+
+enum DATATYPE {
+	INTTYPE,
+	VOIDTYPE,
+	BOOLEANTYPE
+};
+
+enum OPERATOR {
+	PLUS,
+	MINUS
 };
 
 typedef struct ASTNodeType {
 	enum NODETYPE Type;
+	enum DATATYPE dt;
+	enum OPERATOR op;
+
 	struct ASTNodeType *s1, *s2, *next;
 	char *name;
+
+	/* array size if an array, -1 if not an array */
+	int size;
+
+	/* if nodeType is a NUMBER, value is the number */
+	int value;
 } ASTNode;
 
 

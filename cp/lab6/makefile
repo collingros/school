@@ -14,7 +14,7 @@
 c=./c
 
 
-all: yacc lex ast
+all: ast yacc lex
 	gcc -Wall -o run.gitignoreme lex.yy.o y.tab.o ast.o
 
 # compile yacc file
