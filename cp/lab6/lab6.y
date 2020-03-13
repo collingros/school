@@ -58,10 +58,14 @@ program	: decList {
 
 /* declaration-list -> declaration { declaration } */
 decList	: dec {
+			printf("declaration!\n");
+			printf("\t$1: %p\n", $1);
 			$$ = $1;
 		}
 		| dec decList {
 			/* chain the declaration to the other declarations */
+			printf("decl list!\n");
+			printf("\t$1: %p\t$2: %p\n", $1, $2);
 			$1->next = $2;
 		}
 		;
@@ -85,19 +89,23 @@ varDec	: typeSpec varList ';' {
 varList	: VARIABLE {
 			$$ = ASTcreateNode(VARDEC);
 			$$->name = $1;
+			printf("\tname: %s\n", $$->name);
 		}
 		| VARIABLE '[' NUMBER ']' {
 			$$ = ASTcreateNode(VARDEC);
 			$$->name = $1;
+			printf("\tname: %s\n", $$->name);
 		}
 		| VARIABLE ',' varList {
 			$$ = ASTcreateNode(VARDEC);
 			$$->name = $1;
+			printf("\tname: %s\n", $$->name);
 			$$->next = $3;
 		}
 		| VARIABLE '[' NUMBER ']' ',' varList {
 			$$ = ASTcreateNode(VARDEC);
 			$$->name = $1;
+			printf("\tname: %s\n", $$->name);
 			$$->next = $6;
 		}
 		;

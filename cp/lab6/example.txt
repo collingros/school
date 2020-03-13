@@ -1,0 +1,7 @@
+int a;
+int b;
+int c;
+
+int d, e, f;
+
+int g[500], h[2], i, j[2];

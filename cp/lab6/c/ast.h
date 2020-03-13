@@ -35,7 +35,7 @@ void ASTprint(ASTNode *p, int level);
 /// returns the node's address on success
 ASTNode *ASTcreateNode(enum NODETYPE desiredType);
 
-/// prettyPrint
+/// prettyPrint()
 /// print node information, as well as indent nicely according to depth
 /// of the tree
 ///

@@ -17,23 +17,30 @@ ASTNode *ASTcreateNode(enum NODETYPE desiredType)
 	p->s1 = 0;
 	p->s2 = 0;
 	p->next = 0;
-
 	p->Type = desiredType;
+
+	printf("created a node!\n\taddr: %p\ts1: %p\ts2: %p\tnext:"
+		   "%p\n", p, p->s1, p->s2, p->next);
 	return p;
 }
 
-
-void prettyPrint (const char *msg, int numTabs)
+void printTabs (int numTabs)
 {
-	fprintf(stderr, "\t%s\n", msg);
+	for (int i = 0; i < numTabs; ++i) {
+		printf("\t");
+	}
 }
 
 
 void ASTprint(ASTNode *p, int level)
 {
 	if (p == NULL) {
+		printf("\n");
 		return;
 	}
+	printf("level: %d\n", level);
+
+	printTabs(level);
 	if (level == 0) {
 		fprintf(stderr, "START: ASTprint!\n");
 	}
@@ -42,14 +49,9 @@ void ASTprint(ASTNode *p, int level)
 	char buf[100];
 	switch (p->Type) {
 		case VARDEC:
-
-			// 03/06/2020
-			// TODO: prettyPrint! use sprintf to store a msg into buf,
-			// and do a prettyPrint using buf and level!
-
+			fprintf(stderr, "VARDEC: %s\n", p->name);
 			// print child nodes of this node
-			ASTprint(p->s1, level + 1);
-			ASTprint(p->s2, level + 1);
+			ASTprint(p->next, level + 1);
 			break;
 
 		default: fprintf(stderr, "ERROR: unknown type in ASTPrint!\n");
