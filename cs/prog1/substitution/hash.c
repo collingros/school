@@ -5,6 +5,7 @@
 
 #include "hash.h"
 
+#include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 
@@ -13,7 +14,7 @@ struct dict *createDict(size_t size)
 {
 	struct dict *myDict = malloc(sizeof(struct dict));
 	/* if malloc failed.. */
-	if (myDict == 0) {
+	if (myDict == NULL) {
 		return NULL;
 	}
 

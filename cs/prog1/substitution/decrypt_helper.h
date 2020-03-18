@@ -33,6 +33,32 @@ int getFrequencyOfLetter(char letter);
 
 
 /*
+	creates and fills an array of 25 integers, each representing capital
+	letters from A-Z
+
+	returns an integer array with elements 0-25 (0 being A and 25 being Z),
+	each with a value representing the frequency found in the ciphertext
+	file
+*/
+int *getFrequencyOfAllLetters();
+
+
+/*
+	returns a mapping of the given key compared to frequency of letters in the
+	English language
+*/
+int *getGuessedKey(int *freqs);
+
+
+/*
+	decrypt the ciphertext file and print decrypted characters to stdout
+
+	returns 0 on success, otherwise failure
+*/
+int printDecryption(int *key);
+
+
+/*
 	generate a dictionary based on words in the dictionary file
 
 	returns a pointer to the dictionary on success, otherwise NULL
@@ -46,7 +72,7 @@ struct dict *getDictFromDictionaryFile();
 
 	returns the number of words in tmpKey on success, otherwise -1
 */
-int getNumberOfWords(struct dict *myDict, char *tmpKey, size_t tmpKeySize);
+int getNumberOfWords(struct dict *myDict, char *tmpKey);
 
 
 /*

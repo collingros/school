@@ -3,18 +3,13 @@
 
 # makefile for compiling decrypt.c
 
-CC=g++
-SRC_DIR=./src
-OBJ_DIR=./obj
+CC=gcc
 
-SRC_FILES=$(wildcard $(SRC_DIR)/*.c))
-
-$(info $(SRC_FILES))
-OBJ_FILES=$($(SRC_FILES):.c=.o)
+OBJ_FILES=$(patsubst %.c, %.o, $(wildcard *.c))
 
 decrypt: $(OBJ_FILES)
 	$(CC) -o $@ $^
 
 clean:
-	rm -rf $(OBJ_DIR) decrypt
+	rm -rf decrypt *.o
 
