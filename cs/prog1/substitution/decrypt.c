@@ -20,19 +20,7 @@ int main()
 		exit(1);
 	}
 
-	int *freqs = getFrequencyOfAllLetters();
-	for (int i = 0; i < 26; ++i) {
-		char c = i + 'A';
-		printf("letter: %c\tfreq: %d\n", c, freqs[i]);
-	}
-
-	int *res = getGuessedKey(freqs);
-	for (int i = 0; i < 26; ++i) {
-		char c = i + 'A';
-		printf("c: %c\tres: %c\n", c, res[i] + 'A');
-	}
-
-	decrypt(res);
+	decrypt(myDict);
 
 	return 0;
 }
