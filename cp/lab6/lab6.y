@@ -44,15 +44,14 @@ void yyerror (s)	/* Called by yyparse on error */
 	struct ASTNodeType *node;
 }
 
-%token INT VOID BOOLEAN MYBEGIN END IF THEN ELSE WHILE DO MYRETURN
-%token READ WRITE AND OR TRUE FALSE NOT LE GE EQ NEQ
+%token INT VOID BOOLEAN MYBEGIN END IF THEN ELSE WHILE DO MYRETURN READ WRITE
+	   AND OR TRUE FALSE NOT LE GE EQ NEQ
 %token <number> NUMBER;
 %token <string> VARIABLE;
 
-%type <node> varList varDec dec decList funDec
-%type <node> params paramList param
-%type <node> compoundStmt stmtList stmt localDec writeStmt
-%type <node> expr simpleExpr additiveExpr term factor
+%type <node> varList varDec dec decList funDec params paramList param
+			 compoundStmt stmtList stmt localDec writeStmt expr
+			 simpleExpr additiveExpr term factor
 
 %type <datatype> typeSpec 
 %type <op> addop
@@ -66,15 +65,14 @@ program	: decList {
 
 /* declaration-list -> declaration { declaration } */
 decList	: dec {
-			printf("declaration!\n");
-			printf("\t$1: %p\n", $1);
 			$$ = $1;
 		}
 		| dec decList {
-			/* chain the declaration to the other declarations */
-			printf("decl list!\n");
-			$1->next = $2;
-			printf("\tname: %s\tname: %s\n", $1->name, $2);
+			ASTNode *last = ASTfollowNode($1);
+			/* append the other decList to the end of the last node
+			   in this node's next chain */
+			last->next = $2;
+
 			$$ = $1;
 		}
 		;
@@ -91,6 +89,7 @@ dec	: varDec {
 /* var-declaration -> type-specifier var-list ; */
 varDec	: typeSpec varList ';' {
 			$$ = $2;
+			$$->dt = $1;
 		}
 		;
 
@@ -98,24 +97,28 @@ varDec	: typeSpec varList ';' {
 varList	: VARIABLE {
 			$$ = ASTcreateNode(VARDEC);
 			$$->name = $1;
-			printf("\tname: %s\n", $$->name);
 		}
 		| VARIABLE '[' NUMBER ']' {
 			$$ = ASTcreateNode(VARDEC);
 			$$->name = $1;
-			printf("\tname: %s\n", $$->name);
+
+			/* default is -1, indicating the
+			   variable is NOT an array */
+			$$->size = $3;
 		}
 		| VARIABLE ',' varList {
 			$$ = ASTcreateNode(VARDEC);
 			$$->name = $1;
 			$$->next = $3;
-			printf("\tname: %s\tnext: %s\n", $$->name, $3->name);
 		}
 		| VARIABLE '[' NUMBER ']' ',' varList {
 			$$ = ASTcreateNode(VARDEC);
 			$$->name = $1;
 			$$->next = $6;
-			printf("\tname: %s\tnext: %s\n", $$->name, $6->name);
+
+			/* default is -1, indicating the
+			   variable is NOT an array */
+			$$->size = $3;
 		}
 		;
 
@@ -155,7 +158,11 @@ paramList	: param {
 				$$ = $1;
 			}
 			| param ',' paramList {
-				$1->next = $3;
+				ASTNode *last = ASTfollowNode($1);
+				/* append the other decList to the end of the last node
+				   in this node's next chain */
+				last->next = $3;
+
 				$$ = $1;
 			}
 			;
@@ -165,13 +172,15 @@ param	: typeSpec VARIABLE '[' ']' {
 			$$ = ASTcreateNode(PARAM);
 			$$->dt = $1;
 			$$->name = $2;
+
+			/* this is an array, so to signify that we set size to 0 (we
+			   don't know the size, only that the variable is an array) */
 			$$->size = 0;
 		}
 		| typeSpec VARIABLE {
 			$$ = ASTcreateNode(PARAM);
 			$$->dt = $1;
 			$$->name = $2;
-			$$->size = -1;
 		}
 		;
 
@@ -192,7 +201,11 @@ localDec	: /* empty */ {
 					$$ = $2;
 				}
 				else {
-					$1->next = $2;
+					ASTNode *last = ASTfollowNode($1);
+					/* append the other decList to the end of the last node
+					   in this node's next chain */
+					last->next = $2;
+
 					$$ = $1;
 				}
 			}
@@ -207,7 +220,11 @@ stmtList	: /* empty */ {
 					$$ = $2;
 				}
 				else {
-					$1->next = $2;
+					ASTNode *last = ASTfollowNode($1);
+					/* append the other decList to the end of the last node
+					   in this node's next chain */
+					last->next = $2;
+
 					$$ = $1;
 				}
 			}
@@ -217,7 +234,6 @@ stmtList	: /* empty */ {
 				| iteration-stmt | assignment-stmt | return-stmt
 				| read-stmt | write-stmt */
 stmt	: exprStmt {
-			/* WILL EVENTUALLY WRITE $$ = $1 */
 			$$ = NULL;
 		}
 		| compoundStmt {
@@ -315,8 +331,9 @@ additiveExpr	: term {
 				| term addop additiveExpr  {
 					/* all of our multi-expr stuff is EXPR */
 					$$ = ASTcreateNode(EXPR);
-					$$-> s1 = $1;
-					$$-> s2 = $3;
+					$$->s1 = $1;
+					$$->op = $2;
+					$$->s2 = $3;
 				}
 				;
 

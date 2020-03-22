@@ -1,0 +1,8 @@
+int main(int x1, int x2)
+begin
+	int x3;
+	int foo(int x4)
+	begin
+		int x5;
+	end
+end

@@ -19,11 +19,10 @@ ASTNode *ASTcreateNode(enum NODETYPE desiredType)
 	p->next = 0;
 	p->Type = desiredType;
 
-	/* assuming that the node is not an array */
+	/* assuming that the node is NOT an array (change this at the moment
+	   the node is created in YACC if it IS an array) */
 	p->size = -1;
 
-	printf("created a node!\n\taddr: %p\ts1: %p\ts2: %p\tnext:"
-		   "%p\n", p, p->s1, p->s2, p->next);
 	return p;
 }
 
@@ -37,14 +36,21 @@ void prettyPrint(const char *msg, int numTabs)
 }
 
 
+ASTNode *ASTfollowNode(ASTNode *node)
+{
+	/* follow the chain to the last node */
+	while (node->next != NULL) {
+		node = node->next;
+	}
+
+	return node;
+}
+
+
 void ASTprint(ASTNode *p, int level)
 {
 	if (p == NULL) {
 		return;
-	}
-
-	if (level == 0) {
-		fprintf(stderr, "START: ASTprint!\n");
 	}
 
 	char buf[100];
@@ -54,19 +60,27 @@ void ASTprint(ASTNode *p, int level)
 			prettyPrint(buf, level);
 
 			break;
+
 		case FUNDEC:
+			sprintf(buf, "FUNDEC: %s", p->name);
+			prettyPrint(buf, level);
+
 			// pump up the parameters first
 			if (p->s1 == NULL) {
-				fprintf(stderr, "(VOID)");
+				sprintf(buf, "PARAM: (VOID)");
+				prettyPrint(buf, level);
 			}
 			else {
 				ASTprint(p->s1, level + 1);
+				ASTprint(p->s2, level + 1);
 			}
 
-			ASTprint(p->s2, level + 1);
 			break;
 
 		case PARAM:
+			sprintf(buf, "PARAM: %s", p->name);
+			prettyPrint(buf, level);
+
 			break;
 
 		case BLOCK:
@@ -76,20 +90,36 @@ void ASTprint(ASTNode *p, int level)
 			break;
 
 		case MYWRITE:
+			sprintf(buf, "MWRITE!\n");
+			prettyPrint(buf, level);
 			ASTprint(p->s1, level + 1);
 			break;
 
 		case MYNUM:
-			/* print out the value */
+			sprintf(buf, "NUM: %d\n", p->value);
+			prettyPrint(buf, level);
 			break;
 
 		case EXPR:
-			/* do a pre order print (print left and then right) */
-			/* print operator (can be switch statement or a function) */
+			sprintf(buf, "EXPR\n");
+			prettyPrint(buf, level);
 
-
+			/* left side */
 			ASTprint(p->s1, level + 1);
+			/* print the operator */
+			switch (p->op) {
+				case PLUS:
+					fprintf(stderr, " + ");
+					break;
+				case MINUS:
+					fprintf(stderr, " - ");
+					break;
+				default:
+					fprintf(stderr, "ERROR: unknown type in OPERATORS!\n");
+			}
+			/* right side */
 			ASTprint(p->s2, level + 1);
+
 			break;
 
 		default: fprintf(stderr, "ERROR: unknown type in ASTPrint!\n");

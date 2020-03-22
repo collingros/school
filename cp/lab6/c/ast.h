@@ -68,4 +68,10 @@ ASTNode *ASTcreateNode(enum NODETYPE desiredType);
 void prettyPrint(const char *msg, int numTabs);
 
 
+/*
+	returns a pointer to the last node that is connected to node's next
+*/
+ASTNode *ASTfollowNode(ASTNode *node);
+
+
 #endif
