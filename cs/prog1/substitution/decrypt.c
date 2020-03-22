@@ -20,7 +20,15 @@ int main()
 		exit(1);
 	}
 
-	decrypt(myDict);
+	struct node *myNode = find(myDict, "hello");
+	if (myNode != NULL) {
+		printf("a word was found!\n");
+	}
+
+/*
+	int num = getNumberOfWords(myDict, "hellomyname");
+	printf("num: %d\n", num);
+*/
 
 	return 0;
 }

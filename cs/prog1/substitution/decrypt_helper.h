@@ -23,6 +23,21 @@
 #define CIPHERTEXT	"ciphertext.txt"
 /* the maximum length a word in the dictionary file will have */
 #define MAX_WORD_LENGTH	100
+/* the maximum length of the key to check for the existence of a word */
+#define MAX_GUESSED_WORD_LENGTH	7
+
+
+/*
+	decrypt()
+
+	decrypts the ciphertext using multiple keys until it finds one
+	that matches the most words in the given dictionary. prints
+	the decryption to stdout
+
+	returns 0 on success, otherwise failure
+*/
+	int decrypt(struct dict *myDict);
+
 
 /*
 	reads ciphertext.txt and reports the frequency of a given letter

@@ -41,6 +41,13 @@ size_t hash(char *key, size_t size)
 	}
 
 	/* we have our unique index for the hashed value! */
+	if (strcmp(key, "salpinx") == 0) {
+		printf("salpinx hashValue: %d\n", hashValue);
+	}
+
+	if (strcmp(key, "hello") == 0) {
+		printf("hellohashValue: %d\n", hashValue);
+	}
 	size_t index = hashValue % size;
 	return index;
 }
@@ -54,6 +61,7 @@ struct node *find(struct dict *myDict, char *key)
 
 	/* if there is a node at this index */
 	if (n != NULL) {
+		printf("strcmp: %s\t%s\n", n->key, key);
 		/* if this node is what we're looking for */
 		if (strcmp(n->key, key) == 0) {
 			return n;
@@ -69,7 +77,7 @@ int insert(struct dict *myDict, char *key, char *value)
 {
 	struct node *n = malloc(sizeof(struct node));
 	/* malloc failed.. */
-	if (n == 0) {
+	if (n == NULL) {
 		return 1;
 	}
 

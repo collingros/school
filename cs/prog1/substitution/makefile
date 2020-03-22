@@ -4,11 +4,12 @@
 # makefile for compiling decrypt.c
 
 CC=gcc
+CFLAGS=-Wall
 
 OBJ_FILES=$(patsubst %.c, %.o, $(wildcard *.c))
 
 decrypt: $(OBJ_FILES)
-	$(CC) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^
 
 clean:
 	rm -rf decrypt *.o

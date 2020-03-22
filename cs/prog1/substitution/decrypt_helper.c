@@ -47,7 +47,7 @@ int printDecryption(int *key)
 		return -1;
 	}
 
-	char curChar = fgetc(fp);
+	int curChar = fgetc(fp);
 	while (curChar != EOF) {
 		if (curChar >= 'A' && curChar <= 'Z') {
 			char plaintext = key[curChar - 'A'];
@@ -139,17 +139,55 @@ struct dict *getDictFromDictionaryFile()
 }
 
 
-int getNumberOfWords(struct dict *myDict, char *key)
+int getNumberOfWords(struct dict *myDict, char *ciphertext)
 {
-	/* iterate through key */
+	int count = 0;
+
+	for (char *c = ciphertext; *c != '\0'; ++c) {
+		char *subStr = malloc(MAX_GUESSED_WORD_LENGTH + 1);
+		/* if malloc failed */
+		if (subStr == NULL) {
+			return -1;
+		}
+
+		for (int i = 0; i < MAX_GUESSED_WORD_LENGTH; ++i) {
+			if (*c == '\0') {
+				break;
+			}
+
+			subStr[i] = *(c + i);
+
+			/* so we know where the end of the string is */
+			int nullIndex = i + 1;
+			subStr[nullIndex] = '\0';
+
+			printf("subStr: %s\n", subStr);
+
+			struct node *subStrNode = find(myDict, subStr);
+			if (subStrNode != NULL) {
+				printf("word found!\n");
+				count++;
+			}
+		}
+
+
+		free(subStr);
+	}
+
+	return count;
+/*
 	int count = 0;
 	for (char *curChar = key; *curChar != '\0'; ++curChar) {
-		char *subkey;
+		char subStr[MAX_WORD_LENGTH];
+		for (char *subKeyChar = curChar; *subKeyChar != '\0'; ++subKeyChar) {
+
+		}
 		struct node *findResult = find(myDict, subkey);
 		if (findResult != NULL) {
 			count++;
 		}
 	}
+*/
 }
 
 
