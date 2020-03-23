@@ -27,7 +27,11 @@ enum DATATYPE {
 
 enum OPERATOR {
 	PLUS,
-	MINUS
+	MINUS,
+	MULTIPLY,
+	DIVIDE,
+	AND,
+	OR
 };
 
 typedef struct ASTNodeType {

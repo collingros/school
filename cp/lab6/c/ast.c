@@ -72,8 +72,9 @@ void ASTprint(ASTNode *p, int level)
 			}
 			else {
 				ASTprint(p->s1, level + 1);
-				ASTprint(p->s2, level + 1);
 			}
+
+			ASTprint(p->s2, level + 1);
 
 			break;
 
@@ -90,18 +91,18 @@ void ASTprint(ASTNode *p, int level)
 			break;
 
 		case MYWRITE:
-			sprintf(buf, "MWRITE!\n");
+			sprintf(buf, "WRITE");
 			prettyPrint(buf, level);
 			ASTprint(p->s1, level + 1);
 			break;
 
 		case MYNUM:
-			sprintf(buf, "NUM: %d\n", p->value);
+			sprintf(buf, "NUM: %d", p->value);
 			prettyPrint(buf, level);
 			break;
 
 		case EXPR:
-			sprintf(buf, "EXPR\n");
+			sprintf(buf, "EXPR");
 			prettyPrint(buf, level);
 
 			/* left side */
@@ -109,14 +110,18 @@ void ASTprint(ASTNode *p, int level)
 			/* print the operator */
 			switch (p->op) {
 				case PLUS:
-					fprintf(stderr, " + ");
+					sprintf(buf, " + ");
 					break;
 				case MINUS:
-					fprintf(stderr, " - ");
+					sprintf(buf, " - ");
 					break;
 				default:
 					fprintf(stderr, "ERROR: unknown type in OPERATORS!\n");
 			}
+
+			/* print the operator */
+			prettyPrint(buf, level);
+
 			/* right side */
 			ASTprint(p->s2, level + 1);
 

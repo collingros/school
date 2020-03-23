@@ -41,10 +41,10 @@ false {
 }
 
 and {
-	return (AND);
+	return (MYAND);
 }
 or {
-	return (OR);
+	return (MYOR);
 }
 not {
 	return (NOT);

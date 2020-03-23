@@ -1,0 +1,5 @@
+int main(void)
+begin
+	int x1, x2;
+	write (1 + 2 + 3 + 4 + 5);
+end

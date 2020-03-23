@@ -45,16 +45,16 @@ void yyerror (s)	/* Called by yyparse on error */
 }
 
 %token INT VOID BOOLEAN MYBEGIN END IF THEN ELSE WHILE DO MYRETURN READ WRITE
-	   AND OR TRUE FALSE NOT LE GE EQ NEQ
+	   MYAND MYOR TRUE FALSE NOT LE GE EQ NEQ
 %token <number> NUMBER;
 %token <string> VARIABLE;
 
 %type <node> varList varDec dec decList funDec params paramList param
 			 compoundStmt stmtList stmt localDec writeStmt expr
-			 simpleExpr additiveExpr term factor
+			 simpleExpr additiveExpr term factor args argList
 
 %type <datatype> typeSpec 
-%type <op> addop
+%type <op> addop multop
 
 %%
 /* program -> declaration-list */
@@ -329,6 +329,13 @@ additiveExpr	: term {
 					$$ = $1;
 				}
 				| term addop additiveExpr  {
+					/*
+					ASTNode *last = ASTfollowNode($1);
+					 append the other decList to the end of the last node
+					   in this node's next chain 
+					last->next = $2;
+					*/
+
 					/* all of our multi-expr stuff is EXPR */
 					$$ = ASTcreateNode(EXPR);
 					$$->s1 = $1;
@@ -356,16 +363,24 @@ term	: factor {
 		;
 
 /* multop -> factor { multop factor } */
-multop	: '*'
-		| '/'
-		| AND
-		| OR
+multop	: '*' {
+			$$ = MULTIPLY;
+		}
+		| '/' {
+			$$ = DIVIDE;
+		}
+		| MYAND {
+			$$ = AND;
+		}
+		| MYOR {
+			$$ = OR;
+		}
 		;
 
 /* factor -> ( expression ) | NUM | var | call | TRUE | FALSE | NOT factor
    */
 factor	: '(' expr ')' {
-			$$ = NULL;
+			$$ = $2;
 		}
 		| NUMBER {
 			$$ = ASTcreateNode(MYNUM);
@@ -393,13 +408,26 @@ call	: VARIABLE '(' args ')'
 		;
 
 /* args -> arg-list | empty */
-args	: /* empty */
-		| argList
+args	: /* empty */ {
+			$$ = NULL;
+		}
+		| argList {
+			$$ = $1;
+		}
 		;
 
 /* argList -> expression { , expression } */
-argList	: expr
-		| expr ',' expr
+argList	: expr {
+			$$ = $1;
+		}
+		| expr ',' expr {
+			ASTNode *last = ASTfollowNode($1);
+			/* append the other decList to the end of the last node
+			   in this node's next chain */
+			last->next = $3;
+
+			$$ = $1;
+		}
 		;
 %%
 
