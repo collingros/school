@@ -14,7 +14,7 @@
 #ifndef __DECRYPT_HELPER__
 #define __DECRYPT_HELPER__
 
-#include "hash.h"
+#include "dict.h"
 
 #include <stdlib.h>
 #include <stdio.h>

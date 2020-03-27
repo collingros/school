@@ -9,8 +9,10 @@
 		highlight=%2528CategoryAlgorithmNotes%2529
 */
 
-#define HASH_MULTIPLIER	31
+#ifndef __DICT_H_
+#define __DICT_H_
 
+#define HASH_MULTIPLIER	31
 
 struct entry {
 	char *key;
@@ -49,9 +51,4 @@ int dictInsert(struct dict *myDict, const char *key, const char *val);
 struct entry *dictSearch(struct dict *myDict, const char *key);
 
 
-/*	deletes an entry from the dictionary pointed to by 'myDict'
-
-	returns 0 for success, otherwise failure	*/
-int dictDelete(struct dict *myDict, const char *key);
-
-
+#endif

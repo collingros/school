@@ -25,9 +25,23 @@ int main()
 		printf("foundEntry val: %s\n", foundEntry->val);
 	}
 
-	errors += dictDelete(myDict, "AMANDA");
+	foundEntry = dictSearch(myDict, "COLLIN");
+	if (foundEntry == NULL) {
+		printf("entry DNE!\n");
+	}
+	else {
+		printf("foundEntry val: %s\n", foundEntry->val);
+	}
+
+	foundEntry = dictSearch(myDict, "AMANDA");
+	if (foundEntry == NULL) {
+		printf("entry DNE!\n");
+	}
+	else {
+		printf("foundEntry val: %s\n", foundEntry->val);
+	}
+
+
 	errors += dictDestroy(myDict);
-
-
-	printf("number of errors: %d\n", errors);
+	myDict = NULL;
 }

@@ -6,7 +6,7 @@
 	dictionary.txt
 */
 
-#include "hash.h"
+#include "dict.h"
 #include "decrypt_helper.h"
 
 #include <stdio.h>
@@ -20,15 +20,10 @@ int main()
 		exit(1);
 	}
 
-	struct node *myNode = find(myDict, "hello");
-	if (myNode != NULL) {
-		printf("a word was found!\n");
-	}
-
-/*
-	int num = getNumberOfWords(myDict, "hellomyname");
+	int num = getNumberOfWords(myDict, "hello, what is your name?");
 	printf("num: %d\n", num);
-*/
+
+	dictDestroy(myDict);
 
 	return 0;
 }

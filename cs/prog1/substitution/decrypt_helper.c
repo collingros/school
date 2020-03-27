@@ -4,7 +4,7 @@
 */
 
 #include "decrypt_helper.h"
-#include "hash.h"
+#include "dict.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -74,6 +74,7 @@ int *getFrequencyOfAllLetters()
 		freqs[i] = getFrequencyOfLetter(c);
 	}
 
+	/*	remember to free!	*/
 	return freqs;
 }
 
@@ -107,6 +108,7 @@ int *getGuessedKey(int *freqs)
 		key[maxKey] = idx;
 	}
 
+	/*	remember to free!	*/
 	return key;
 }
 
@@ -120,7 +122,7 @@ struct dict *getDictFromDictionaryFile()
 	}
 
 	int size = getLineCount(fp);
-	struct dict *myDict = createDict(size);
+	struct dict *myDict = dictCreate(size);
 	/* if there was an error initializing a new dictionary */
 	if (myDict == NULL) {
 		return NULL;
@@ -128,8 +130,9 @@ struct dict *getDictFromDictionaryFile()
 
 	char word[MAX_WORD_LENGTH];
 	while (fgets(word, MAX_WORD_LENGTH, fp) != NULL) {
-		/* if insert encounters any error */
-		if(insert(myDict, word, "")) {
+		/*	replaces newline with null character so strcmp works	*/
+		word[strcspn(word, "\n")] = '\0';
+		if (dictInsert(myDict, word, "")) {
 			return NULL;
 		}
 	}
@@ -144,50 +147,28 @@ int getNumberOfWords(struct dict *myDict, char *ciphertext)
 	int count = 0;
 
 	for (char *c = ciphertext; *c != '\0'; ++c) {
-		char *subStr = malloc(MAX_GUESSED_WORD_LENGTH + 1);
-		/* if malloc failed */
-		if (subStr == NULL) {
-			return -1;
-		}
+		char subStr[MAX_GUESSED_WORD_LENGTH + 1];
 
 		for (int i = 0; i < MAX_GUESSED_WORD_LENGTH; ++i) {
-			if (*c == '\0') {
+			char subChar = *(c + i);
+			if (subChar == '\0') {
 				break;
 			}
 
-			subStr[i] = *(c + i);
-
+			subStr[i] = subChar;
 			/* so we know where the end of the string is */
-			int nullIndex = i + 1;
-			subStr[nullIndex] = '\0';
+			subStr[i + 1] = '\0';
 
-			printf("subStr: %s\n", subStr);
-
-			struct node *subStrNode = find(myDict, subStr);
+			struct entry *subStrNode = dictSearch(myDict, subStr);
+			/*	check if a word was found	*/
 			if (subStrNode != NULL) {
-				printf("word found!\n");
+				printf("word found: %s\n", subStr);
 				count++;
 			}
 		}
-
-
-		free(subStr);
 	}
 
 	return count;
-/*
-	int count = 0;
-	for (char *curChar = key; *curChar != '\0'; ++curChar) {
-		char subStr[MAX_WORD_LENGTH];
-		for (char *subKeyChar = curChar; *subKeyChar != '\0'; ++subKeyChar) {
-
-		}
-		struct node *findResult = find(myDict, subkey);
-		if (findResult != NULL) {
-			count++;
-		}
-	}
-*/
 }
 
 

@@ -40,12 +40,12 @@ struct dict *dictCreate(int size)
 /*	frees the memory that was allocated in a given entry 'myEntry'
 
 	returns 0 on success, otherwise failure	*/
-int freeEntry(struct entry *myEntry)
+int freeEntry(struct entry *e)
 {
-	free(myEntry->key);
-	free(myEntry->val);
-	free(myEntry);
-
+	free(e->key);
+	free(e->val);
+	free(e);
+	e = NULL;
 
 	return 0;
 }
@@ -60,32 +60,20 @@ int dictDestroy(struct dict *myDict)
 
 	/*	free memory of all entries in dictionary	*/
 	for (int i = 0; i < myDict->size; ++i) {
-		struct entry *curEntry = myDict->table[i];
-		if (curEntry == NULL) {
-			continue;
-		}
-		if (curEntry->next == NULL) {
-			freeEntry(curEntry);
-			continue;
-		}
+		struct entry *myEntry = myDict->table[i];
+		while (myEntry != NULL) {
+			struct entry *nextEntry = myEntry->next;
 
-		/*	free up all of the nodes chained together from identical
-			indexes	*/
-		struct entry *prevEntry = curEntry;
-		struct entry *nextEntry = curEntry->next;
-		while (nextEntry != NULL) {
-			/*	we're advancing to the node connected to nextEntry, then
-				freeing the node we came from (prevEntry)	*/
-			prevEntry = nextEntry;
-			nextEntry = nextEntry->next;
+			freeEntry(myEntry);
 
-			/*	erase the entryalong with all its components	*/
-			freeEntry(prevEntry);
+			myEntry = nextEntry;
 		}
 	}
 
+
 	free(myDict->table);
 	free(myDict);
+	myDict = NULL;
 
 	return 0;
 }
@@ -100,7 +88,7 @@ size_t hash(const char *key)
 {
 	size_t res = 0;
 	const char *curChar = key;
-	for (curChar; (int) *curChar != '\0'; ++curChar) {
+	for (; (int) *curChar != '\0'; ++curChar) {
 		res = res * HASH_MULTIPLIER + *curChar;
 	}
 
@@ -140,57 +128,24 @@ int dictInsert(struct dict *myDict, const char *key, const char *val)
 
 struct entry *dictSearch(struct dict *myDict, const char *key)
 {
+	/*	if the dictionary doesn't exist!	*/
+	if (myDict == NULL) {
+		return NULL;
+	}
+
 	size_t idx = hash(key) % myDict->size;
 
 	/*	first entry in chain corresponding to the given key	*/
 	struct entry *myEntry = myDict->table[idx];
 
-	/*	move down the chain until we find our specific key	*/
-	struct entry *curEntry = myEntry;
-	while (curEntry != NULL) {
-		if (strcmp(curEntry->key, key) == 0) {
-			break;
+	/*	search all chained entries at this idx	*/
+	for (; myEntry != NULL; myEntry = myEntry->next) {
+		if (strcmp(myEntry->key, key) == 0) {
+			return myEntry;
 		}
-
-		curEntry = curEntry->next;
 	}
 
-	/*	nextEntry will be NULL if the specified entry was not found!	*/
-	return curEntry;
+	return NULL;
 }
 
-
-int dictDelete(struct dict *myDict, const char *key)
-{
-	/*	we could use dictSearch here, but then we wouldn't know how to
-		tell the previous node that this node doesn't exist anymore	*/
-	size_t idx = hash(key) % myDict->size;
-
-	/*	first entry in chain corresponding to the given key	*/
-	struct entry *myEntry = myDict->table[idx];
-
-	/*	no entry exists with this key! nothing to delete!	*/
-	if (myEntry == NULL) {
-		return 0;
-	}
-
-	/*	move down the chain until we find our specific key	*/
-	struct entry *curEntry = myEntry;
-	struct entry *prevEntry = myEntry;
-	while (curEntry->next != NULL) {
-		if (strcmp(curEntry->key, key) == 0) {
-			break;
-		}
-
-		curEntry = curEntry->next;
-		prevEntry = curEntry;
-	}
-
-	/*	skip over the entry we're deleting	*/
-	prevEntry->next = curEntry->next;
-	freeEntry(curEntry);
-
-
-	return 0;
-}
 
