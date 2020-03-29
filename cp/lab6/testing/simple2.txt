@@ -1,0 +1,4 @@
+int main(void)
+begin
+	write not ( (3 and 5) or (true and not false));
+end

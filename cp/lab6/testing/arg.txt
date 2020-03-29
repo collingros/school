@@ -1,0 +1,8 @@
+int main(void)
+begin
+	f(x, x);
+
+	x[5];
+
+	return 0;
+end

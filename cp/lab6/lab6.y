@@ -1,14 +1,28 @@
 %{
 /*
 	collin gros
-	02/28/20
+	02/28/20 - 03/29/2020
 
 	YACC program for handling code in 'Extended BNF Grammar for C-Algol'
 	format.
 
-	all rules were copied from the above grammar.
+	all rules were copied from lab 5, though some bugs were found and fixed:
 
-	NOTE: can't handle any semantics yet, only syntax
+		in the 'call' rule. 'var' was originally VARIABLE, which was just
+		a token instead of the actual production rule 'var'.
+
+		in the 'argsList' rule, i didn't use '0 or more times' which made
+		it so you couldn't have more than 2 arguments in a call...
+
+
+	i added semantic action for every production rule, and created c-code
+	to generate a parse tree.
+
+	it seems like the PLUS and MINUS operations are computed backwards, which
+	might be caused by my use of a while loop instead of a recursive function,
+	but i hope that won't affect anything.
+
+	the VARIABLE token might seem confusing, but it is equivalent to 'ID'.
 */
 
 #include <stdio.h>
@@ -44,17 +58,20 @@ void yyerror (s)	/* Called by yyparse on error */
 	struct ASTNodeType *node;
 }
 
-%token INT VOID BOOLEAN MYBEGIN END IF THEN ELSE WHILE DO MYRETURN READ WRITE
-	   MYAND MYOR TRUE FALSE NOT LE GE EQ NEQ
+%token	INT VOID BOOLEAN MYBEGIN END IF THEN ELSE WHILE DO
+		MYRETURN READ WRITE AND OR TRUE FALSE NOT LE GE EQ
+		NEQ
 %token <number> NUMBER;
 %token <string> VARIABLE;
 
-%type <node> varList varDec dec decList funDec params paramList param
-			 compoundStmt stmtList stmt localDec writeStmt expr
-			 simpleExpr additiveExpr term factor args argList
+%type <node>	varList varDec dec decList funDec params paramList param
+				compoundStmt stmtList stmt localDec writeStmt expr
+				simpleExpr additiveExpr term factor args argList call var
+				assignmentStmt exprStmt iterationStmt returnStmt readStmt
+				selectionStmt
 
 %type <datatype> typeSpec 
-%type <op> addop multop
+%type <op> addop multop relop
 
 %%
 /* program -> declaration-list */
@@ -234,25 +251,25 @@ stmtList	: /* empty */ {
 				| iteration-stmt | assignment-stmt | return-stmt
 				| read-stmt | write-stmt */
 stmt	: exprStmt {
-			$$ = NULL;
+			$$ = $1;
 		}
 		| compoundStmt {
 			$$ = $1;
 		}
 		| selectionStmt {
-			$$ = NULL;
+			$$ = $1;
 		}
 		| iterationStmt {
-			$$ = NULL;
+			$$ = $1;
 		}
 		| assignmentStmt {
-			$$ = NULL;
+			$$ = $1;
 		}
 		| returnStmt {
-			$$ = NULL;
+			$$ = $1;
 		}
 		| readStmt {
-			$$ = NULL;
+			$$ = $1;
 		}
 		| writeStmt {
 			$$ = $1;
@@ -260,26 +277,64 @@ stmt	: exprStmt {
 		;
 
 /* expression-stmt -> expression ; | ; */
-exprStmt	: expr ';'
-			| ';'
+exprStmt	: expr ';' {
+				$$ = $1;
+			}
+			| ';' {
+				$$ = NULL;
+			}
 			;
 
 /* selection-stmt -> if expression then statement [ else statement ]+ */
-selectionStmt	: IF expr THEN stmt
-				| IF expr THEN stmt ELSE stmt
+selectionStmt	: IF expr THEN stmt {
+					$$ = ASTcreateNode(MYIF);
+					$$->s1 = $2;
+
+					ASTNode *elseNode = ASTcreateNode(MYELSE);
+					/*	the stmt in the IF	*/
+					elseNode->s1 = $4;
+					/*	the stmt in the ELSE	*/
+					elseNode->s2 = NULL;
+
+					$$->s2 = elseNode;
+				}
+				| IF expr THEN stmt ELSE stmt {
+					$$ = ASTcreateNode(MYIF);
+					$$->s1 = $2;
+
+					ASTNode *elseNode = ASTcreateNode(MYELSE);
+					/*	the stmt in the IF	*/
+					elseNode->s1 = $4;
+					/*	the stmt in the ELSE	*/
+					elseNode->s2 = $6;
+
+					$$->s2 = elseNode;
+				}
 				;
 
 /* iteration-stmt -> while expressino do statement */
-iterationStmt	: WHILE expr DO stmt
+iterationStmt	: WHILE expr DO stmt {
+					$$ = ASTcreateNode(MYWHILE);
+					$$->s1 = $2;
+					$$->s2 = $4;
+				}
 				;
 
 /* return-stmt -> return [ expressinon ]+ */
-returnStmt	: MYRETURN ';'
-			| MYRETURN expr ';'
+returnStmt	: MYRETURN ';' {
+				$$ = ASTcreateNode(RETURN);
+			}
+			| MYRETURN expr ';' {
+				$$ = ASTcreateNode(RETURN);
+				$$->s1 = $2;
+			}
 			;
 
 /* read-stmt -> read variable; */
-readStmt	: READ VARIABLE ';'
+readStmt	: READ var ';' {
+				$$ = ASTcreateNode(MYREAD);
+				$$->s1 = $2;
+			}
 			;
 
 /* write-stmt -> write expr; */
@@ -290,7 +345,11 @@ writeStmt	: WRITE expr ';' {
 			;
 
 /* assignment-stmt -> var = simple-expression; */
-assignmentStmt	: var '=' simpleExpr ';'
+assignmentStmt	: var '=' simpleExpr ';' {
+					$$ = ASTcreateNode(ASSIGN);
+					$$->s1 = $1;
+					$$->s2 = $3;
+				}
 				;
 
 /* expression -> simple-expression; */
@@ -301,8 +360,16 @@ expr	: simpleExpr {
 
 /* var -> ID [ [ expression ] ]+ */
 /* NOTE: we aren't dealing with multi dimensional arrays */
-var	: VARIABLE
-	| VARIABLE '[' expr ']'
+var	: VARIABLE {
+		$$ = ASTcreateNode(ID);
+		$$->name = $1;
+	}
+	| VARIABLE '[' expr ']' {
+		$$ = ASTcreateNode(ID);
+		$$->name = $1;
+		/*	an VARIABLE node's s1 points to its expression	*/
+		$$->s1 = $3;
+	}
 	;
 
 /* simple-expression -> additive-expression [ relop additive-expression ]+
@@ -311,17 +378,32 @@ simpleExpr	: additiveExpr {
 				$$ = $1;
 			}
 			| simpleExpr relop additiveExpr {
-				$$ = NULL;
+				$$ = ASTcreateNode(EXPR);
+				$$->s1 = $1;
+				$$->op = $2;
+				$$->s2 = $3;
 			}
 			;
 
 /* relop -> <= | < | > | >= | == | != */
-relop	: LE
-		| '<'
-		| '>'
-		| GE
-		| EQ
-		| NEQ
+relop	: LE {
+			$$ = MYLE;
+		}
+		| '<' {
+			$$ = GT;
+		}
+		| '>' {
+			$$ = LT;
+		}
+		| GE {
+			$$ = MYGE;
+		}
+		| EQ {
+			$$ = MYEQ;
+		}
+		| NEQ {
+			$$ = MYNEQ;
+		}
 		;
 
 /* additive-expression -> term { addop term } */
@@ -329,13 +411,6 @@ additiveExpr	: term {
 					$$ = $1;
 				}
 				| term addop additiveExpr  {
-					/*
-					ASTNode *last = ASTfollowNode($1);
-					 append the other decList to the end of the last node
-					   in this node's next chain 
-					last->next = $2;
-					*/
-
 					/* all of our multi-expr stuff is EXPR */
 					$$ = ASTcreateNode(EXPR);
 					$$->s1 = $1;
@@ -357,8 +432,12 @@ addop	: '+' {
 term	: factor {
 			$$ = $1;
 		}
-		| multop term {
-			$$ = NULL;
+		| factor multop term {
+			/* all of our multi-expr stuff is EXPR */
+			$$ = ASTcreateNode(EXPR);
+			$$->s1 = $1;
+			$$->op = $2;
+			$$->s2 = $3;
 		}
 		;
 
@@ -369,11 +448,11 @@ multop	: '*' {
 		| '/' {
 			$$ = DIVIDE;
 		}
-		| MYAND {
-			$$ = AND;
+		| AND {
+			$$ = MYAND;
 		}
-		| MYOR {
-			$$ = OR;
+		| OR {
+			$$ = MYOR;
 		}
 		;
 
@@ -387,24 +466,33 @@ factor	: '(' expr ')' {
 			$$->value = $1;
 		}
 		| var {
-			$$ = NULL;
+			$$ = $1;
 		}
 		| call {
-			$$ = NULL;
+			$$ = $1;
 		}
 		| TRUE {
-			$$ = NULL;
+			$$ = ASTcreateNode(BOOL);
+			$$->value = 1;
 		}
 		| FALSE {
-			$$ = NULL;
+			$$ = ASTcreateNode(BOOL);
+			$$->value = 0;
 		}
 		| NOT factor {
-			$$ = NULL;
+			/*	NOT is only defined on boolean types, this will NOT throw an
+				error yet if factor is not a boolean...	*/
+			$$ = $2;
+			$$->value = !($$->value);
 		}
 		;
 
 /* call -> ID ( args ) */
-call	: VARIABLE '(' args ')'
+call	: VARIABLE '(' args ')' {
+			$$ = ASTcreateNode(CALL);
+			$$->name = $1;
+			$$->s1 = $3;
+		}
 		;
 
 /* args -> arg-list | empty */
@@ -420,7 +508,7 @@ args	: /* empty */ {
 argList	: expr {
 			$$ = $1;
 		}
-		| expr ',' expr {
+		| expr ',' argList {
 			ASTNode *last = ASTfollowNode($1);
 			/* append the other decList to the end of the last node
 			   in this node's next chain */

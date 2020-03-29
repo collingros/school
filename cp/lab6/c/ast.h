@@ -16,7 +16,16 @@ enum NODETYPE {
 	BLOCK,
 	MYWRITE,
 	MYNUM,
-	EXPR
+	BOOL,
+	EXPR,
+	CALL,
+	ID,
+	ASSIGN,
+	RETURN,
+	MYWHILE,
+	MYIF,
+	MYELSE,
+	MYREAD
 };
 
 enum DATATYPE {
@@ -30,8 +39,14 @@ enum OPERATOR {
 	MINUS,
 	MULTIPLY,
 	DIVIDE,
-	AND,
-	OR
+	MYAND,
+	MYOR,
+	GT,
+	LT,
+	MYEQ,
+	MYNEQ,
+	MYGE,
+	MYLE
 };
 
 typedef struct ASTNodeType {
@@ -50,31 +65,30 @@ typedef struct ASTNodeType {
 } ASTNode;
 
 
-/// ASTprint
-/// prints the AST of nodes, starting at p and moving down.
-/// also indents the screen so that it's easy to see the depth 
-/// of the tree
-///
-/// returns nothing
+/*	ASTprint
+	prints the AST of nodes, starting at p and moving down.
+	also indents the screen so that it's easy to see the depth 
+	of the tree
+
+	returns nothing	*/
 void ASTprint(ASTNode *p, int level);
 
-/// ASTcreateNode
-/// creates a node with the desired NODETYPE
-///
-/// returns the node's address on success
+/*	ASTcreateNode
+	creates a node with the desired NODETYPE
+
+	returns the node's address on success	*/
 ASTNode *ASTcreateNode(enum NODETYPE desiredType);
 
-/// prettyPrint()
-/// print node information, as well as indent nicely according to depth
-/// of the tree
-///
-/// returns nothing
+/*	prettyPrint()
+	print node information, as well as indent nicely according to depth
+	of the tree
+
+	returns nothing	*/
 void prettyPrint(const char *msg, int numTabs);
 
 
-/*
-	returns a pointer to the last node that is connected to node's next
-*/
+/*	returns a pointer to the last node that is connected to node's next,
+	used to connect nodes together	*/
 ASTNode *ASTfollowNode(ASTNode *node);
 
 

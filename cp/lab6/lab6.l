@@ -24,7 +24,7 @@ int linecount = 1;
 %%
  /* keywords */
 int {
-	return(INT);
+	return (INT);
 }
 void {
 	return (VOID);
@@ -41,10 +41,10 @@ false {
 }
 
 and {
-	return (MYAND);
+	return (AND);
 }
 or {
-	return (MYOR);
+	return (OR);
 }
 not {
 	return (NOT);

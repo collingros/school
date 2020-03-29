@@ -11,17 +11,20 @@
 
 #include <stdio.h>
 
+#define DICTIONARY_FILE	"dictionary.txt"
+#define CIPHERTEXT_FILE	"ciphertext.txt"
+
 
 int main()
 {
-	struct dict *myDict = getDictFromDictionaryFile();
+	struct dict *myDict = getDictFromDictionaryFile(DICTIONARY_FILE);
 	if (myDict == NULL) {
 		printf("ERROR: problem retrieving myDict!\n");
 		exit(1);
 	}
 
-	int num = getNumberOfWords(myDict, "hello, what is your name?");
-	printf("num: %d\n", num);
+	char *key = getBestDecryption(myDict, CIPHERTEXT_FILE);
+	printf("best decryption: %s\n", key);
 
 	dictDestroy(myDict);
 

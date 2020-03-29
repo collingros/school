@@ -1,0 +1,56 @@
+found an array declaration 
+Variable INT  x1
+Variable INT  X2
+Variable INT  X3
+Variable INT  x4[100]
+VOID FUNCTION main 
+   (VOID) 
+  BLOCK STATEMENT  
+   READ STATEMENT 
+    IDENTIFIER y
+    Array Reference [ 
+     EXPR  + 
+      NUMBER with value 3
+      IDENTIFIER z
+      Array Reference [ 
+       NUMBER with value 2
+      ] end array 
+    ] end array 
+   WHILE STATEMENT 
+    NUMBER with value 1
+     BLOCK STATEMENT  
+      READ STATEMENT 
+       IDENTIFIER z
+      WRITE STATEMENT
+       EXPR  + 
+        EXPR  + 
+         EXPR  - 
+          EXPR  + 
+           NUMBER with value 5
+           IDENTIFIER z
+          NUMBER with value 2
+         NUMBER with value 2
+        NUMBER with value 3
+   Assignment STATEMENT 
+    IDENTIFIER x
+    EXPR  + 
+     IDENTIFIER z
+     IDENTIFIER y
+VOID FUNCTION f 
+  ( 
+  PARAMETER  INT  x
+  PARAMETER  BOOLEAN  x11
+  PARAMETER  VOID  foobar
+  ) 
+  BLOCK STATEMENT  
+   READ STATEMENT 
+    IDENTIFIER y
+   READ STATEMENT 
+    IDENTIFIER z
+   WRITE STATEMENT
+    IDENTIFIER X
+    Array Reference [ 
+     EXPR  + 
+      IDENTIFIER y
+      IDENTIFIER z
+    ] end array 

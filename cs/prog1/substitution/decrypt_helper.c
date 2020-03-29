@@ -11,38 +11,102 @@
 #include <string.h>
 
 
-int getFrequencyOfLetter(char letter)
+/*	returns the contents of a given file in a string
+
+	success:
+		returns a char * pointing to the contents of the file (null-term.)
+	failure:
+		returns a NULL pointer
+	NOTE:
+		remember to free the returned pointer when finished with it!	*/
+char *convertFileToString(const char *file);
+
+
+/*	returns the number of times a target letter is found in the
+	given string
+
+	success:
+		returns the num of times a target letter is found in the str
+	failure:
+		---	*/
+int getFrequencyOfLetter(char *plaintext, char letter);
+
+
+/*	returns the number of times each letter (A-Z) was counted in a string
+	with indicies representing the letter that was counted, and values
+	representing the number of times the letter was counted
+
+	success:
+		returns an int * pointing to an array representing the frequencies
+		of each letter
+	failure:
+		returns a NULL pointer
+	NOTE:
+		remember to free the returned pointer when finished with it!	*/
+int *getFrequencyOfAllLetters(char *plaintext);
+
+
+/*	returns a string representing the plaintext from a decryption with
+	a given key
+
+	success:
+		returns plaintext from a given string and key
+	failure:
+		returns a NULL pointer
+	NOTE:
+		remember to free the returned pointer when finished with it!	*/
+char *getDecryption(char *ciphertext, int *key);
+
+
+/*	counts the number of words from a dictionary that exist in a
+	given plaintext, and returns the total number of words counted
+
+	success:
+		returns the number of words counted
+	failure:
+		returns -1	*/
+int getNumberOfWords(struct dict *myDict, char *plaintext);
+
+
+int *getFreqBasedKey(int *freqs);
+
+
+int getFrequencyOfLetter(char *plaintext, char letter)
 {
-	FILE *fp;
-	fp = fopen(CIPHERTEXT, "r");
-
-	/* if our file DNE */
-	if (fp == NULL) {
-		return -1;
-	}
-
 	int count = 0;
-	int curChar = fgetc(fp);
-	while (curChar != EOF) {
-		/* increment counter every time 'letter' is found */
-		if (curChar == letter) {
+	for (char *c = plaintext; *c != '\0'; ++c) {
+		if (c == letter) {
 			++count;
 		}
-
-		curChar = fgetc(fp);
 	}
 
-	fclose(fp);
 	return count;
 }
 
 
-int printDecryption(int *key)
+int *getFrequencyOfAllLetters(char *plaintext)
+{
+	int *freqs = malloc((sizeof (int)) * 26);
+	for (int i = 0; i < 26; ++i) {
+		char c = i + 'A';
+		freqs[i] = getFrequencyOfLetter(plaintext, c);
+	}
+
+	return freqs;
+}
+
+
+char *getDecryption(char *ciphertext, int *key)
+{
+	return NULL;
+}
+
+
+/*int printDecryption(int *key)
 {
 	FILE *fp;
 	fp = fopen(CIPHERTEXT, "r");
 
-	/* if our file DNE */
 	if (fp == NULL) {
 		return -1;
 	}
@@ -64,22 +128,10 @@ int printDecryption(int *key)
 	fclose(fp);
 	return 0;
 }
+*/
 
 
-int *getFrequencyOfAllLetters()
-{
-	int *freqs = malloc((sizeof (int)) * 26);
-	for (int i = 0; i < 26; ++i) {
-		char c = i + 'A';
-		freqs[i] = getFrequencyOfLetter(c);
-	}
-
-	/*	remember to free!	*/
-	return freqs;
-}
-
-
-int *getGuessedKey(int *freqs)
+int *getFreqBasedKey(int *freqs)
 {
 	/* ETAOINSHRDLCUMWFGYPBVKJXQZ */
 	char *enString = "ETAOINSHRDLCUMWFGYPBVKJXQZ";
@@ -142,11 +194,11 @@ struct dict *getDictFromDictionaryFile()
 }
 
 
-int getNumberOfWords(struct dict *myDict, char *ciphertext)
+int getNumberOfWords(struct dict *myDict, char *plaintext)
 {
 	int count = 0;
 
-	for (char *c = ciphertext; *c != '\0'; ++c) {
+	for (char *c = plaintext; *c != '\0'; ++c) {
 		char subStr[MAX_GUESSED_WORD_LENGTH + 1];
 
 		for (int i = 0; i < MAX_GUESSED_WORD_LENGTH; ++i) {
