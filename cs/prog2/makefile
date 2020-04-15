@@ -7,11 +7,11 @@ cf=-Wall -lcrypto -lssl
 
 
 run.gitignoreme: extractPK.o
-	$(cc) $(cf) extractPK.o
+	$(cc) extractPK.o $(cf) -o run.gitignoreme
 
 
 extractPK.o: extractPK.c
-	$(cc) $(cf) -c extractPK.c
+	$(cc) -c extractPK.c $(cf)
 
 
 clean:
