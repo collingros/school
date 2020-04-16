@@ -63,6 +63,9 @@ typedef struct ASTNodeType {
 
 	/* if nodeType is a NUMBER, value is the number */
 	int value;
+
+	/*	pointer to our symbol table	*/
+	struct SymbTab *sym;
 } ASTNode;
 
 
@@ -91,6 +94,42 @@ void prettyPrint(const char *msg, int numTabs);
 /*	returns a pointer to the last node that is connected to node's next,
 	used to connect nodes together	*/
 ASTNode *ASTfollowNode(ASTNode *node);
+
+
+/*	getNODETYPE
+
+	retrieve the string corresponding to the given nodetype and store it
+	in buf
+
+	success:
+		returns 0
+	failure:
+		returns 1	*/
+int getNODETYPE(enum NODETYPE nt, char *buf);
+
+
+/*	getDATATYPE
+
+	retrieve the string corresponding to the given datatype and store it
+	in buf
+
+	success:
+		returns 0
+	failure:
+		returns 1	*/
+int getDATATYPE(enum DATATYPE dt, char *buf);
+
+
+/*	getOPERATOR
+	
+	retrieve the string corresponding to the given operator and store it
+	in buf
+
+	success:
+		returns 0
+	failure:
+		returns 1	*/
+int getOPERATOR(enum OPERATOR op, char *buf);
 
 
 #endif

@@ -98,11 +98,9 @@ varDec	: typeSpec varList ';' {
 
 			/*	propogate dt across all vars in varList	*/
 			for (ASTNode *i = $$; i != NULL; i = i->next) {
-				struct SymbTab *sym = Search($$->name, level, 0);
-				sym->Type = 999;
-				i->dt = 999;
-
-				printf("set %s's dt to %d\n", i->name, i->dt);
+				struct SymbTab *sym = Search(i->name, level, 0);
+				sym->Type = $1;
+				i->dt = $1;
 			}
 		}
 		;
@@ -116,14 +114,14 @@ varList	: VARIABLE {
 				exit(1);
 			}
 
-			/*	name, type, isafunc, level, mysize, offset, fparams	*/
-			Insert($1, -1, 0, level, 1, offset, NULL);
 			$$ = ASTcreateNode(VARDEC);
 			$$->name = $1;
 
+			/*	name, type, isafunc, level, mysize, offset, fparams	*/
+			$$->sym = Insert($1, -1, 0, level, 1, offset, NULL);
+
 			/* increment offset by the size	*/
 			offset = offset + 1;
-
 			Display();
 		}
 		| VARIABLE '[' NUMBER ']' {
@@ -134,10 +132,11 @@ varList	: VARIABLE {
 				exit(1);
 			}
 
-			/*	name, type, isafunc, level, mysize, offset, fparams	*/
-			Insert($1, -1, 0, level, $3, offset, NULL);
 			$$ = ASTcreateNode(VARDEC);
 			$$->name = $1;
+
+			/*	name, type, isafunc, level, mysize, offset, fparams	*/
+			$$->sym = Insert($1, -1, 0, level, $3, offset, NULL);
 
 			/* default is -1, indicating the
 			   variable is NOT an array */
@@ -155,11 +154,12 @@ varList	: VARIABLE {
 				exit(1);
 			}
 
-			/*	name, type, isafunc, level, mysize, offset, fparams	*/
-			Insert($1, -1, 0, level, 1, offset, NULL);
 			$$ = ASTcreateNode(VARDEC);
 			$$->name = $1;
 			$$->next = $3;
+
+			/*	name, type, isafunc, level, mysize, offset, fparams	*/
+			$$->sym = Insert($1, -1, 0, level, 1, offset, NULL);
 
 			/* increment offset by the size	*/
 			offset = offset + 1;
@@ -173,11 +173,12 @@ varList	: VARIABLE {
 				exit(1);
 			}
 
-			/*	name, type, isafunc, level, mysize, offset, fparams	*/
-			Insert($1, -1, 0, level, $3, offset, NULL);
 			$$ = ASTcreateNode(VARDEC);
 			$$->name = $1;
 			$$->next = $6;
+
+			/*	name, type, isafunc, level, mysize, offset, fparams	*/
+			$$->sym = Insert($1, -1, 0, level, $3, offset, NULL);
 
 			/* default is -1, indicating the
 			   variable is NOT an array */
@@ -221,7 +222,7 @@ funDec	:	typeSpec VARIABLE '(' {
 				$$->s2 = $7;
 
 				/*	name, type, isafunc, level, mysize, offset, fparams	*/
-				Insert($2, $1, 1, level, 0, 0, $5);
+				$$->sym = Insert($2, $1, 1, level, 0, 0, $5);
 
 				offset = goffset;
 		}
@@ -259,11 +260,12 @@ param	: typeSpec VARIABLE '[' ']' {
 				exit(1);
 			}
 
-			/*	name, type, isafunc, level, mysize, offset, fparams	*/
-			Insert($2, $1, 0, level + 1, 1, offset, NULL);
 			$$ = ASTcreateNode(PARAM);
 			$$->dt = $1;
 			$$->name = $2;
+
+			/*	name, type, isafunc, level, mysize, offset, fparams	*/
+			$$->sym = Insert($2, $1, 0, level + 1, 1, offset, NULL);
 
 			$$->size = 0;
 			Display();
@@ -277,11 +279,12 @@ param	: typeSpec VARIABLE '[' ']' {
 				exit(1);
 			}
 
-			/*	name, type, isafunc, level, mysize, offset, fparams	*/
-			Insert($2, $1, 0, level + 1, 1, offset, NULL);
 			$$ = ASTcreateNode(PARAM);
 			$$->dt = $1;
 			$$->name = $2;
+
+			/*	name, type, isafunc, level, mysize, offset, fparams	*/
+			$$->sym = Insert($2, $1, 0, level + 1, 1, offset, NULL);
 
 			Display();
 			offset = offset + 1;
@@ -527,10 +530,14 @@ additiveExpr	: term {
 					$$->op = $2;
 					$$->s2 = $3;
 
-					if (!equalSymbTabTypes($$->s1, $$->s2, level)) {
-						yyerror("ERROR: unequal types for additiveExpr!\n");
+					/*	if s1's type is equal to s2's type, then we are ok.
+						this includes if s1's type is 'INT' and s2 is a
+						NUMBER node.	*/
+					if (!equalTypes($1, $3, level)) {
+						yyerror("ERROR: additiveExpr with unequal types!\n");
 						exit(1);
 					}
+
 				}
 				;
 
@@ -605,6 +612,13 @@ call	: VARIABLE '(' args ')' {
 			$$ = ASTcreateNode(CALL);
 			$$->name = $1;
 			$$->s1 = $3;
+
+			if (Search($1, level, 0) == NULL) {
+				yyerror("ERROR: attempt to call undefined function: ");
+				yyerror($1);
+
+				exit(1);
+			}
 		}
 		;
 

@@ -1,6 +1,7 @@
 
 int main(void)
 begin
-	void x1, x2;
-	x1 = x1 + x2;
+	int x1, x2;
+	void x3;
+	x1 = x2 + x2;
 end

@@ -49,6 +49,7 @@ struct SymbTab * Insert(char *name, enum OPERATOR Type, int isafunc, int  level,
       p->fparms=fparms;  /* assign the Function  */
       p->next=NULL;
 
+
    /* Check on how many elements we have in the symbol table */
       if(first==NULL)
       {
@@ -59,6 +60,7 @@ struct SymbTab * Insert(char *name, enum OPERATOR Type, int isafunc, int  level,
         p->next=first;
         first=p;
       }
+
       return (p);
  
     }
@@ -159,27 +161,64 @@ int Delete(int level)
     return(SIZE);
 }
 
-int equalSymbTabTypes(ASTNode *x, ASTNode *y, int level)
+
+int equalTypes(ASTNode *n1, ASTNode *n2, int level)
 {
-	if (x == NULL || y == NULL) {
+	enum NODETYPE n1type = n1->Type;
+	enum NODETYPE n2type = n2->Type;
+
+	enum DATATYPE n1dt = -1, n2dt = -1;
+
+	/*	check if either n1 or n2 are ID nodes. if they are,
+		we need to pull them from the symbol table	*/
+	if (n1type == ID) {
+		struct SymbTab *s = Search(n1->name, level, 0);
+		if (s == NULL) {
+			return -1;
+		}
+
+		n1dt = s->Type;
+	}
+	if (n2type == ID) {
+		struct SymbTab *s = Search(n2->name, level, 0);
+		if (s == NULL) {
+			return -1;
+		}
+
+		n2dt = s->Type;
+
+	}
+
+	/*	check if the node is a MYNUM type; if it is, its dt is an
+		INTTYPE	*/
+	if (n1type == MYNUM) {
+		n1dt = INTTYPE;
+	}
+	if (n2type == MYNUM) {
+		n2dt = INTTYPE;
+	}
+
+	/*	check if the node is a function	*/
+	if (n1type == FUNDEC) {
+	}
+	if (n2type == FUNDEC) {
+	}
+
+	/*	if we were unable to set the dt for one of them	*/
+	if (n1dt == -1 || n2dt == -1) {
+		/*	unknown datatype (not implemented for this yet	*/
 		return -1;
 	}
 
-	printf("x->name: %s\ty->name: %s\n", x->name, y->name);
-	printf("x->dt: %d\ty->dt: %d\n", x->dt, y->dt);
-	struct SymbTab *s1 = Search(x->name, level, 0);
-	struct SymbTab *s2 = Search(y->name, level, 0);
 
-	if (s1 == NULL || s2 == NULL) {
-		return -1;
-	}
-
-	printf("s1->Type: %d\ts2->Type: %d\n", s1->Type, s2->Type);
-	if (s1->Type == s2->Type) {
+	/*	if their datatypes are equal	*/
+	if (n1dt == n2dt) {
 		return 1;
 	}
 
+	/*	their datatypes were different	*/
 	return 0;
 }
+
 
 
