@@ -42,4 +42,11 @@ struct SymbTab
 struct SymbTab * Search(char name[], int level, int recur);
 
 struct SymbTab * Insert(char *name, enum OPERATOR Type, int isafunc, int  level, int mysize, int offset, ASTNode * fparms );
+
+
+/*	returns 1 if the types of x and y are equal, 0 if not equal,
+	and -1 on error	*/
+int equalSymbTabTypes(ASTNode *x, ASTNode *y, int level);
+
+
 #endif

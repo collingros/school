@@ -98,7 +98,11 @@ varDec	: typeSpec varList ';' {
 
 			/*	propogate dt across all vars in varList	*/
 			for (ASTNode *i = $$; i != NULL; i = i->next) {
-				i->dt = $1;
+				struct SymbTab *sym = Search($$->name, level, 0);
+				sym->Type = 999;
+				i->dt = 999;
+
+				printf("set %s's dt to %d\n", i->name, i->dt);
 			}
 		}
 		;
@@ -123,7 +127,7 @@ varList	: VARIABLE {
 			Display();
 		}
 		| VARIABLE '[' NUMBER ']' {
-			if (Search($1, 0, 0) != NULL) {
+			if (Search($1, level, 0) != NULL) {
 				yyerror("ERROR: duplicate variable: ");
 				yyerror($1);
 
@@ -141,9 +145,10 @@ varList	: VARIABLE {
 
 			/* increment offset by the size	*/
 			offset = offset + $3;
+			Display();
 		}
 		| VARIABLE ',' varList {
-			if (Search($1, 0, 0) != NULL) {
+			if (Search($1, level, 0) != NULL) {
 				yyerror("ERROR: duplicate variable: ");
 				yyerror($1);
 
@@ -158,9 +163,10 @@ varList	: VARIABLE {
 
 			/* increment offset by the size	*/
 			offset = offset + 1;
+			Display();
 		}
 		| VARIABLE '[' NUMBER ']' ',' varList {
-			if (Search($1, 0, 0) != NULL) {
+			if (Search($1, level, 0) != NULL) {
 				yyerror("ERROR: duplicate variable: ");
 				yyerror($1);
 
@@ -179,6 +185,7 @@ varList	: VARIABLE {
 
 			/* increment offset by the size	*/
 			offset = offset + $3;
+			Display();
 		}
 		;
 
@@ -196,6 +203,13 @@ typeSpec	: INT {
 
 /* fun-declaration -> type-specifier ID ( params ) compound-stmt */
 funDec	:	typeSpec VARIABLE '(' {
+				if (Search($2, level, 0) != NULL) {
+					yyerror("ERROR: duplicate function: ");
+					yyerror($2);
+
+					exit(1);
+				}
+
 				goffset = offset;
 				offset = 0;
 			}
@@ -205,6 +219,9 @@ funDec	:	typeSpec VARIABLE '(' {
 				$$->dt = $1;
 				$$->s1 = $5;
 				$$->s2 = $7;
+
+				/*	name, type, isafunc, level, mysize, offset, fparams	*/
+				Insert($2, $1, 1, level, 0, 0, $5);
 
 				offset = goffset;
 		}
@@ -248,12 +265,9 @@ param	: typeSpec VARIABLE '[' ']' {
 			$$->dt = $1;
 			$$->name = $2;
 
-			/* this is an array, so to signify that we set size to 0 (we
-			   don't know the size, only that the variable is an array) */
-
-			/*	TODO this won't work because we use size for offset, need
-				to also increment offset	*/
 			$$->size = 0;
+			Display();
+			/*	dont increment offset since var is an arr with no size	*/
 		}
 		| typeSpec VARIABLE {
 			if (Search($2, level + 1, 0) != NULL) {
@@ -268,6 +282,9 @@ param	: typeSpec VARIABLE '[' ']' {
 			$$ = ASTcreateNode(PARAM);
 			$$->dt = $1;
 			$$->name = $2;
+
+			Display();
+			offset = offset + 1;
 		}
 		;
 
@@ -426,6 +443,7 @@ assignmentStmt	: var '=' simpleExpr ';' {
 					$$ = ASTcreateNode(ASSIGN);
 					$$->s1 = $1;
 					$$->s2 = $3;
+
 				}
 				;
 
@@ -440,12 +458,26 @@ expr	: simpleExpr {
 var	: VARIABLE {
 		$$ = ASTcreateNode(ID);
 		$$->name = $1;
+
+		if (Search($1, level, 0) == NULL) {
+			yyerror("ERROR: undefined variable: ");
+			yyerror($1);
+
+			exit(1);
+		}
 	}
 	| VARIABLE '[' expr ']' {
 		$$ = ASTcreateNode(ID);
 		$$->name = $1;
 		/*	an VARIABLE node's s1 points to its expression	*/
 		$$->s1 = $3;
+
+		if (Search($1, level, 0) == NULL) {
+			yyerror("ERROR: undefined variable: ");
+			yyerror($1);
+
+			exit(1);
+		}
 	}
 	;
 
@@ -459,6 +491,7 @@ simpleExpr	: additiveExpr {
 				$$->s1 = $1;
 				$$->op = $2;
 				$$->s2 = $3;
+
 			}
 			;
 
@@ -493,6 +526,11 @@ additiveExpr	: term {
 					$$->s1 = $1;
 					$$->op = $2;
 					$$->s2 = $3;
+
+					if (!equalSymbTabTypes($$->s1, $$->s2, level)) {
+						yyerror("ERROR: unequal types for additiveExpr!\n");
+						exit(1);
+					}
 				}
 				;
 

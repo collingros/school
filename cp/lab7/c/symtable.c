@@ -62,8 +62,6 @@ struct SymbTab * Insert(char *name, enum OPERATOR Type, int isafunc, int  level,
       return (p);
  
     }
-     
-  printf("\n\tLabel inserted\n");
 }
 
 /* print out a single symbol table entry -- for debugging */
@@ -157,6 +155,31 @@ int Delete(int level)
           }
 
       }
+
     return(SIZE);
 }
+
+int equalSymbTabTypes(ASTNode *x, ASTNode *y, int level)
+{
+	if (x == NULL || y == NULL) {
+		return -1;
+	}
+
+	printf("x->name: %s\ty->name: %s\n", x->name, y->name);
+	printf("x->dt: %d\ty->dt: %d\n", x->dt, y->dt);
+	struct SymbTab *s1 = Search(x->name, level, 0);
+	struct SymbTab *s2 = Search(y->name, level, 0);
+
+	if (s1 == NULL || s2 == NULL) {
+		return -1;
+	}
+
+	printf("s1->Type: %d\ts2->Type: %d\n", s1->Type, s2->Type);
+	if (s1->Type == s2->Type) {
+		return 1;
+	}
+
+	return 0;
+}
+
 
