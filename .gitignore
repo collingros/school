@@ -2,3 +2,5 @@
 *.o
 *.gitignoreme
 *.gch
+
+./cp/lab8/*.jar
