@@ -26,7 +26,7 @@ struct SymbTab *first = NULL;
 
 /* Simple Insert into the symbol table with the size, type level that the name is being inserted into */
 
-struct SymbTab * Insert(char *name, enum OPERATOR Type, int isafunc, int  level, int mysize, int offset , ASTNode * fparms, int isArray)
+struct SymbTab * Insert(char *name, enum DATATYPE Type, int isafunc, int  level, int mysize, int offset , ASTNode * fparms, int isArray)
 
 {
   struct SymbTab * n;

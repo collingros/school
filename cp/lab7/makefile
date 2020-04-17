@@ -10,7 +10,7 @@
 
 # compile all seperately, then link them together
 
-# directory that contains our c-code (ast)
+# directory that contains our c-code (ast & symtable)
 c=./c
 
 

@@ -2,7 +2,34 @@
 /*	collin gros
 	04/08/2020
 
-	lab7	*/ 
+	lab7: set up the symbol table and integrate it with our code. implement
+			rudimentary type checking, and some other error checking.
+			display the output after the end of every compoundStmt.
+
+	to achieve this, i inserted a new element into the symbol table whenever
+	there was a varDec, funDec, or a param. all of these things need to be
+	accounted for when writing the assembly language for the program.
+
+	to check whether types were okay, i made a function in the symtable.c
+	file to compare nodes and tell me whether their type is the same or not.
+	this made it easy to add rudimentary type checking for assignmentStmt and
+	additiveExpr (the function is called equalTypes()).
+
+	i checked whether arguments were correctly used and matched the formal
+	params of a function by iterating each list of arguments/parameters and
+	directly comparing each of their types, and determining whether there was a
+		a. problem with the number of arguments
+		b. problem with argument type
+		c. use of an undefined argument
+
+	i also had to add the pointer to the formal parameter list right after
+	the function name was determined in funDec. this allows me to parse
+	recursive calls without any issues.
+
+	i added a symbol table pointer to each ASTNode so that we can
+	reference the symbol table at any point as long as we have the node.
+	it is assigned to the node at the moment it is inserted into the table.
+	 	*/ 
 
 #include <stdio.h>
 #include <ctype.h>
@@ -122,7 +149,6 @@ varList	: VARIABLE {
 
 			/* increment offset by the size	*/
 			offset = offset + 1;
-			Display();
 		}
 		| VARIABLE '[' NUMBER ']' {
 			if (Search($1, level, 0) != NULL) {
@@ -144,7 +170,6 @@ varList	: VARIABLE {
 
 			/* increment offset by the size	*/
 			offset = offset + $3;
-			Display();
 		}
 		| VARIABLE ',' varList {
 			if (Search($1, level, 0) != NULL) {
@@ -163,7 +188,6 @@ varList	: VARIABLE {
 
 			/* increment offset by the size	*/
 			offset = offset + 1;
-			Display();
 		}
 		| VARIABLE '[' NUMBER ']' ',' varList {
 			if (Search($1, level, 0) != NULL) {
@@ -186,7 +210,6 @@ varList	: VARIABLE {
 
 			/* increment offset by the size	*/
 			offset = offset + $3;
-			Display();
 		}
 		;
 
@@ -204,7 +227,7 @@ typeSpec	: INT {
 
 /* fun-declaration -> type-specifier ID ( params ) compound-stmt */
 funDec	:	typeSpec VARIABLE '(' {
-				if (Search($2, level, 0) != NULL) {
+			if (Search($2, level, 0) != NULL) {
 					yyerror("ERROR: duplicate function: ");
 					yyerror($2);
 
@@ -219,21 +242,24 @@ funDec	:	typeSpec VARIABLE '(' {
 				goffset = offset;
 				offset = 0;
 			}
-			params ')' compoundStmt {
+			params {
+				/*	need to know our params in case we get a call in the
+					function definition	*/
+				struct SymbTab *s = Search($2, level, 0);
+				s->fparms = $5;
+			}
+			')' compoundStmt {
 				$$ = ASTcreateNode(FUNDEC);
 				$$->name = $2;
 				$$->dt = $1;
 				$$->s1 = $5;
-				$$->s2 = $7;
+				$$->s2 = $8;
 
-				/*	retrieve the symbol table for this function and
-					add in the formal parameters	*/
+				/*	assign the symtab pointer of this node to its symtab	*/
 				struct SymbTab *s = Search($2, level, 0);
-				s->fparms = $5;
 				$$->sym = s;
 
 				offset = goffset;
-				Display();
 		}
 		;
 
@@ -278,7 +304,6 @@ param	: typeSpec VARIABLE '[' ']' {
 
 			$$->size = 0;
 			offset = offset + 1;
-			Display();
 		}
 		| typeSpec VARIABLE {
 			if (Search($2, level + 1, 0) != NULL) {
@@ -296,7 +321,6 @@ param	: typeSpec VARIABLE '[' ']' {
 			$$->sym = Insert($2, $1, 0, level + 1, 1, offset, NULL, 0);
 
 			offset = offset + 1;
-			Display();
 		}
 		;
 
@@ -309,6 +333,7 @@ compoundStmt	: MYBEGIN {
 					$$->s1 = $3;
 					$$->s2 = $4;
 
+					Display();
 					/*	reset our offset back to what it was	*/
 					offset -= Delete(level);
 					--level;
@@ -553,12 +578,6 @@ additiveExpr	: term {
 					$$ = $1;
 				}
 				| additiveExpr addop term {
-					/* all of our multi-expr stuff is EXPR */
-					$$ = ASTcreateNode(EXPR);
-					$$->s1 = $1;
-					$$->op = $2;
-					$$->s2 = $3;
-
 					/*	if s1's type is equal to s2's type, then we are ok.
 						this includes if s1's type is 'INT' and s2 is a
 						NUMBER node.	*/
@@ -567,6 +586,11 @@ additiveExpr	: term {
 						exit(1);
 					}
 
+					/* all of our multi-expr stuff is EXPR */
+					$$ = ASTcreateNode(EXPR);
+					$$->s1 = $1;
+					$$->op = $2;
+					$$->s2 = $3;
 				}
 				;
 
@@ -643,16 +667,16 @@ call	: VARIABLE '(' args ')' {
 			$$->s1 = $3;
 
 			/*	grab the symbol table for this variable	*/
-			struct SymbTab *s = Search($1, level, 1);
+			struct SymbTab *sf = Search($1, level, 1);
 			/*	if our var doesn't exist	*/
-			if (s == NULL) {
+			if (sf == NULL) {
 				yyerror("ERROR: attempt to call undefined function: ");
 				yyerror($1);
 
 				exit(1);
 			}
 			/*	if our var isn't a function	*/
-			else if (!s->IsAFunc) {
+			else if (!sf->IsAFunc) {
 				yyerror("ERROR: calling a variable that is not a function: ");
 				yyerror($1);
 
@@ -661,11 +685,27 @@ call	: VARIABLE '(' args ')' {
 
 			/*	check that our arguments match our formal parameters	*/
 			/*	iterate the arguments & parameters	*/
-			ASTNode *fparm = s->fparms;
+			ASTNode *fparm = sf->fparms;
 			ASTNode *arg = $3;
+
+			/*	iterate each formal parameter & argument at the same time
+				so we can directly compare them to each other	*/
 			while (fparm != NULL && arg != NULL) {
-				/*	pull our symbol table data from this current arg	*/
-				struct SymbTab *s = Search(arg->name, level, 1);
+				enum DATATYPE dt;
+
+				/*	pull our symbol table data
+					from this current arg if it is an ID	*/
+				struct SymbTab *s;
+				if (arg->Type == ID) {
+					s = Search(arg->name, level, 1);
+					dt = s->Type;
+				}
+				/*	the arg is not an ID, so it will have its dt directly
+					available without any symbol table	*/
+				else {
+					dt = arg->dt;	
+				}
+
 				/*	if this arg was never defined	*/
 				if (s == NULL) {
 					yyerror("ERROR: use of undefined argument: \n");
@@ -674,8 +714,9 @@ call	: VARIABLE '(' args ')' {
 					exit(1);
 				}
 
-				/*	if our current arg/param have differing data types...	*/
-				if (fparm->dt != s->Type) {
+				/*	if our current arg/param have differing
+					data types...	*/
+				if (fparm->dt != dt) {
 					yyerror("ERROR: mismatched data types for function "
 							"call: ");
 					yyerror($1);
@@ -687,15 +728,15 @@ call	: VARIABLE '(' args ')' {
 				arg = arg->next;
 			}
 
-			/*	if the number of arguments and fparams are not matched..	*/
+			/*	if the number of arguments and fparams are 
+				not matched..	*/
 			if (!(fparm == NULL && arg == NULL)) {
-				yyerror("ERROR: mismatched number of arguments for function"
-						" call: ");
+				yyerror("ERROR: mismatched number of arguments "
+						"for function call: ");
 				yyerror($1);
 
 				exit(1);
 			}
-
 		}
 		;
 
@@ -737,7 +778,7 @@ int main(int argc, char** argv)
 	}
 
 	// print out
-	ASTprint(globalTreePointer, 0);
+	/*ASTprint(globalTreePointer, 0);*/
 
 	exit(0);
 }

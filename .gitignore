@@ -3,4 +3,4 @@
 *.gitignoreme
 *.gch
 
-./cp/lab8/*.jar
+/cp/lab8/*.jar
