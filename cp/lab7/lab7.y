@@ -211,6 +211,11 @@ funDec	:	typeSpec VARIABLE '(' {
 					exit(1);
 				}
 
+				/*	insert into symbol table so we know this function
+					exists while we're defining it (for recursion)	*/
+				/*	name, type, isafunc, level, mysize, offset, fparams	*/
+				Insert($2, $1, 1, level, 0, 0, NULL, 0);
+
 				goffset = offset;
 				offset = 0;
 			}
@@ -221,10 +226,14 @@ funDec	:	typeSpec VARIABLE '(' {
 				$$->s1 = $5;
 				$$->s2 = $7;
 
-				/*	name, type, isafunc, level, mysize, offset, fparams	*/
-				$$->sym = Insert($2, $1, 1, level, 0, 0, $5, 0);
+				/*	retrieve the symbol table for this function and
+					add in the formal parameters	*/
+				struct SymbTab *s = Search($2, level, 0);
+				s->fparms = $5;
+				$$->sym = s;
 
 				offset = goffset;
+				Display();
 		}
 		;
 
@@ -268,8 +277,8 @@ param	: typeSpec VARIABLE '[' ']' {
 			$$->sym = Insert($2, $1, 0, level + 1, 1, offset, NULL, 1);
 
 			$$->size = 0;
+			offset = offset + 1;
 			Display();
-			/*	dont increment offset since var is an arr with no size	*/
 		}
 		| typeSpec VARIABLE {
 			if (Search($2, level + 1, 0) != NULL) {
@@ -286,8 +295,8 @@ param	: typeSpec VARIABLE '[' ']' {
 			/*	name, type, isafunc, level, mysize, offset, fparams, isarray	*/
 			$$->sym = Insert($2, $1, 0, level + 1, 1, offset, NULL, 0);
 
-			Display();
 			offset = offset + 1;
+			Display();
 		}
 		;
 
@@ -468,7 +477,7 @@ expr	: simpleExpr {
 /* NOTE: we aren't dealing with multi dimensional arrays */
 var	: VARIABLE {
 		/*	check if this var is in the symbol table	*/
-		if (Search($1, level, 0) == NULL) {
+		if (Search($1, level, 1) == NULL) {
 			yyerror("ERROR: undefined variable: ");
 			yyerror($1);
 
@@ -480,7 +489,7 @@ var	: VARIABLE {
 	}
 	| VARIABLE '[' expr ']' {
 		/*	check if this var is in the symbol table	*/
-		struct SymbTab *s = Search($1, level, 0);
+		struct SymbTab *s = Search($1, level, 1);
 		if (s == NULL) {
 			yyerror("ERROR: undefined variable: ");
 			yyerror($1);
