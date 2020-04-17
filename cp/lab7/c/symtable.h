@@ -34,6 +34,8 @@ struct SymbTab
      int level;  /* the level where we found the variable */
      enum OPERATOR Type;  /* the type of the symbol */
      int IsAFunc;  /* the element is a function */
+	/*	if the element is an array	*/
+	int isArray;
      ASTNode * fparms; /* pointer to parameters of the function in the AST */
 
      struct SymbTab *next;
@@ -41,7 +43,7 @@ struct SymbTab
 
 struct SymbTab * Search(char name[], int level, int recur);
 
-struct SymbTab * Insert(char *name, enum OPERATOR Type, int isafunc, int  level, int mysize, int offset, ASTNode * fparms );
+struct SymbTab * Insert(char *name, enum OPERATOR Type, int isafunc, int  level, int mysize, int offset, ASTNode * fparms, int isArray);
 
 
 /*	returns 1 if the types of n1 and n2 are equal, 0 if not equal,

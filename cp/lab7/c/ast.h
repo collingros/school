@@ -58,7 +58,6 @@ typedef struct ASTNodeType {
 	struct ASTNodeType *s1, *s2, *next;
 	char *name;
 
-	/* array size if an array, -1 if not an array */
 	int size;
 
 	/* if nodeType is a NUMBER, value is the number */

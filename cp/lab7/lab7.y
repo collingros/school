@@ -117,8 +117,8 @@ varList	: VARIABLE {
 			$$ = ASTcreateNode(VARDEC);
 			$$->name = $1;
 
-			/*	name, type, isafunc, level, mysize, offset, fparams	*/
-			$$->sym = Insert($1, -1, 0, level, 1, offset, NULL);
+			/*	name, type, isafunc, level, mysize, offset, fparams, isarray	*/
+			$$->sym = Insert($1, -1, 0, level, 1, offset, NULL, 0);
 
 			/* increment offset by the size	*/
 			offset = offset + 1;
@@ -135,8 +135,8 @@ varList	: VARIABLE {
 			$$ = ASTcreateNode(VARDEC);
 			$$->name = $1;
 
-			/*	name, type, isafunc, level, mysize, offset, fparams	*/
-			$$->sym = Insert($1, -1, 0, level, $3, offset, NULL);
+			/*	name, type, isafunc, level, mysize, offset, fparams, isarray	*/
+			$$->sym = Insert($1, -1, 0, level, $3, offset, NULL, 1);
 
 			/* default is -1, indicating the
 			   variable is NOT an array */
@@ -158,8 +158,8 @@ varList	: VARIABLE {
 			$$->name = $1;
 			$$->next = $3;
 
-			/*	name, type, isafunc, level, mysize, offset, fparams	*/
-			$$->sym = Insert($1, -1, 0, level, 1, offset, NULL);
+			/*	name, type, isafunc, level, mysize, offset, fparams, isarray	*/
+			$$->sym = Insert($1, -1, 0, level, 1, offset, NULL, 0);
 
 			/* increment offset by the size	*/
 			offset = offset + 1;
@@ -177,8 +177,8 @@ varList	: VARIABLE {
 			$$->name = $1;
 			$$->next = $6;
 
-			/*	name, type, isafunc, level, mysize, offset, fparams	*/
-			$$->sym = Insert($1, -1, 0, level, $3, offset, NULL);
+			/*	name, type, isafunc, level, mysize, offset, fparams, isarray	*/
+			$$->sym = Insert($1, -1, 0, level, $3, offset, NULL, 1);
 
 			/* default is -1, indicating the
 			   variable is NOT an array */
@@ -222,7 +222,7 @@ funDec	:	typeSpec VARIABLE '(' {
 				$$->s2 = $7;
 
 				/*	name, type, isafunc, level, mysize, offset, fparams	*/
-				$$->sym = Insert($2, $1, 1, level, 0, 0, $5);
+				$$->sym = Insert($2, $1, 1, level, 0, 0, $5, 0);
 
 				offset = goffset;
 		}
@@ -264,8 +264,8 @@ param	: typeSpec VARIABLE '[' ']' {
 			$$->dt = $1;
 			$$->name = $2;
 
-			/*	name, type, isafunc, level, mysize, offset, fparams	*/
-			$$->sym = Insert($2, $1, 0, level + 1, 1, offset, NULL);
+			/*	name, type, isafunc, level, mysize, offset, fparams, isarray	*/
+			$$->sym = Insert($2, $1, 0, level + 1, 1, offset, NULL, 1);
 
 			$$->size = 0;
 			Display();
@@ -283,8 +283,8 @@ param	: typeSpec VARIABLE '[' ']' {
 			$$->dt = $1;
 			$$->name = $2;
 
-			/*	name, type, isafunc, level, mysize, offset, fparams	*/
-			$$->sym = Insert($2, $1, 0, level + 1, 1, offset, NULL);
+			/*	name, type, isafunc, level, mysize, offset, fparams, isarray	*/
+			$$->sym = Insert($2, $1, 0, level + 1, 1, offset, NULL, 0);
 
 			Display();
 			offset = offset + 1;
@@ -443,6 +443,14 @@ writeStmt	: WRITE expr ';' {
 
 /* assignment-stmt -> var = simple-expression; */
 assignmentStmt	: var '=' simpleExpr ';' {
+					if (!equalTypes($1, $3, level)) {
+						yyerror("ERROR: assignment statement has unequal "
+								"types: \n");
+						yyerror($1->name);
+
+						exit(1);
+					}
+
 					$$ = ASTcreateNode(ASSIGN);
 					$$->s1 = $1;
 					$$->s2 = $3;
@@ -459,28 +467,40 @@ expr	: simpleExpr {
 /* var -> ID [ [ expression ] ]+ */
 /* NOTE: we aren't dealing with multi dimensional arrays */
 var	: VARIABLE {
-		$$ = ASTcreateNode(ID);
-		$$->name = $1;
-
+		/*	check if this var is in the symbol table	*/
 		if (Search($1, level, 0) == NULL) {
 			yyerror("ERROR: undefined variable: ");
 			yyerror($1);
 
 			exit(1);
 		}
+
+		$$ = ASTcreateNode(ID);
+		$$->name = $1;
 	}
 	| VARIABLE '[' expr ']' {
+		/*	check if this var is in the symbol table	*/
+		struct SymbTab *s = Search($1, level, 0);
+		if (s == NULL) {
+			yyerror("ERROR: undefined variable: ");
+			yyerror($1);
+
+			exit(1);
+		}
+
+		/*	check if the var is actually an array	*/
+		if (!s->isArray) {
+			yyerror("ERROR: [] is undefined on non-array types: \n");
+			yyerror($1);
+
+			exit(1);
+		}
+
 		$$ = ASTcreateNode(ID);
 		$$->name = $1;
 		/*	an VARIABLE node's s1 points to its expression	*/
 		$$->s1 = $3;
 
-		if (Search($1, level, 0) == NULL) {
-			yyerror("ERROR: undefined variable: ");
-			yyerror($1);
-
-			exit(1);
-		}
 	}
 	;
 
@@ -613,12 +633,60 @@ call	: VARIABLE '(' args ')' {
 			$$->name = $1;
 			$$->s1 = $3;
 
-			if (Search($1, level, 0) == NULL) {
+			/*	grab the symbol table for this variable	*/
+			struct SymbTab *s = Search($1, level, 1);
+			/*	if our var doesn't exist	*/
+			if (s == NULL) {
 				yyerror("ERROR: attempt to call undefined function: ");
 				yyerror($1);
 
 				exit(1);
 			}
+			/*	if our var isn't a function	*/
+			else if (!s->IsAFunc) {
+				yyerror("ERROR: calling a variable that is not a function: ");
+				yyerror($1);
+
+				exit(1);
+			}
+
+			/*	check that our arguments match our formal parameters	*/
+			/*	iterate the arguments & parameters	*/
+			ASTNode *fparm = s->fparms;
+			ASTNode *arg = $3;
+			while (fparm != NULL && arg != NULL) {
+				/*	pull our symbol table data from this current arg	*/
+				struct SymbTab *s = Search(arg->name, level, 1);
+				/*	if this arg was never defined	*/
+				if (s == NULL) {
+					yyerror("ERROR: use of undefined argument: \n");
+					yyerror($1);
+
+					exit(1);
+				}
+
+				/*	if our current arg/param have differing data types...	*/
+				if (fparm->dt != s->Type) {
+					yyerror("ERROR: mismatched data types for function "
+							"call: ");
+					yyerror($1);
+
+					exit(1);
+				}
+
+				fparm = fparm->next;
+				arg = arg->next;
+			}
+
+			/*	if the number of arguments and fparams are not matched..	*/
+			if (!(fparm == NULL && arg == NULL)) {
+				yyerror("ERROR: mismatched number of arguments for function"
+						" call: ");
+				yyerror($1);
+
+				exit(1);
+			}
+
 		}
 		;
 
