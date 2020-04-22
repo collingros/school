@@ -29,6 +29,7 @@ int offset = 0;
 
 /*	global offset	*/
 int goffset;
+int maxoffset = 0;
 
 /*	debug mode?	*/
 int mydebug = 0;
@@ -218,6 +219,7 @@ funDec	:	typeSpec VARIABLE '(' {
 				Insert($2, $1, 1, level, 0, 0, NULL, 0);
 
 				goffset = offset;
+				maxoffset = 2;
 				offset = 0;
 			}
 			params {
@@ -237,6 +239,11 @@ funDec	:	typeSpec VARIABLE '(' {
 				struct SymbTab *s = Search($2, level, 0);
 				$$->sym = s;
 
+				/*	set the max offset to offset if offset is bigger	*/
+
+				/*	TODO	*/
+				/*	set mysize = maxoffset	*/
+				/*	set value = maxoffset	*/
 				offset = goffset;
 		}
 		;
@@ -313,6 +320,9 @@ compoundStmt	: MYBEGIN {
 
 					Display();
 					/*	reset our offset back to what it was	*/
+
+					/*	TODO: set max offset to be
+						the max of maxoffset and offset	*/
 					offset -= Delete(level);
 					--level;
 				}
@@ -782,7 +792,6 @@ int main(int argc, char** argv)
 		fprintf(stderr, "yyparse() failed!\n");
 		exit(1);
 	}
-	printf("yyparse() was successful!\n");
 
 	if (globalTreePointer == 0) {
 		fprintf(stderr, "ERROR: globalTreePointer points to null!\n");
@@ -798,6 +807,8 @@ int main(int argc, char** argv)
 	fprintf(fp, "\n\n.align 2\n\n");
 	ASTemitGlobs(fp, globalTreePointer);
 	fprintf(fp, "\n\n.text\n\n");
+
+	ASTemit(fp, globalTreePointer);
 
 	exit(0);
 }
