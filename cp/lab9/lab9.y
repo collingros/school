@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "c/ast.h"
 #include "c/symtable.h"
@@ -28,6 +29,9 @@ int offset = 0;
 
 /*	global offset	*/
 int goffset;
+
+/*	debug mode?	*/
+int mydebug = 0;
 
 void yyerror (s)	/* Called by yyparse on error */
 	 char *s;
@@ -745,6 +749,35 @@ argList	: expr {
 
 int main(int argc, char** argv)
 {
+	char s[100];
+
+	/*	args	*/
+	for (int i = 0; i < argc; ++i) {
+		if (strcmp(argv[i], "-d") == 0) {
+			mydebug = 1;
+		}
+		/*	assuming the next argument is the file prefix we want to open
+			*/
+		else if (strcmp(argv[i], "-o") == 0) {
+			/*	if a filename wasn't provided with -o... barf	*/
+			if (!(i + 1 < argc)) {
+				printf("ERROR: improper usage of -o! a filename is needed!\n");
+				exit(1);
+			}
+
+			sprintf(s, "%s.asm", argv[++i]);
+		}
+	}
+
+	FILE *fp = fopen(s, "w");
+	/*	problem opening file	*/
+	if (fp == NULL) {
+		printf("ERROR: cannot open file: %s\n", s);
+		exit(1);
+	}
+
+
+
 	if (yyparse()) {
 		fprintf(stderr, "yyparse() failed!\n");
 		exit(1);
@@ -757,7 +790,14 @@ int main(int argc, char** argv)
 	}
 
 	// print out
-	ASTprint(globalTreePointer, 0);
+	/*ASTprint(globalTreePointer, 0);*/
+
+	fprintf(fp, "\n\n.data\n\n");
+	ASTemitStrings(fp, globalTreePointer);
+	fprintf(fp, "NL:\t.asciiz\t\"\\n\"\n");
+	fprintf(fp, "\n\n.align 2\n\n");
+	ASTemitGlobs(fp, globalTreePointer);
+	fprintf(fp, "\n\n.text\n\n");
 
 	exit(0);
 }

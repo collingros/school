@@ -19,5 +19,13 @@
 free it!	*/
 char *genlabel();
 
+/*	prints all of the strings in MIPS format, returns
+	nothing	*/
+void ASTemitStrings(FILE *fp, ASTNode *p);
+
+/*	prints all of the global vars in MIPS format,
+	returns nothing	*/
+void ASTemitGlobs(FILE *fp, ASTNode *p);
+
 #endif
 
