@@ -6,6 +6,7 @@
 cc=g++
 cf=-Wall -lcrypto -lssl
 
+all: enc.gitignoreme dec.gitignoreme
 
 enc.gitignoreme: project2_encryption.o
 	$(cc) project2_encryption.o $(cf) -o enc.gitignoreme
@@ -23,4 +24,5 @@ project2_decryption.o: project2_decryption.cpp
 
 clean:
 	rm -rf enc.gitignoreme dec.gitignoreme
+	rm -rf encrypt_me.txt.*
 	rm -rf *.o
