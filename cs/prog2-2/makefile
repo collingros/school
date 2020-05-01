@@ -7,14 +7,20 @@ cc=g++
 cf=-Wall -lcrypto -lssl
 
 
-run.gitignoreme: project2_encryption.o
-	$(cc) project2_encryption.o $(cf) -o run.gitignoreme
+enc.gitignoreme: project2_encryption.o
+	$(cc) project2_encryption.o $(cf) -o enc.gitignoreme
+
+dec.gitignoreme: project2_decryption.o
+	$(cc) project2_decryption.o $(cf) -o dec.gitignoreme
 
 
 project2_encryption.o: project2_encryption.cpp
 	$(cc) -c project2_encryption.cpp $(cf)
 
+project2_decryption.o: project2_decryption.cpp
+	$(cc) -c project2_decryption.cpp $(cf)
+
 
 clean:
-	rm -rf run.gitignoreme
+	rm -rf enc.gitignoreme dec.gitignoreme
 	rm -rf *.o

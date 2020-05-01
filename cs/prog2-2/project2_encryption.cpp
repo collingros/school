@@ -5,37 +5,64 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <openssl/bio.h>
+#include <openssl/conf.h>
 
 #define MAX_ARG_SIZE 100
 
 
-int main(int argc, char **argv)
+int parseArgs(int argc, char **argv, char *msg, char *pub, char *pri)
 {
-	char pkFilename[MAX_ARG_SIZE];
-	sprintf(pkFilename, "%s", argv[2]);
+	if (argc != 4) {
+		printf("ERROR: usage: [msg] [pubkeyfilename] [privkeyfilename]\n");
+		return 1;
+	}
 
-	BIO *pkbio = BIO_new_file(pkFilename, "r");
+	sprintf(msg, "%s", argv[1]);
+	sprintf(pub, "%s", argv[2]);
+	sprintf(pri, "%s", argv[3]);
 
-
-	exit(1);
+	return 0;
 }
 
-/* as command line args:	*/
-	/*	take the encrypted message	*/
-	/*	take third party public key	*/
-	/*	take our private key	*/
 
-/*	use the third party public key to decrypt the encrypted message	*/
+int main(int argc, char **argv)
+{
+	char msg[MAX_ARG_SIZE];
+	char pubKeyFilename[MAX_ARG_SIZE];
+	char priKeyFilename[MAX_ARG_SIZE];
 
-/*	store the message in a text file, symmetric.txt (this is our
-	symmetric key	*/
+	// parse our arguments, exit on failure
+	if (parseArgs(argc, argv, msg, pubKeyFilename, priKeyFilename)) {
+		printf("ERROR: parseArgs() failed!\n");
+		exit(1);
+	}
 
-/*	use the decrypted message as a symm key to encrypt a text file
-	with one of the symm key algos (AES or 3DES). write the code for
-	this part OR use openssl command with system function. the text file
-	MUST have my name and 800652097. explain which algo was used in project
-	eval	*/
+	/*	decrypt message with third party public key and store it
+		in symmetric.txt	*/
+	char buf[100 + MAX_ARG_SIZE * 3];
+	sprintf(buf, "openssl rsautl -encrypt -raw -inkey "
+			"%s -pubin -in %s -out symmetric.txt", pubKeyFilename, msg);
+	system(buf);
 
-/*	sign the file content with our private key, and store it in a file	*/
+	/*	use the decrypted message as a symm key to encrypt a text file
+		with one of the symm key algos (AES or 3DES). write the code for
+		this part OR use openssl command with system function.
+		the text file MUST have my name and 800652097.
+		explain which algo was used in project eval	*/
+	sprintf(buf, "openssl aes-256-cbc -in encrypt_me.txt "
+			"-out encrypt_me.txt.enc -pass file:symmetric.txt");
+	system(buf);
+
+	/*	sign the file content with our private key, and store
+		it in a file	*/
+	sprintf(buf, "openssl dgst -sha256 -sign %s -out "
+			"encrypt_me.txt.enc.sha256 encrypt_me.txt.enc",
+			priKeyFilename);
+	system(buf);
+
+
+	return 0;
+}
+
+
 
