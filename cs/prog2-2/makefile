@@ -24,5 +24,6 @@ project2_decryption.o: project2_decryption.cpp
 
 clean:
 	rm -rf enc.gitignoreme dec.gitignoreme
-	rm -rf encrypt_me.txt.*
+	rm -rf symmetric.txt encrypted.txt encrypted-signed.txt
+	rm -rf plaintext.txt
 	rm -rf *.o
