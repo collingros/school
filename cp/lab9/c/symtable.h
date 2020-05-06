@@ -19,6 +19,8 @@
 
 #include "ast.h"    
 
+#define MAX_TEMP_SIZE 100
+
 
 
 void Display();
@@ -40,6 +42,9 @@ struct SymbTab
 
      struct SymbTab *next;
 };
+
+/*	added from instructions for lab9	*/
+char *CreateTemp();
 
 struct SymbTab * Search(char name[], int level, int recur);
 

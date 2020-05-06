@@ -26,7 +26,8 @@ enum NODETYPE {
 	MYIF,
 	MYELSE,
 	MYREAD,
-	MYNOT
+	MYNOT,
+	INTDEC
 };
 
 enum DATATYPE {

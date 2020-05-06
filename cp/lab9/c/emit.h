@@ -40,11 +40,26 @@ void ASTemit(FILE *fp, ASTNode *p);
 /*	writes the header code in MIPS to fp, returns nothing	*/
 void ASTemitFunctionHead(FILE *fp, ASTNode *p);
 
-/*	emit the function's return (implicitly) in MIPS code to fp, returns
-	nothing	*/
+/*	emit the function's return implicitly or explicitly in MIPS code to fp,
+		p is a pointer to an expression or NULL
+
+		returns nothing, but prints MIPS code to fp	*/
 void ASTemitFunctionReturn(FILE *fp, ASTNode *p);
 
+/*	gets a pointer to a MYREAD node and prints MIPS code for read in fp,
+	returns nothing	*/
+void ASTemitRead(FILE *fp, ASTNode *p);
+
+/*	prints MIPS code for write in fp, p is a pointer to a MYWRITE node,
+	returns nothing	*/
 void ASTemitWrite(FILE *fp, ASTNode *p);
 
+/*	takes a pointer to an expression in YACC (p) and prints MIPS code that
+	sets $a0 to the value of it, returns nothing.	*/
+void ASTemitExpr(FILE *fp, ASTNode *p);
+
+/*	p is a pointer to an ID node, and prints MIPS code such that $a0 is the
+	address of where ID is in memory, returns nothing	*/
+void ASTemitIdentifier(FILE *fp, ASTNode *p);
 #endif
 

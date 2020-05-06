@@ -23,9 +23,21 @@
 
 
 struct SymbTab *first = NULL;
+static int GTEMP = 0;
+
+
+char *CreateTemp()
+{
+	char buf[MAX_TEMP_SIZE];
+	sprintf(buf, "_t%d", GTEMP++);
+
+
+	char *s = strdup(buf);
+	return s;
+}
+
 
 /* Simple Insert into the symbol table with the size, type level that the name is being inserted into */
-
 struct SymbTab * Insert(char *name, enum DATATYPE Type, int isafunc, int  level, int mysize, int offset , ASTNode * fparms, int isArray)
 
 {

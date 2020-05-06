@@ -239,11 +239,11 @@ funDec	:	typeSpec VARIABLE '(' {
 				struct SymbTab *s = Search($2, level, 0);
 				$$->sym = s;
 
-				/*	set the max offset to offset if offset is bigger	*/
+				/*	for activation record later	*/
+				s->mysize = maxoffset;
 
-				/*	TODO	*/
-				/*	set mysize = maxoffset	*/
-				/*	set value = maxoffset	*/
+				/*	reset maxoffset	*/
+				maxoffset = offset;
 				offset = goffset;
 		}
 		;
@@ -318,11 +318,13 @@ compoundStmt	: MYBEGIN {
 					$$->s1 = $3;
 					$$->s2 = $4;
 
-					Display();
+					/*	Display();*/
 					/*	reset our offset back to what it was	*/
 
-					/*	TODO: set max offset to be
-						the max of maxoffset and offset	*/
+					if (offset > maxoffset) {
+						maxoffset = offset;
+					}
+
 					offset -= Delete(level);
 					--level;
 				}
@@ -482,6 +484,12 @@ assignmentStmt	: var '=' simpleExpr ';' {
 					$$->s1 = $1;
 					$$->s2 = $3;
 
+					/*	code added as instructed for lab9	*/
+					$$->name = CreateTemp();
+					$$->sym = Insert($$->name, INTDEC, 0, level, 1, offset,
+										NULL, 0);
+					++offset;
+
 				}
 				;
 
@@ -495,7 +503,8 @@ expr	: simpleExpr {
 /* NOTE: we aren't dealing with multi dimensional arrays */
 var	: VARIABLE {
 		/*	check if this var is in the symbol table	*/
-		if (Search($1, level, 1) == NULL) {
+		struct SymbTab *s = Search($1, level, 1);
+		if (s == NULL) {
 			yyerror("ERROR: undefined variable: ");
 			yyerror($1);
 
@@ -504,6 +513,7 @@ var	: VARIABLE {
 
 		$$ = ASTcreateNode(ID);
 		$$->name = $1;
+		$$->sym = s;
 	}
 	| VARIABLE '[' expr ']' {
 		/*	check if this var is in the symbol table	*/
@@ -525,6 +535,7 @@ var	: VARIABLE {
 
 		$$ = ASTcreateNode(ID);
 		$$->name = $1;
+		$$->sym = s;
 		/*	an VARIABLE node's s1 points to its expression	*/
 		$$->s1 = $3;
 
@@ -542,6 +553,11 @@ simpleExpr	: additiveExpr {
 				$$->op = $2;
 				$$->s2 = $3;
 
+				/*	code added as instructed for lab9	*/
+				$$->name = CreateTemp();
+				$$->sym = Insert($$->name, INTDEC, 0, level, 1, offset, NULL,
+									0);
+				++offset;
 			}
 			;
 
@@ -584,6 +600,12 @@ additiveExpr	: term {
 					$$->s1 = $1;
 					$$->op = $2;
 					$$->s2 = $3;
+
+					/*	code added as instructed for lab9	*/
+					$$->name = CreateTemp();
+					$$->sym = Insert($$->name, INTDEC, 0, level, 1, offset,
+										NULL, 0);
+					++offset;
 				}
 				;
 
@@ -606,6 +628,12 @@ term	: factor {
 			$$->s1 = $1;
 			$$->op = $2;
 			$$->s2 = $3;
+
+			/*	code added as instructed for lab9	*/
+			$$->name = CreateTemp();
+			$$->sym = Insert($$->name, INTDEC, 0, level, 1, offset, NULL,
+								0);
+			++offset;
 		}
 		;
 
@@ -650,6 +678,11 @@ factor	: '(' expr ')' {
 		| NOT factor {
 			$$ = ASTcreateNode(MYNOT);
 			$$->s1 = $2;
+
+			/*	code added as instructed for lab9	*/
+			$$->name = CreateTemp();
+			$$->sym = Insert($$->name, INTDEC, 0, level, 1, offset, NULL, 0);
+			++offset;
 		}
 		;
 
@@ -745,6 +778,11 @@ args	: /* empty */ {
 /* argList -> expression { , expression } */
 argList	: expr {
 			$$ = $1;
+
+			/*	code added as instructed for lab9	*/
+			$$->name = CreateTemp();
+			$$->sym = Insert($$->name, INTDEC, 0, level, 1, offset, NULL, 0);
+			++offset;
 		}
 		| expr ',' argList {
 			ASTNode *last = ASTfollowNode($1);
@@ -753,6 +791,11 @@ argList	: expr {
 			last->next = $3;
 
 			$$ = $1;
+
+			/*	code added as instructed for lab9	*/
+			$$->name = CreateTemp();
+			$$->sym = Insert($$->name, INTDEC, 0, level, 1, offset, NULL, 0);
+			++offset;
 		}
 		;
 %%
