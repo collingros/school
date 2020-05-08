@@ -11,7 +11,7 @@
 #include "symtable.h"
 
 #define WSIZE 4	/*	num bytes in word	*/
-#define LOGWSIZE 2	/*	num shifts to get to WSIZE	*/
+#define LOG_WSIZE 2	/*	num shifts to get to WSIZE	*/
 #define MAX_LABEL_SIZE 100	/* maximum length a label name can be	*/
 
 
@@ -65,6 +65,14 @@ void ASTemitIdentifier(FILE *fp, ASTNode *p);
 /*	p is a pointer to an ASSIGN node, does assignment using $a0, returns
 	nothing	*/
 void ASTemitAssignment(FILE *fp, ASTNode *p);
+
+/*	p is a pointer to a MYIF node, prints MIPS code for If statatement,
+	returns nothing	*/
+void ASTemitIf(FILE *fp, ASTNode *p);
+
+/*	p is a pointer to a MYWHILE node, prints MIPS code for While statement,
+	returns nothing	*/
+void ASTemitWhile(FILE *fp, ASTNode *p);
 
 #endif
 

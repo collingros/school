@@ -99,6 +99,12 @@ void ASTemit(FILE *fp, ASTNode *p)
 		case ASSIGN:
 			ASTemitAssignment(fp, p);
 			break;
+		case MYIF:
+			ASTemitIf(fp, p);
+			break;
+		case MYWHILE:
+			ASTemitWhile(fp, p);
+			break;
 
 		default: printf("ASTemit Type not implemented\n");
 	}
@@ -143,6 +149,32 @@ void ASTemitAssignment(FILE *fp, ASTNode *p)
 }
 
 
+void ASTemitWhile(FILE *fp, ASTNode *p)
+{
+	char *L1, *L2;
+	L1 = genlabel();
+	L2 = genlabel();
+
+	char s[100];
+	ASTemitLine(fp, L2, "", "# begin of while statement");
+	ASTemitExpr(fp, p->s1);
+	/*	$a0 now has the expr s1 in it (the conditional)	*/
+	ASTemitLine(fp, "", "li $t0, 0", "# while conditional");
+
+	/*	jmp to end if they're both 0	*/
+	sprintf(s, "beq $a0, $t0, %s", L1);
+	ASTemitLine(fp, "", s, "# if they're both 0 we want to jump to end");
+
+	/*	emit the statement	*/
+	ASTemit(fp, p->s2);
+	/*	repeat the loop	*/
+	sprintf(s, "j %s", L2);
+	ASTemitLine(fp, "", s, "# repeat loop");
+
+	ASTemitLine(fp, L1, "", "# end of while statement");
+}
+
+
 void ASTemitIf(FILE *fp, ASTNode *p)
 {
 	char *L1, *L2;
@@ -152,24 +184,29 @@ void ASTemitIf(FILE *fp, ASTNode *p)
 	char s[100];
 	ASTemitExpr(fp, p->s1);
 	/*	$a0 now has the expr s1 in it (the conditional)	*/
-	ASTemitLine(fp, "", "ldi $t0, 0", "# set $t0 to 0");
+	ASTemitLine(fp, "", "li $t0, 0", "# begin of if statement");
 
 	/*	jmp to else if they're both 0	*/
-	sprintf(s, "breq $a0, $t0, %s", L1);
+	sprintf(s, "beq $a0, $t0, %s", L1);
 	ASTemitLine(fp, "", s, "# if they're both 0 we want to jump to else");
 
 	/*	emit the positive part of if	*/
 	ASTemit(fp, p->s2->s1);
-	sprintf(s, "jmp %s", L2);
-	ASTemitLine(fp, "", s, "# end of if statement");
+	sprintf(s, "j %s", L2);
+	ASTemitLine(fp, "", s, "# end of positive part of if statement");
 
+	ASTemitLine(fp, L1, "", "# begin negative part of if statement");
+
+	/*	emit the negative part of if	*/
+	ASTemit(fp, p->s2->s2);
+	ASTemitLine(fp, L2, "", "# end of if statement");
 }
 
 
 void ASTemitIdentifier(FILE *fp, ASTNode *p)
 {
 	char s[100];
-	/*	if ID is a scalar	*/
+	/*	ID is an array	*/
 	if (p->sym->isArray) {
 		/*	if ID is global	*/
 		if (p->sym->level == 0) {
@@ -178,25 +215,42 @@ void ASTemitIdentifier(FILE *fp, ASTNode *p)
 			ASTemitLine(fp, "", "move $a1, $a0", "# move specified index to "
 						"$a1");
 
+			/*	multiply it by 4	*/
+			sprintf(s, "sll $a1, $a1, %d", LOG_WSIZE);
+			ASTemitLine(fp, "", s, "# offset needs to be moevd by WSIZE");
+			
 			/*	load address of array into $a0	*/
 			sprintf(s, "la $a0, %s", p->name);
 			ASTemitLine(fp, "", s, "# id is a GLOBAL ARRAY");
-			sprintf(s, "add $a0, $sp, %d", p->sym->offset * WSIZE);
-			ASTemitLine(fp, "", s, "# add offset to $a0");
 
 			/*	add the two	*/
-			ASTemitLine(fp, "", "add $a0, $a0, $a1", "# add index to (array + "
-						"offset");
+			ASTemitLine(fp, "", "add $a0, $a0, $a1", "# add index (array + "
+						"offset)");
+
 			ASTemitLine(fp, "", "", "");
 		}
 		/*	ID is local	*/
 		else {
+			/*	emiexpr on s1, move $a0 $a1, ssl $a1, after the sp crap,
+				add $a1 to $a0	*/
+			ASTemitExpr(fp, p->s1);
+			ASTemitLine(fp, "", "move $a1, $a0", "# move specific index to "
+						"$a1");
+
+			/*	multiply it by 4	*/
+			sprintf(s, "sll $a1, $a1, %d", LOG_WSIZE);
+			ASTemitLine(fp, "", s, "# offset needs to be moved by WSIZE");
+
 			sprintf(s, "add $a0, $sp, %d", p->sym->offset * WSIZE);
 			ASTemitLine(fp, "", s, "# id is a LOCAL ARRAY");
+
+			ASTemitLine(fp, "", "add $a0, $a0, $a1", "# add index (array + "
+						"offset)");
+
 			ASTemitLine(fp, "", "", "");
 		}
 	}
-	/*	ID is an array	*/
+	/*	if ID is a scalar	*/
 	else {
 		/*	if ID is global	*/
 		if (p->sym->level == 0) {
@@ -320,16 +374,6 @@ void ASTemitExpr(FILE *fp, ASTNode *p)
 		case MYNOT:
 			ASTemitLine(fp, "", "sltiu $a0, $a0, 1", "# expr !");
 			break;
-		case MYLE:
-			ASTemitLine(fp, "", "slt $t0, $a0, $a1", "# expr < (<=)");
-			ASTemitLine(fp, "", "seq $t1, $a0, $a1", "# expr == (<=)");
-			ASTemitLine(fp, "", "or $a0, $t0, $t1", "# expr OR (>=)");
-			break;
-		case MYGE:
-			ASTemitLine(fp, "", "sgt $t0, $a0, $a1", "# expr > (>=)");
-			ASTemitLine(fp, "", "seq $t1, $a0, $a1", "# expr == (>=)");
-			ASTemitLine(fp, "", "or $a0, $t0, $t1", "# expr OR (>=)");
-			break;
 	}
 
 	ASTemitLine(fp, "", "", "");
@@ -381,6 +425,10 @@ void ASTemitWrite(FILE *fp, ASTNode *p)
 		ASTemitExpr(fp, p->s1);
 		ASTemitLine(fp, "", "li $v0, 1", "# printing a number");
 		ASTemitLine(fp, "", "syscall", "# system call for print number");
+
+		ASTemitLine(fp, "", "li $v0, 4", "# printing a string");
+		ASTemitLine(fp, "", "la $a0, NL", "# print newline");
+		ASTemitLine(fp, "", "syscall", "# system call for printing string");
 	}
 
 	ASTemitLine(fp, "", "", "");
