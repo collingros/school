@@ -140,6 +140,8 @@ varList	: VARIABLE {
 			$$ = ASTcreateNode(VARDEC);
 			$$->name = $1;
 
+			printf("inserting %s with offset: %d\n", $1, offset);
+
 			/*	name, type, isafunc, level, mysize, offset, fparams, isarray	*/
 			$$->sym = Insert($1, -1, 0, level, $3, offset, NULL, 1);
 
@@ -149,6 +151,7 @@ varList	: VARIABLE {
 
 			/* increment offset by the size	*/
 			offset = offset + $3;
+			printf("incrementing offset by size (%d): %d\n", $3, offset);
 		}
 		| VARIABLE ',' varList {
 			if (Search($1, level, 0) != NULL) {
@@ -213,14 +216,20 @@ funDec	:	typeSpec VARIABLE '(' {
 					exit(1);
 				}
 
+
 				/*	insert into symbol table so we know this function
 					exists while we're defining it (for recursion)	*/
 				/*	name, type, isafunc, level, mysize, offset, fparams	*/
 				Insert($2, $1, 1, level, 0, 0, NULL, 0);
 
 				goffset = offset;
-				maxoffset = 2;
-				offset = 0;
+
+				printf("pre-offset (offset & goffset): %d\n", offset);
+
+				/*	function needs to store RA and old SP	*/
+				offset = 2;
+
+				printf("pre-offset (offset) set to 2\n");
 			}
 			params {
 				/*	need to know our params in case we get a call in the
@@ -243,7 +252,7 @@ funDec	:	typeSpec VARIABLE '(' {
 				s->mysize = maxoffset;
 
 				/*	reset maxoffset	*/
-				maxoffset = offset;
+				maxoffset = 0;
 				offset = goffset;
 		}
 		;
@@ -489,7 +498,6 @@ assignmentStmt	: var '=' simpleExpr ';' {
 					$$->sym = Insert($$->name, INTDEC, 0, level, 1, offset,
 										NULL, 0);
 					++offset;
-
 				}
 				;
 
@@ -566,10 +574,10 @@ relop	: LE {
 			$$ = MYLE;
 		}
 		| '<' {
-			$$ = GT;
+			$$ = LT;
 		}
 		| '>' {
-			$$ = LT;
+			$$ = GT;
 		}
 		| GE {
 			$$ = MYGE;
@@ -676,8 +684,9 @@ factor	: '(' expr ')' {
 			$$->value = 0;
 		}
 		| NOT factor {
-			$$ = ASTcreateNode(MYNOT);
+			$$ = ASTcreateNode(EXPR);
 			$$->s1 = $2;
+			$$->op = MYNOT;
 
 			/*	code added as instructed for lab9	*/
 			$$->name = CreateTemp();

@@ -61,5 +61,10 @@ void ASTemitExpr(FILE *fp, ASTNode *p);
 /*	p is a pointer to an ID node, and prints MIPS code such that $a0 is the
 	address of where ID is in memory, returns nothing	*/
 void ASTemitIdentifier(FILE *fp, ASTNode *p);
+
+/*	p is a pointer to an ASSIGN node, does assignment using $a0, returns
+	nothing	*/
+void ASTemitAssignment(FILE *fp, ASTNode *p);
+
 #endif
 

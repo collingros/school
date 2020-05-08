@@ -26,7 +26,6 @@ enum NODETYPE {
 	MYIF,
 	MYELSE,
 	MYREAD,
-	MYNOT,
 	INTDEC
 };
 
@@ -48,7 +47,8 @@ enum OPERATOR {
 	MYEQ,
 	MYNEQ,
 	MYGE,
-	MYLE
+	MYLE,
+	MYNOT
 };
 
 typedef struct ASTNodeType {

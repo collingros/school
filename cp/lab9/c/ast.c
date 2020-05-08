@@ -128,9 +128,6 @@ int getNODETYPE(enum NODETYPE nt, char *buf)
 		case MYREAD:
 			sprintf(buf, "%s", "READ");
 			break;
-		case MYNOT:
-			sprintf(buf, "%s", "NOT");
-			break;
 		default:
 			fprintf(stderr, "ERROR: unknown datatype!\n");
 			return 1;
@@ -217,6 +214,9 @@ int getOPERATOR(enum OPERATOR op, char *buf)
 			break;
 		case MYLE:
 			sprintf(buf, "%s", "LE");
+			break;
+		case MYNOT:
+			sprintf(buf, "%s", "NOT");
 			break;
 		default:
 			fprintf(stderr, "ERROR: unknown operator type!\n");
@@ -408,14 +408,6 @@ void ASTprint(ASTNode *p, int level)
 			prettyPrint(buf, level);
 
 			/*	print the var	*/
-			ASTprint(p->s1, level + 1);
-			break;
-
-		case MYNOT:
-			sprintf(buf, "%s", nt);
-			prettyPrint(buf, level);
-
-			/*	print the assoc. factor	*/
 			ASTprint(p->s1, level + 1);
 			break;
 
