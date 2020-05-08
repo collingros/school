@@ -140,8 +140,6 @@ varList	: VARIABLE {
 			$$ = ASTcreateNode(VARDEC);
 			$$->name = $1;
 
-			printf("inserting %s with offset: %d\n", $1, offset);
-
 			/*	name, type, isafunc, level, mysize, offset, fparams, isarray	*/
 			$$->sym = Insert($1, -1, 0, level, $3, offset, NULL, 1);
 
@@ -151,7 +149,6 @@ varList	: VARIABLE {
 
 			/* increment offset by the size	*/
 			offset = offset + $3;
-			printf("incrementing offset by size (%d): %d\n", $3, offset);
 		}
 		| VARIABLE ',' varList {
 			if (Search($1, level, 0) != NULL) {
@@ -224,12 +221,8 @@ funDec	:	typeSpec VARIABLE '(' {
 
 				goffset = offset;
 
-				printf("pre-offset (offset & goffset): %d\n", offset);
-
 				/*	function needs to store RA and old SP	*/
 				offset = 2;
-
-				printf("pre-offset (offset) set to 2\n");
 			}
 			params {
 				/*	need to know our params in case we get a call in the

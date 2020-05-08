@@ -1,7 +1,7 @@
 /*	collin gros
 	04/21/2020
 
-	emit.h	*/
+	takes ASTNodes and prints their meaningful code into a file (in MIPS)	*/
 
 #ifndef __EMIT__
 #define __EMIT__

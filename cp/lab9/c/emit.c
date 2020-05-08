@@ -1,5 +1,7 @@
 /*	collin gros
-	04/21/2020	*/
+	04/21/2020
+
+	takes ASTNodes and prints their meaningful code into a file (in MIPS)	*/
 
 
 #include <string.h>
@@ -13,6 +15,10 @@ static int GLABEL = 0;	/*	global label counter	*/
 
 char *CURR_FUNCTION = NULL;
 
+
+/*	PRE: none
+	POST: a string is returned
+	strdup is used to generate the string	*/
 char *genlabel()
 {
 	char buf[MAX_LABEL_SIZE];
@@ -24,6 +30,10 @@ char *genlabel()
 }
 
 
+/*	PRE: p is a pointer to the tree
+	POST: MIPS code is printed for string section in fp
+	need to do this because all the strings must be declared at the top
+	of the MIPS code	*/
 void ASTemitStrings(FILE *fp, ASTNode *p)
 {
 	if (p == NULL) {
@@ -41,6 +51,10 @@ void ASTemitStrings(FILE *fp, ASTNode *p)
 }
 
 
+/*	PRE: p is a pointer to the tree
+	POST: prints MIPS code for globals in fp
+	all the globals need to be at the top for the MIPS code. this function
+	takes care of that.	*/
 void ASTemitGlobs(FILE *fp, ASTNode *p)
 {
 	if (p == NULL) {
@@ -59,6 +73,9 @@ void ASTemitGlobs(FILE *fp, ASTNode *p)
 }
 
 
+/*	PRE: takes the fp for MIPS, and a label, command, and comment to write
+	POST: MIPS code is printed in fp
+	this function is a helper function to print out MIPS lines	*/
 void ASTemitLine(FILE *fp, char *label, char *command, char *comment)
 {
 	if (strcmp(label, "") == 0) {
@@ -70,12 +87,18 @@ void ASTemitLine(FILE *fp, char *label, char *command, char *comment)
 }
 
 
+/*	PRE: takes the fp to the MIPS file, as well as a pointer to a node with
+			AST NODETYPES
+	POST: code is emitted into fp
+	this function is used to decide which function to call to emit MIPS code
+	for specific NODETYPES	*/
 void ASTemit(FILE *fp, ASTNode *p)
 {
 	if (p == NULL) {
 		return;
 	}
 
+	/*	for each nodetype we want to emit different things	*/
 	switch(p->Type) {
 		case VARDEC: /*	no code	*/
 			break;
@@ -113,6 +136,10 @@ void ASTemit(FILE *fp, ASTNode *p)
 }
 
 
+/*	PRE: takes pointer to a node that is a fundec
+	POST: prints MIPS code in fp for the beginning of the function
+	this function prints the label and sets up the stack pointer and return
+	address for a fundec	*/
 void ASTemitFunctionHead(FILE *fp, ASTNode *p)
 {
 	ASTemitLine(fp, p->name, "", "# start of function");
@@ -130,6 +157,9 @@ void ASTemitFunctionHead(FILE *fp, ASTNode *p)
 }
 
 
+/*	PRE: takes a pointer to an assignment node, as well as the MIPS fp
+	POST: prints MIPS code in fp for an assignment statement
+	this function assigns a value at p->sym->offset * WSIZE to $a0	*/
 void ASTemitAssignment(FILE *fp, ASTNode *p)
 {
 	char s[100];
@@ -149,6 +179,10 @@ void ASTemitAssignment(FILE *fp, ASTNode *p)
 }
 
 
+/*	PRE: takes a while node, p
+	POST: emits MIPS code for a while statement in fp
+	this function emits all code necessary for a while statement - it's
+	basically an ASTemitIf with a few changes	*/
 void ASTemitWhile(FILE *fp, ASTNode *p)
 {
 	char *L1, *L2;
@@ -175,6 +209,10 @@ void ASTemitWhile(FILE *fp, ASTNode *p)
 }
 
 
+/*	PRE: takes a pointer to a MYIF ASTNode and the file pointer for MIPS
+	POST: outputs MIPS code in fp for the if statement
+	this function emits all MIPS code for an if statement. uses jumps
+	and labels, as well as heavily relies on emitexpr and emit.	*/
 void ASTemitIf(FILE *fp, ASTNode *p)
 {
 	char *L1, *L2;
@@ -203,6 +241,10 @@ void ASTemitIf(FILE *fp, ASTNode *p)
 }
 
 
+/*	PRE: takes an ID node, p, and the pointer to the MIPS file
+	POST: loads the address of the ID into $a0
+	this is basically used to read an identifier, whether it is global
+	or local, or a scalar or an array	*/
 void ASTemitIdentifier(FILE *fp, ASTNode *p)
 {
 	char s[100];
@@ -269,6 +311,13 @@ void ASTemitIdentifier(FILE *fp, ASTNode *p)
 }
 
 
+/*	PRE: takes fp, a pointer to the MIPS file, and p, a pointer to an EXPR
+			node.
+	POST: code for MIPS is emitted for the expression in fp
+	emite MIPS for for any given expression; uses base cases and recursion
+	to go down and back up the chain of things underneath EXPR. then deals
+	with the operator and evaluates the expression, and stores it in
+	$a0	*/
 void ASTemitExpr(FILE *fp, ASTNode *p)
 {
 	char s[100];
@@ -324,7 +373,6 @@ void ASTemitExpr(FILE *fp, ASTNode *p)
 
 		/*	evaluating RHS	*/
 		ASTemitExpr(fp, p->s2);
-		printf("after s2\n");
 		ASTemitLine(fp, "", "move $a1, $a0", "# moving expr1 out of the way");
 		sprintf(s, "lw $a0, %d($sp)", p->sym->offset * WSIZE);
 		ASTemitLine(fp, "", s, "# put temp in $a0");
@@ -332,6 +380,7 @@ void ASTemitExpr(FILE *fp, ASTNode *p)
 		/*	at this point: the expr p->s1 is in $a0 and p->s2 is in $a1	*/
 	}
 
+	/*	deal with the operator to eval the expression	*/
 	switch(p->op) {
 		case PLUS:
 			ASTemitLine(fp, "", "add $a0, $a0, $a1", "# expr PLUS");
@@ -380,6 +429,13 @@ void ASTemitExpr(FILE *fp, ASTNode *p)
 }
 
 
+/*	PRE: takes a pointer to the MIPS file, fp, and a pointer to the
+			MYRETURN node
+	POST: prints the return code and restores the RA and SP in the MIPS
+			fp
+	this function emits the return statement in MIPS (if there is a return),
+	and returs the RA and SP. if the function is main, it writes MIPS to
+	stop the program.	*/
 void ASTemitFunctionReturn(FILE *fp, ASTNode *p)
 {
 	if (p != NULL) {
@@ -408,6 +464,9 @@ void ASTemitFunctionReturn(FILE *fp, ASTNode *p)
 }
 
 
+/*	PRE: takes a pointer to the MIPS file and a pointer to a MYWRITE node.
+	POST: the node is printed using MIPS code into the mips fp
+	this function emits code to print statements in MIPS.	*/
 void ASTemitWrite(FILE *fp, ASTNode *p)
 {
 	/*	if we have a string	*/
@@ -435,6 +494,10 @@ void ASTemitWrite(FILE *fp, ASTNode *p)
 }
 
 
+/*	PRE: takes a pointer to the MIPS file and a poitner to a MYREAD node
+	POST: MIPS code is printed to take user input in fp and is stored into
+			a memory location
+	this function reads in user input and stores it into $a0.	*/
 void ASTemitRead(FILE *fp, ASTNode *p)
 {
 	ASTemitIdentifier(fp, p->s1);
