@@ -1,18 +1,14 @@
 /*
 	collin gros
-	08-29-2020
-	cs-471
-	prog-1
-*/
+	08-30-2020
+	prog-1-alt
 
+	shows what happens when we
+*/
 
 #include <stdio.h>
 
 
-/*	INPUT: void
-	OUTUT: return status of main
-	PRECONDITION: program is running
-	POSTCONDITION: prints out my full name	*/
 int main()
 {
 	/*	3 bytes are needed for my name, plus the one
@@ -35,10 +31,21 @@ int main()
 				'o' * (256) +
 				's' * (256 * 256) +
 				'.' * (256 * 256 * 256);
-	/*	null character to stop printf	*/
-	nameArr[3] = 0;
+
+	/*	this way prints xxx	*/
+/*
+	nameArr[3] = 'x' +
+				'x' * (256) +
+				'x' * (256 * 256) +
+				0;
+*/
+
+	/*	this way prints nothing	*/
+	nameArr[3] = 0 +
+				'x' * (256) +
+				'x' * (256 * 256) +
+				'x' * (256 * 256 * 256);
 
 	/*	print my name!	*/
 	printf("My name is %s\n", S);
 }
-
