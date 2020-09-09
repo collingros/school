@@ -1,0 +1,12 @@
+*** mentioned possible test question in video for this day ***
+sentence has only terminals
+
+sentence derivation puts things in sentential form
+*** ***
+
+
+ambiguity is commonly found by having recursino on both sides
+
+
+name date purpose of program in all programs
+
