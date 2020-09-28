@@ -9,6 +9,18 @@
 ! and reports how long it takes to complete the gaussian elimination/subst
 ! part.
 !
+! input: size of matrix to do gauss elimination/ subst on
+! output: time it took to compute gauss eliminatino/subst
+!
+! used all of the following as references:
+! 	https://gcc.gnu.org/onlinedocs/gfortran/CPU_005fTIME.html
+! 	Shaun Cooper's code on dynamic arrays in fortran
+! 	https://labmathdu.wordpress.com/gaussian-elimination-without-pivoting/
+! 	https://en.wikibooks.org/wiki/Fortran/Fortran_simple_input_and_output
+! 	https://gcc.gnu.org/onlinedocs/gfortran/RAND.html
+! 	https://gcc.gnu.org/onlinedocs/gfortran/RANDOM_005fNUMBER.html
+! 	https://gcc.gnu.org/onlinedocs/gfortran/RANDOM_005fSEED.html
+! 
 program prog4
 	implicit none
 
