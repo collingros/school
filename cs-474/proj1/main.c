@@ -1,8 +1,12 @@
 /*
 	collin gros
+	cgros
 	10-04-2020
 	cs474
 	project1
+
+	shows what happens when you share memory across processes and what
+	strange/problematic things can happen if memory is not protected
 */
 
 #include <stdio.h>
@@ -30,6 +34,10 @@ struct shm {
 			the project description, returns nonzero for failure	*/
 int proc1(struct shm *total)
 {
+	while (total->value < 100000) {
+		total->value++;
+	}
+
 	return 0;
 }
 
@@ -40,8 +48,11 @@ int proc1(struct shm *total)
 			the project description, returns nonzero for failure	*/
 int proc2(struct shm *total)
 {
-	return 0;
+	while (total->value < 200000) {
+		total->value++;
+	}
 
+	return 0;
 }
 
 
@@ -51,6 +62,10 @@ int proc2(struct shm *total)
 			the project description, returns nonzero for failure	*/
 int proc3(struct shm *total)
 {
+	while (total->value < 300000) {
+		total->value++;
+	}
+
 	return 0;
 
 }
@@ -62,6 +77,10 @@ int proc3(struct shm *total)
 			the project description, returns nonzero for failure	*/
 int proc4(struct shm *total)
 {
+	while (total->value < 500000) {
+		total->value++;
+	}
+
 	return 0;
 }
 
@@ -136,17 +155,12 @@ int main()
 
 
 	total->value = 0;
-
-	pid_t main_pid = getpid();
-
 	/*	spawn 4 children with fork: each one executes its own instructions
 		as given in the function proc{i}()	*/
 	for (int i = 1; i < 5; ++i) {
-		printf("i: %d\tpid: %d\n", i, (int)getpid());
 		pid_t pid = fork();
 		if (pid == 0) {
 			/*	child	*/
-			printf("(child) i: %d\tpid: %d\n", i, (int)getpid());
 			int status;
 			if (status = doproc(i, total)) {
 				/*	process failed, or doproc failed	*/
@@ -156,26 +170,49 @@ int main()
 
 			return 0;
 		}
-
-		/*
-		if ((int)getpid() == (int)main_pid) {
-			/*	original parent, spawn another child next iteration
-			continue;
-		}
-
-			newly spawned parent, return because we don't care
-		return 100;
-		*/
 	}
 
-	/*	wait for all child processes to quit	*/
-	pid_t pid;
-	int status;
-	do {
-		pid = wait(&status);
-		printf("exit status of %d was %d\n", (int) pid, status);
-	} while (pid > 0);
 
+	/*	wait for all child processes to quit	*/
+
+	pid_t pid;
+	/*	return status of the process	*/
+	int status;
+	while (1) {
+		pid = wait(&status);
+		if ((int)pid < 0) {
+			/*	we've gone through all the processes and are back to
+				the original parent	*/
+			break;
+		}
+
+		/*	because i didn't save the name we have to get it by subtracting
+			child - parent	*/
+		int process_name = (int)pid - (int)getpid();
+		printf("From Process %d: Counter = %d\n", process_name,
+													total->value);
+		printf("Child with ID %d has just exited.\n", (int) pid);
+	}
+
+
+
+	/*	detach shared memory segment	*/
+
+	if (shmdt(total) == -1) {
+		/*	shmdt failed	*/
+		perror("shmdt");
+		exit(1);
+	}
+
+	/*	remove shared memory	*/
+	if (shmctl(shmid, IPC_RMID, NULL) == -1) {
+		/*	shmctl failed	*/
+		perror("shmctl");
+		exit(1);
+	}
+
+
+	printf("End of program.\n");
 	return 0;
 }
 
