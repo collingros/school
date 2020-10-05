@@ -30,7 +30,7 @@ struct shm {
 			the project description, returns nonzero for failure	*/
 int proc1(struct shm *total)
 {
-
+	return 0;
 }
 
 
@@ -40,6 +40,7 @@ int proc1(struct shm *total)
 			the project description, returns nonzero for failure	*/
 int proc2(struct shm *total)
 {
+	return 0;
 
 }
 
@@ -50,6 +51,7 @@ int proc2(struct shm *total)
 			the project description, returns nonzero for failure	*/
 int proc3(struct shm *total)
 {
+	return 0;
 
 }
 
@@ -60,7 +62,7 @@ int proc3(struct shm *total)
 			the project description, returns nonzero for failure	*/
 int proc4(struct shm *total)
 {
-
+	return 0;
 }
 
 
@@ -135,26 +137,44 @@ int main()
 
 	total->value = 0;
 
+	pid_t main_pid = getpid();
+
 	/*	spawn 4 children with fork: each one executes its own instructions
 		as given in the function proc{i}()	*/
 	for (int i = 1; i < 5; ++i) {
+		printf("i: %d\tpid: %d\n", i, (int)getpid());
 		pid_t pid = fork();
 		if (pid == 0) {
 			/*	child	*/
-			if (doproc(i, total)) {
+			printf("(child) i: %d\tpid: %d\n", i, (int)getpid());
+			int status;
+			if (status = doproc(i, total)) {
 				/*	process failed, or doproc failed	*/
 				fprintf(stderr, "doproc failed\n");
-				exit(1);
-			};
+				return status;
+			}
+
+			return 0;
 		}
+
+		/*
+		if ((int)getpid() == (int)main_pid) {
+			/*	original parent, spawn another child next iteration
+			continue;
+		}
+
+			newly spawned parent, return because we don't care
+		return 100;
+		*/
 	}
 
 	/*	wait for all child processes to quit	*/
 	pid_t pid;
 	int status;
-	while (pid = wait(&status)) {
-		printf("%d done\n", pid);
-	}
+	do {
+		pid = wait(&status);
+		printf("exit status of %d was %d\n", (int) pid, status);
+	} while (pid > 0);
 
 	return 0;
 }
