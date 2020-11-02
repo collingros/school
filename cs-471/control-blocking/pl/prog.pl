@@ -21,7 +21,7 @@
 #
 
 # filename of file to be fixed
-my $FIX_NAME = "test-1.txt";
+my $FIX_NAME = "control-char.txt";
 my $TMP_NAME = ".${FIX_NAME}.swp";
 
 
@@ -34,15 +34,32 @@ open(ffh, '<', $FIX_NAME) or die $!;
 # open tmp file for appending
 open(tfh, '>>', $TMP_NAME) or die $!;
 
-my @stuff = do { local $/ = 1; <ffh>; };
-foreach $thing (@stuff) {
-	print "beg\n";
-	print ${thing};
-	print "end\n";
+
+# read file character by character until we hit eof
+read ffh, my $c, 1;
+until (ord $c == 0) {
+	# if c is ^C then we start skipping
+	if (ord $c == 3) {
+		# skip characters up until eof or ^B
+		until (ord $c == 0 or ord $c == 2) {
+			# next character
+			read ffh, $c, 1;
+		}
+		# skip the ^B
+		read ffh, $c, 1;
+	}
+
+	# append good data to temporary file
+	print tfh $c;
+
+	# next character
+	read ffh, $c, 1;
 }
-
-
 
 
 close(ffh);
 close(tfh);
+
+# overwrite bad file with fixed file
+`mv $TMP_NAME $FIX_NAME`;
+
