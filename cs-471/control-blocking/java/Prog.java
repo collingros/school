@@ -20,7 +20,7 @@ the pattern of the corrupt data:
 			note: there may be more ^C after the initial ^C.
 */
 
-//import static java.nio.file.StandardOpenOption.*;
+import static java.nio.file.StandardOpenOption.*;
 import java.nio.file.*;
 import java.io.*;
 
@@ -28,56 +28,19 @@ import java.io.*;
 class Prog
 {
 	// file we want to fix
-	static String FILE_NAME = "test-1.txt";
+	static String FILE_NAME = "control-char.txt";
 
 	public static void main(String[] args)
 	{
 		// tmp file for writing
 		String TMP_NAME = "." + FILE_NAME + ".swp";
 
-/*
-		Path tpath = Paths.get(TMP_NAME);
-		// open tmp file for appending
-		OutputStream out;
-		try (out = new BufferedOutputStream(
-					Files.newOutputStream(tpath, CREATE, APPEND))) {
-		}
-		catch (IOException e) {
-			System.err.println(e);
-		}
-*/
-
-		// open bad file for reading
-		Path fpath = Paths.get(FILE_NAME);
-		BufferedReader reader;
 		try {
-			InputStream fin = Files.newInputStream(fpath);
-			reader = new BufferedReader(new InputStreamReader(fin));
-		}
-		catch(IOException e) {
-			System.err.println(e);
-		}
+			// open new readers/writers for reading the bad file (FILE_NAME)
+			// and writing to a tmp file to be moved later (TMP_NAME)
+			BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME));
+			BufferedWriter writer = new BufferedWriter(new FileWriter(TMP_NAME));
 
-		// read bad file char-by-char
-		for (int c = reader.read(); c != -1; c = reader.read()) {
-			// if c is ^C then we start skipping
-			if (c == 3) {
-				// skip characters up until eof or ^B
-				for (;c != -1 && c != 2; c = reader.read());
-				// skip the ^B
-				c = reader.read();
-			}
-
-			// append good data to temporary file
-			System.out.print((char) c);
-		}
-
-/*
-		// open bad file for reading
-		Path fpath = Paths.get(FILE_NAME);
-		try {
-			InputStream fin = Files.newInputStream(fpath);
-			BufferedReader reader = new BufferedReader(new InputStreamReader(fin));
 			// read bad file char-by-char
 			for (int c = reader.read(); c != -1; c = reader.read()) {
 				// if c is ^C then we start skipping
@@ -88,14 +51,22 @@ class Prog
 					c = reader.read();
 				}
 
-				// append good data to temporary file
-				System.out.print((char) c);
+				// append good data to temporary file (not actually written yet)
+				writer.write(c);
 			}
+
+			// flush the buffer so it writes
+			writer.close();
+			reader.close();
+
+			// replace bad file with good file
+			Path ffile = Paths.get(FILE_NAME);
+			Path tfile = Paths.get(TMP_NAME);
+			Files.move(tfile, ffile, StandardCopyOption.REPLACE_EXISTING);
 		}
-		catch(IOException e) {
+		catch (IOException e) {
 			System.err.println(e);
 		}
-	*/
 	}
 }
 
