@@ -11,7 +11,7 @@
 
 
 all:
-	gcc main.c -lpthread -lrt -o run
+	gcc main.c circ.h -lpthread -lrt -o run
 
 clean:
 	rm -f run
