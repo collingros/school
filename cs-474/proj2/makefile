@@ -10,8 +10,10 @@
 #		clean
 
 
-all:
-	gcc main.c circ.h -lpthread -lrt -o run
+all: circ.o
+	gcc main.c circ.o -lpthread -lrt -o run
+circ.o:
+	gcc -c circ.c
 
 clean:
 	rm -f run

@@ -18,6 +18,11 @@
 */
 
 #define _REENTRANT
+/*	size of our shared circular buffer	*/
+#define MAX_B_SIZE	15
+/*	character size is 1 byte	*/
+#define B_SZ		1
+
 #include <pthread.h>
 #include <stdio.h>
 #include <sys/types.h>
@@ -31,10 +36,6 @@
 /*	circular_buffer data structure	*/
 #include "circ.h"
 
-/*	size of our shared circular buffer	*/
-#define BUFF_SIZE	15
-/*	character size is 1 byte	*/
-#define BUFF_SZ		1
 
 
 /*	semaphore for ensuring mutual exclusion in consumer and producer	*/
@@ -45,8 +46,8 @@ sem_t fill_count;
 sem_t empty_count;
 
 /*	allocate circular buffer in data segment	*/
-circular_buffer buf;
-cb_init(&buf, BUFF_SIZE, BUFF_SZ);
+static circular_buffer buf;
+cb_init(&buf, MAX_B_SIZE, B_SZ);
 
 
 /*	producer thread:
@@ -92,13 +93,22 @@ void* producer(void* arg)
 		the screen.	*/
 void* consumer(void* arg)
 {
-	sem_wait(&mutex);
 	printf("entered consumer\n");
 
+	while (1) {
+		sem_wait(&fill_count);
+		sem_wait(&mutex);
+
+		/*	retrieve char from buffer and print it	*/
+		char c;
+		cb_pop_front(&buf, &c);
+		printf("%c", c);
+
+		sem_post(&mutex);
+		sem_post(&empty_count);
+	}
 
 	printf("exiting consumer\n");
-	sem_post(&mutex);
-
 }
 
 
@@ -111,7 +121,7 @@ int main()
 		executes first	*/
 	sem_init(&mutex, 0, 1);
 	sem_init(&fill_count, 0, 0);
-	sem_init(&empty_count, 0, BUFF_SIZE);
+	sem_init(&empty_count, 0, MAX_B_SIZE);
 
 
 	/*	create producer and consumer threads. producer runs critical
