@@ -9,9 +9,6 @@
 
 	and is used by main.c for the circular buffer.	*/
 
-#ifndef __CIRCULAR_BUFFER_INCLUDED__
-#define __CIRCULAR_BUFFER_INCLUDED__
-
 #include <string.h>
 #include <stdlib.h>
 
@@ -36,4 +33,3 @@ void cb_push_back(circular_buffer *cb, const void *item);
 void cb_pop_front(circular_buffer *cb, void *item);
 
 
-#endif

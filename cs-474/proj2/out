@@ -1,0 +1,1625 @@
+created prod thread
+created cons thread
+entered producer
+producer: beginning read
+producer: wait(empty)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+entered consumer
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing xxxxxxxxer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empxxxxxxxxxxxxxxxxst(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: wconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: aconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: iconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: tconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: (consumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: econsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: mconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: pconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+cxxxxxxxxxxxxxxxxonsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: rconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: iconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: econsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: vconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: iconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: nconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: gconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got:  consumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: cconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: hconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: aconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: rconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: 
+consumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: cconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producxxxxxxxxxxxxxxxxroducer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: tconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: (consumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: mconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: uconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: tconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: econsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: )consumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: 
+consumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: pconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: rconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: oconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: dconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: uconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: cconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: waxxxxxxxxxxxxxxxxr: wait(mutex)
+consumer: retrieving char
+consumer: got: yconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: )consumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: 
+consumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: cconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: oconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: nconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: sconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: uconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: mconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: econsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: rconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: :consumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got:  consumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: wconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: aconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+pxxxxxxxxxxxxxxxxtex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got:  consumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: pconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: oconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: sconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: tconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: (consumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: mconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: uconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: tconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: econsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: )consumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: 
+consumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: pconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning reaxxxxxxxxxxxxxxxx(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: :consumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got:  consumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: bconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: econsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: gconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: iconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: nconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: nconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: iconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: nconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: gconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got:  consumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: rconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: econsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: aconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumexxxxxxxxxxxx
+ char
+consumer: got: (consumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: mconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: uconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: tconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: econsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: )consumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: 
+consumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: cconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: oconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: nconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: sconsumer: post(mutex)
+producer: wait(mutex)
+pushing x
+producer: post(mutex)
+producer: post(fill)
+producer: beginning read
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: uconsumer: post(mutex)
+producer: wait(mutex)
+pushing 
+
+producer: post(mutex)
+producer: post(fill)
+producer: closing file
+producer: wait(empty)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: mconsumer: post(mutex)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: econsumer: post(mutex)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+consumer: post(empty)
+consumer: wait(fill)
+consumer: wait(mutex)
+consumer: retrieving char
+consumer: got: xconsumer: post(mutex)
+consumer: post(empty)
+consu

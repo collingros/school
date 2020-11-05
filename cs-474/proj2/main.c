@@ -47,7 +47,6 @@ sem_t empty_count;
 
 /*	allocate circular buffer in data segment	*/
 static circular_buffer buf;
-cb_init(&buf, MAX_B_SIZE, B_SZ);
 
 
 /*	producer thread:
@@ -65,21 +64,34 @@ void* producer(void* arg)
 
 	fp = fopen("mytest.dat", "r");
 	while (fscanf(fp, "%c", &c) != EOF) {
+		printf("producer: beginning read\n");
 		/*	inserting character into shared buffer	*/
+		printf("producer: wait(empty)\n");
 		sem_wait(&empty_count);
+		printf("producer: wait(mutex)\n");
 		sem_wait(&mutex);
-		cb_push_back(&buf, c);
+		printf("pushing %c\n", c);
+		cb_push_back(&buf, &c);
+		printf("producer: post(mutex)\n");
 		sem_post(&mutex);
+		printf("producer: post(fill)\n");
 		sem_post(&fill_count);
 	}
 
+	printf("producer: closing file\n");
 	fclose(fp);
 
 	/*	insert * into buffer as we've reached EOF	*/
+	printf("producer: wait(empty)\n");
 	sem_wait(&empty_count);
+	printf("producer: wait(mutex)\n");
 	sem_wait(&mutex);
-	cb_push_back(&buf, '*');
+	const char star = '*';
+	printf("producer: pushing *\n");
+	cb_push_back(&buf, &star);
+	printf("producer: post(mutex)\n");
 	sem_post(&mutex);
+	printf("producer: post(fill)\n");
 	sem_post(&fill_count);
 
 	printf("exiting producer\n");
@@ -96,16 +108,21 @@ void* consumer(void* arg)
 	printf("entered consumer\n");
 
 	while (1) {
+		printf("consumer: wait(fill)\n");
 		sem_wait(&fill_count);
+		printf("consumer: wait(mutex)\n");
 		sem_wait(&mutex);
 
+		printf("consumer: retrieving char\n");
 		/*	retrieve char from buffer and print it	*/
 		char c;
 		cb_pop_front(&buf, &c);
-		printf("%c", c);
+		printf("consumer: got: %c\n", c);
 
 		sem_post(&mutex);
+		printf("consumer: post(mutex)\n");
 		sem_post(&empty_count);
+		printf("consumer: post(empty)\n");
 	}
 
 	printf("exiting consumer\n");
@@ -117,6 +134,8 @@ void* consumer(void* arg)
 		both are finished tod estroy semaphores.	*/
 int main()
 {
+	cb_init(&buf, MAX_B_SIZE, B_SZ);
+
 	/*	initialize semaphore to 1 so the first created process (producer)
 		executes first	*/
 	sem_init(&mutex, 0, 1);
@@ -128,7 +147,9 @@ int main()
 		section first.	*/
 
 	pthread_t tprod, tcons;
+	printf("created prod thread\n");
 	pthread_create(&tprod, NULL, producer, NULL);
+	printf("created cons thread\n");
 	pthread_create(&tcons, NULL, consumer, NULL);
 
 	/*	wait until both are finshed	and destroy producer and consumer
