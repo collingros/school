@@ -10,6 +10,8 @@
 
 */
 import java.util.ArrayList;
+import java.util.Random;
+
 
 class Concurrency
 {
@@ -25,14 +27,14 @@ class Concurrency
 		try {
 			// take 1 input from the user (dimension of the square matrix [N])
 
-			int size = Integer.parseInt(args[0]);
 			// create the array from input
+			int size = Integer.parseInt(args[0]);
+			// create 2D NxN INTEGER matrix
 			A = new int[size][size];
 	
 
-		// create 2D NxN INTEGER matrix
-
-		// randomly assign INTEGER values to each element
+			// randomly assign INTEGER values to each element
+			
 
 		// use only double/long
 		// start timer
