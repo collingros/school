@@ -28,9 +28,9 @@ class Concurrency
 	public static int[][] A;
 
 	// stats stores statistics for each row analyzed; written to by threads
-	// each entry is an integer array in the following format:
-	// 	max, min, sum, avg
-	public static int[][] stats;
+	// each entry is an array in the following format:
+	// 	max, min, sum
+	public static float[][] stats;
 
 
 	public static void main(String[] args)
@@ -43,8 +43,8 @@ class Concurrency
 			N = Integer.parseInt(args[0]);
 			// create 2D NxN INTEGER matrix
 			A = new int[N][N];
-			// create stats matrix (N x 4)
-			stats = new int[N][4];
+			// create stats matrix (N x 3)
+			stats = new float[N][3];
 	
 
 			// randomly assign INTEGER values to each element
@@ -72,11 +72,41 @@ class Concurrency
 		}
 
 		// each thread calculates max, min, and stats for summation and avg
-		// and stores them in shared set of arrays (global variable)
+		// and stores them in shared set of arrays (stats[][])
+		// and main thread waits on all of them to finish
+		for (int i = 0; i < N; ++i) {
+			// WAITING... join to NULL when thread is done
+			arrThreads.get(i).join();
+		}
 
-		// main thread waits on all of them to finish
 
 		// calculate the overall max, min, and average
+		// (recall that) each entry is an integer array in
+		// the following format:
+		// 	max, min, sum
+		// initialize maximum to first max in matrix
+		float max = Concurrency.A[0][0];
+		// initialize minimum to first min in matrix
+		float min = Concurrency.A[0][1];
+		// initialize sum, avgs to 0
+		float sum = 0, avgs = 0;
+		for (int i = 0; i < N; ++i) {
+			if (max < stats[i][0]) {
+				max = stats[i][0];
+			}
+			if (min > stats[i][1]) {
+				min = stats[i][1];
+			}
+			sum += stats[i][2];
+			avgs += stats[i][3];
+		}
+		// calculate overall avg
+		float avg = avgs / N;
+
+		float[] totalstats = {max, min, sum, avg};
+		System.out.println("totalstats: max: "+totalstats[0]+" min: "
+							+totalstats[1]+" sum: "+totalstats[2]
+							+" avg: "+totalstats[3]);
 
 		// stop timer
 		long stopTime = System.nanoTime();

@@ -23,18 +23,18 @@ class ThreadTest implements Runnable
 	public void run()
 	{
 		// initialize maximum to first element in row
-		int max = Concurrency.A[row][0];
+		float max = Concurrency.A[row][0];
 		// initialize minimum to first element in row
-		int min = Concurrency.A[row][0];
+		float min = Concurrency.A[row][0];
 		// initialize sum to 0
-		int sum = 0;
+		float sum = 0;
 
 		// analyze row #row
 		// loop thu row; Concurrency.N = length/width of row
 		for (int i = 0; i < Concurrency.N; ++i) {
 			System.out.println("\t"+row+":\tA["+row+"]["+i+"]"
 								+ ": " + Concurrency.A[row][i]);
-			int val = Concurrency.A[row][i];
+			float val = Concurrency.A[row][i];
 			// get min, max, sum
 			if (max < val) {
 				max = val;
@@ -46,12 +46,12 @@ class ThreadTest implements Runnable
 			sum += val;
 		}
 		// calculate avg with sum and N
-		int avg = sum / Concurrency.N;
+		float avg = sum / Concurrency.N;
 
 
 		// store values in an integer array, which is then stored
 		// in the shared array Concurrency.stats
-		int [] stats = {max, min, sum, avg};
+		float [] stats = {max, min, sum, avg};
 		for (int i = 0; i < 4; ++i) {
 			System.out.println(row+":\t stats["+i+"]: "+stats[i]);
 		}
