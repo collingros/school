@@ -32,8 +32,8 @@ class ThreadTest implements Runnable
 		// analyze row #row
 		// loop thu row; Concurrency.N = length/width of row
 		for (int i = 0; i < Concurrency.N; ++i) {
-			System.out.println("\t"+row+":\tA["+row+"]["+i+"]"
-								+ ": " + Concurrency.A[row][i]);
+//			System.out.println("\t"+row+":\tA["+row+"]["+i+"]"
+//								+ ": " + Concurrency.A[row][i]);
 			float val = Concurrency.A[row][i];
 			// get min, max, sum
 			if (max < val) {
@@ -52,9 +52,9 @@ class ThreadTest implements Runnable
 		// store values in an integer array, which is then stored
 		// in the shared array Concurrency.stats
 		float [] stats = {max, min, sum, avg};
-		for (int i = 0; i < 4; ++i) {
-			System.out.println(row+":\t stats["+i+"]: "+stats[i]);
-		}
+//		for (int i = 0; i < 4; ++i) {
+//			System.out.println(row+":\t stats["+i+"]: "+stats[i]);
+//		}
 
 		try{
 		Concurrency.stats[row] = stats;

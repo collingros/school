@@ -103,21 +103,19 @@ class Concurrency
 		// calculate overall avg
 		float avg = avgs / N;
 
+		// save final results in array
 		float[] totalstats = {max, min, sum, avg};
-		System.out.println("totalstats: max: "+totalstats[0]+" min: "
-							+totalstats[1]+" sum: "+totalstats[2]
-							+" avg: "+totalstats[3]);
 
 		// stop timer
 		long stopTime = System.nanoTime();
 		long duration = stopTime - startTime;
 
-		// use only int and float for max, sum, avg.
-		// calculate the max value, min value, average of all values
-		// in matrix,
-		// the average of all of the values in the matrix, the time it
-		// took to
-		// do parts a-c
+
+		// print final results
+		System.out.println("total time(ns): " + duration);
+		System.out.println("totalstats: max: "+totalstats[0]+" min: "
+							+totalstats[1]+" sum: "+totalstats[2]
+							+" avg: "+totalstats[3]);
 		}
 		catch (Exception e) {
 			System.out.println(e.getMessage());
