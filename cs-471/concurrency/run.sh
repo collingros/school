@@ -12,3 +12,4 @@
 # to compile and run. (poor pinkies)
 
 javac Concurrency.java && java Concurrency $1
+

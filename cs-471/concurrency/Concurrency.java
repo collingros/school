@@ -8,6 +8,10 @@
 							and calculate some basic statistics while
 							measuring time.
 
+	this program calculates the max, min, sum, and avg of random int values
+	stored in a square matrix of a given size, and prints the time
+	it takes to do so (in nanoseconds).
+
 */
 import java.util.ArrayList;
 import java.util.Random;
