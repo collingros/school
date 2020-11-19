@@ -1,0 +1,13 @@
+;;   Shaun Cooper
+;;   November 2014
+;;
+;;   Example code for LISP/mzscheme which does tail recursion
+;;   while adding one to each element of a list
+
+(require trace)  ;; we turn on tracing to see how things work
+                 ;; tracing must be on before defining a function
+
+(define (addone L)
+    (if (null? L)
+          L
+          (cons (+ (car L) 1) (addone (cdr L)))))

@@ -1,0 +1,13 @@
+;;  Shaun Cooper
+;; November 2014
+;;
+;;  Example showing how to use eval with with known functions and lambda functio
+n
+
+;;
+
+;; show how to evaluate a string
+
+(eval '(+ 1 2))
+
+(eval '((lambda (X) (+ 1 X)) 5))
