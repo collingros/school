@@ -3,6 +3,29 @@
 ;; cs471
 ;; lisp
 ;;
+;; findinputvars - clean up all other stuff in a CD
+;; modified version of Shaun Cooper's code from lecture
+;;
+;; WE GET A FLATTENED UNIQ CD
+;;
+;; pre: takes a list L
+;; post: returns all input VARIABLES in L
+(define (findinputvars L)
+	(cond ((null? L) `())
+		;; if list is null return ()
+		((not (list? L)) `())
+		;; if list is an atom return ()
+		((or (eq? (car L) 1)
+			 (eq? (car L) 0)
+			 (eq? (car L) `AND)
+			 (eq? (car L) `OR)
+			 (eq? (car L) `NOT))
+			;; we want to ignore all of these so we want to examine the
+			;; rest of the list
+			(findinputvars (cdr L)))
+		(else (cons (car L) (findinputvars (cdr L))))))
+
+
 ;; uniq - extracts unique atoms from a FLATTENED list or nested lists
 ;;				---note: THE LIST MUST BE FLATTENED
 ;;
@@ -26,4 +49,8 @@
 			;;								`()
 
 
-
+;; uniq_findinputvars
+;; pre: takes a list L
+;; post: returns uniq input variables in list L
+(define (uniq_findinputvars L)
+	(findinputvars (uniq (flatten L))))
