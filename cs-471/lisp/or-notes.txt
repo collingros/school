@@ -1,0 +1,11 @@
+OR 0 0
+OR 1 0
+OR 0 1
+OR 1 1
+
+OR 0 A1
+OR A1 0
+OR 1 A1
+OR A1 1
+
+OR A1 A1

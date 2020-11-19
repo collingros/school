@@ -3,12 +3,12 @@
 ;; cs471
 ;; lisp
 ;;
-;; uniq.lsp - extracts unique atoms from a FLATTENED list or nested lists
+;; uniq - extracts unique atoms from a FLATTENED list or nested lists
 ;;				---note: THE LIST MUST BE FLATTENED
 ;;
 ;; (used some modified Shaun Cooper's code from lecture)
-;;
-
+;; pre: takes a list L
+;; post: returns uniq elements in list L
 (define (uniq L)
 	(cond	((null? L) `())
 			;; uniq of empty list is empty list
