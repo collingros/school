@@ -10,10 +10,10 @@
 #
 
 all: main.o
-	gcc main.o -o run
+	gcc main.o -lpthread -o run
 
 main.o: main.c
-	gcc -c main.c
+	gcc -c main.c -lpthread
 
 clean:
 	rm -rf run *.o
