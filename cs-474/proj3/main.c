@@ -13,8 +13,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/*	pthreads	*/
+/*	pthreads & semaphores	*/
 #include <pthread.h>
+#include <semaphore.h>
 
 /*	sleep	*/
 #include <unistd.h>
@@ -45,6 +46,15 @@ int init(char** argv, char *baboon_buf,
 /*	how long it takes for a baboon to cross (user input)	*/
 static int travel_time;
 
+/*	for controlling access to rope	*/
+sem_t rope;
+/*	for allowing 3 at once on the rope	*/
+sem_t baboons_counter;
+/*	for mutex on left side	*/
+sem_t left_mutex;
+/*	for mutex on right side	*/
+sem_t right_mutex;
+
 
 
 int main(int argc, char** argv)
@@ -57,7 +67,6 @@ int main(int argc, char** argv)
 		return 1;
 	}
 
-
 	/*	INITIALIZE VARS TO ARGUMENTS	*/
 	struct baboon_counts baboon_counts;
 	char baboon_buf[MAX_BABOONS];
@@ -66,6 +75,16 @@ int main(int argc, char** argv)
 		fprintf(stderr, "init(): ERROR: %s\n", strerror(errno));
 		return 1;
 	}
+
+
+	/*	INITIALIZE SEMAPHORES	*/
+	/*	rope is used once at a time	*/
+	sem_init(&rope, 0, 1);
+	/*	left and right honor mutual exclusion	*/
+	sem_init(&left_mutex, 0, 1);
+	sem_init(&right_mutex, 0, 1);
+	/*	3 baboons at a time	*/
+	sem_init(&baboons_counter, 0, 3);
 
 
 	/*	PREPARE FOR THREAD CREATION	*/
@@ -80,35 +99,37 @@ int main(int argc, char** argv)
 	pthread_t r_baboons[baboon_counts.right],
 				l_baboons[baboon_counts.left];
 
-
+	/*	so threads know their baboon IDs	*/
+	int id[baboon_counts.total];
+	/*	for creating the correct number of r/l threads	*/
+	int r_baboons_remaining = baboon_counts.right;
+	int l_baboons_remaining = baboon_counts.left;
 	/*	CREATE THREADS	*/
 	for (int i = 0; i < baboon_counts.total; ++i) {
+		printf("i: %d\n", i);
 		/*	FIXME preserve FIFO order	*/
 		sleep(1);
 
 		/*	create thread for baboon	*/
 		char baboon = baboon_buf[i];
+		id[i] = i;
 		if (baboon == 'R') {
-			/*	subtract 1 to avoid off-by-one error	*/
-			int next_baboon = baboon_counts.right - 1;
+			/*	decrememnt before we use so we can avoid off-by-one
+				error 	*/
+			r_baboons_remaining--;
 			/*	create the thread	*/
-			pthread_create(&r_baboons[next_baboon], NULL,
-							right, NULL);
-
-			/*	subtract 1 from the right queue as we have just
-				queued a baboon from the right	*/
-			baboon_counts.right--;
+			pthread_create(&r_baboons[r_baboons_remaining], NULL,
+							right, &id[i]);
 		}
 		if (baboon == 'L') {
+			/*	decrememnt before we use so we can avoid off-by-one
+				error 	*/
+			l_baboons_remaining--;
 			/*	subtract 1 to avoid off-by-one error	*/
 			int next_baboon = baboon_counts.left - 1;
 			/*	create the thread	*/
-			pthread_create(&l_baboons[next_baboon], NULL,
-							left, NULL);
-
-			/*	subtract 1 from the left queue as we have just
-				queued a baboon from the left	*/
-			baboon_counts.left--;
+			pthread_create(&l_baboons[l_baboons_remaining], NULL,
+							left, &id[i]);
 		}
 	}
 
@@ -116,11 +137,11 @@ int main(int argc, char** argv)
 	/*	WAIT FOR THREAD COMPLETION	*/
 	/*	[wait for ALL baboons]	*/
 	/*	wait for right baboons	*/
-	for (int i = baboon_counts.right-1; i > 0; --i) {
+	for (int i = baboon_counts.right-1; i >= 0; --i) {
 		pthread_join(r_baboons[i], NULL);
 	}
 	/*	wait for left baboons	*/
-	for (int i = baboon_counts.left-1; i > 0; --i) {
+	for (int i = baboon_counts.left-1; i >= 0; --i) {
 		pthread_join(l_baboons[i], NULL);
 	}
 
@@ -131,10 +152,20 @@ int main(int argc, char** argv)
 
 void *left(void *arg)
 {
+	int *id = arg;
+	printf("left: got baboon %d: \n", *id);
+	sem_wait(&left_mutex);
+	printf("left: baboon %d can cross!\n", *id);
+	sem_post(&left_mutex);
 }
 
 void *right(void *arg)
 {
+	int *id = arg;
+	printf("right: got baboon %d: \n", *id);
+	sem_wait(&right_mutex);
+	printf("right: baboon %d can cross!\n", *id);
+	sem_post(&right_mutex);
 }
 
 
