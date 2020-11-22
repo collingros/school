@@ -27,6 +27,11 @@
 /*	maximum total of 'R' and 'L' characters ('R's + 'L's) in the
 	given baboon file	*/
 #define MAX_BABOONS	100
+/*	time to sleep between 'next_id' checks (to minimize busy waiting
+											cpu usage)	*/
+#define NEXT_ID_SLEEP_TIME	1
+/*	time to wait inbetween baboon creations	*/
+#define BABOON_CREATION_WAIT_TIME	1
 
 
 /*	keep record of numbers of baboons	*/
@@ -43,9 +48,15 @@ int init(char** argv, char *baboon_buf,
 			struct baboon_counts *baboon_counts);
 
 
+/*	number of baboons waiting on one side of the rope; used for
+	letting multiple cross at once on one side (< 3)	*/
+static int r_wait_count = 0;
+static int l_wait_count = 0;
+/*	for preserving FIFO	*/
+static int next_id = 0;
+
 /*	how long it takes for a baboon to cross (user input)	*/
 static int travel_time;
-
 /*	for controlling access to rope	*/
 sem_t rope;
 /*	for allowing 3 at once on the rope	*/
@@ -106,9 +117,8 @@ int main(int argc, char** argv)
 	int l_baboons_remaining = baboon_counts.left;
 	/*	CREATE THREADS	*/
 	for (int i = 0; i < baboon_counts.total; ++i) {
-		printf("i: %d\n", i);
-		/*	FIXME preserve FIFO order	*/
-		sleep(1);
+		/*	print the time	*/
+		printf("%d-------------------------------------------\n", i);
 
 		/*	create thread for baboon	*/
 		char baboon = baboon_buf[i];
@@ -131,6 +141,7 @@ int main(int argc, char** argv)
 			pthread_create(&l_baboons[l_baboons_remaining], NULL,
 							left, &id[i]);
 		}
+		sleep(BABOON_CREATION_WAIT_TIME);
 	}
 
 
@@ -146,6 +157,13 @@ int main(int argc, char** argv)
 	}
 
 
+	/*	DESTROY SEMAPHORES	*/
+	sem_destroy(&rope);
+	sem_destroy(&baboons_counter);
+	sem_destroy(&left_mutex);
+	sem_destroy(&right_mutex);
+
+
 	return 0;
 }
 
@@ -153,18 +171,109 @@ int main(int argc, char** argv)
 void *left(void *arg)
 {
 	int *id = arg;
-	printf("left: got baboon %d: \n", *id);
+	/*	thread is created: a request is made.	*/
+	printf("b%d:\tl->r?\n", *id);
+
+
+	/*	if we are not the next baboon to cross, then we
+		need to wait	*/
+	while (next_id != *id) {
+		sleep(NEXT_ID_SLEEP_TIME);
+	}
+
+	/*	the first baboon on this side will activate this semaphore.	*/
 	sem_wait(&left_mutex);
-	printf("left: baboon %d can cross!\n", *id);
+
+	/*	we are the next baboon to cross, and are waiting for our turn
+		to go.	*/
+	/*	if we are the first baboon to go on our side, we are responsible
+		for checking if the rope is available. once it is available,
+		we can signal the other queued baboons to go behind us.	*/
+	if (l_wait_count == 0) {
+		sem_wait(&rope);
+	}
+	l_wait_count++;
+	next_id++;
+	sem_post(&left_mutex);
+
+	/*	after 3 are crossing in one direction,
+		we can't let any more on the rope	*/
+	sem_wait(&baboons_counter);
+
+	int num_baboons;
+	sem_getvalue(&baboons_counter, &num_baboons);
+	/*	print that we are now crossing	*/
+	printf("b%d:\tl->r!\n", *id);
+	printf("b%d:\t%d seconds until crossed over...\n", *id, travel_time);
+	printf("b%d:\tbaboons on rope: %d\n", *id, 3-num_baboons);
+
+	/*	cross the rope 	*/
+	sleep(travel_time);
+
+	/*	done crossing - print that we are finished	*/
+	printf("b%d:\t/\n", *id);
+
+	sem_post(&baboons_counter);
+
+	sem_wait(&left_mutex);
+	l_wait_count--;
+	/*	only when all the baboons are done crossing we can post the
+		rope	*/
+	if (l_wait_count == 0) {
+		sem_post(&rope);
+	}
 	sem_post(&left_mutex);
 }
 
 void *right(void *arg)
 {
 	int *id = arg;
-	printf("right: got baboon %d: \n", *id);
+	/*	thread is created: a request is made.	*/
+	printf("b%d:\tr->l?\n", *id);
+
+
+	/*	if we are not the next baboon to cross, then we
+		need to wait	*/
+	while (next_id != *id) {
+		sleep(NEXT_ID_SLEEP_TIME);
+	}
+
+	/*	the first baboon on this side will activate this semaphore.	*/
 	sem_wait(&right_mutex);
-	printf("right: baboon %d can cross!\n", *id);
+
+	/*	we are the next baboon to cross, and are waiting for our turn
+		to go.	*/
+	/*	if we are the first baboon to go on our side, we are responsible
+		for checking if the rope is available. once it is available,
+		we can signal the other queued baboons to go behind us.	*/
+	if (r_wait_count == 0) {
+		sem_wait(&rope);
+	}
+	r_wait_count++;
+	next_id++;
+	sem_post(&right_mutex);
+
+	/*	after 3 are crossing in one direction,
+		we can't let any more on the rope	*/
+	sem_wait(&baboons_counter);
+
+	int num_baboons;
+	sem_getvalue(&baboons_counter, &num_baboons);
+	printf("b%d:\tr->l!\n", *id);
+	printf("b%d:\t%d seconds until crossed over...\n", *id, travel_time);
+	printf("b%d:\tbaboons on rope: %d\n", *id, 3-num_baboons);
+	sleep(travel_time);
+	printf("b%d:\t/\n", *id);
+
+	sem_post(&baboons_counter);
+
+	sem_wait(&right_mutex);
+	r_wait_count--;
+	/*	only when all the baboons are done crossing we can post the
+		rope	*/
+	if (r_wait_count == 0) {
+		sem_post(&rope);
+	}
 	sem_post(&right_mutex);
 }
 
@@ -199,11 +308,14 @@ int init(char** argv, char *baboon_buf,
 	baboon_counts->right = 0;
 	baboon_counts->left = 0;
 
-	/*	read file	*/
+	/*	READ FILE	*/
+	printf("file input:\n");
 	for (char c = getc(file); c != EOF; c = getc(file)) {
 		/*	fill baboon_buf according to which side the baboon crosses
 			from	*/
 		if (c == 'R' || c == 'L') {
+			/*	print baboon and their id	*/
+			printf("%d:%c ", baboon_counts->total, c);
 			baboon_buf[baboon_counts->total] = c;
 			if (c == 'R') {
 				baboon_counts->right++;
@@ -214,6 +326,8 @@ int init(char** argv, char *baboon_buf,
 			baboon_counts->total++;
 		}
 	}
+	printf("\n");
+
 
 	return 0;
 }
