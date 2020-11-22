@@ -168,6 +168,20 @@ int main(int argc, char** argv)
 }
 
 
+/*	left()
+	pre:	takes the id the baboon is given
+	post:	appropriate action is taken for the baboon to cross. they
+			either wait or cross. print statements show the actions
+			the baboons take.
+
+			print statements:
+				b0:	l->r? // baboon #0 requests to cross from the left side
+				b0: l->r! // baboon #0 has begun crossing
+				b0:	4 seconds until crossed over... // b0's ETA
+				b0:	baboons on rope: 3 // number of baboons crossing from
+										// this side as well
+				b0:	/ // baboon 0 has made it to the other side.
+	return value: none	*/
 void *left(void *arg)
 {
 	int *id = arg;
@@ -225,6 +239,20 @@ void *left(void *arg)
 	sem_post(&left_mutex);
 }
 
+/*	right()
+	pre:	takes the id the baboon is given
+	post:	appropriate action is taken for the baboon to cross. they
+			either wait or cross. print statements show the actions
+			the baboons take.
+
+			print statements:
+				b0:	r->l? // baboon #0 requests to cross from the left side
+				b0: r->l! // baboon #0 has begun crossing
+				b0:	4 seconds until crossed over... // b0's ETA
+				b0:	baboons on rope: 3 // number of baboons crossing from
+										// this side as well
+				b0:	/ // baboon 0 has made it to the other side.
+	return value: none	*/
 void *right(void *arg)
 {
 	int *id = arg;
