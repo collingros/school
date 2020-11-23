@@ -8,3 +8,4 @@ branches:
 	sophomore_2:	fourth semester in college
 	junior_1:	fifth semester in college
 	junior_2:	sixth semester in college
+	senior_1:	seventh semester in college
