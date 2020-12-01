@@ -1,0 +1,10 @@
+nth(0,[H|T],H).
+nth(X,[H|T],Y) :- X1 is X-1, nth(X1,T,Y).
+
+/* find the last element of a list */
+last([H|T],X) :- last(T,X).
+last([X],X) .
+
+
+/*find the nth element of the last of a list */
+find(L,Z,X) :- last(L,X1),nth(X1,Z,X).

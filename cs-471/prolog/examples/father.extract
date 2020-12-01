@@ -1,0 +1,11 @@
+/* The following program contains a database of
+positions and employees in a company. It specifies
+the position of an employee, given the name */
+father(lloyd, shaun).
+father(shaun, john).
+father(shaun, david).
+father(david, lloyd).
+grand_father(X,Y):-
+   father(X,Z), father(Z,Y).
+
+/* find the nth element in a list */

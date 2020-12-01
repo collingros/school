@@ -1,0 +1,23 @@
+% collin gros
+% 11-30-2020
+% cs471
+% prolog.flatten
+%
+% gets a list and flattens it
+%
+% (largely based on cooper's code 11-18-2020)
+%
+
+flatten([], []).
+% if what we have is not a list at all, make it a list
+% cut (stop possible choices) at the end
+flatten(X, [X]) :- atom(X), !.
+
+% flatten head and tail into temporary values, then append them
+% for final result
+flatten([H|T], Z) :- flatten(H, T1), flatten(T, T2), myappend(T1, T2, Z).
+% equivalent to append(flatten(H), flatten(T))
+
+% append always gets 2 lists
+myappend([], L, L).
+myappend([H|T], L, [H | Z]) :- myappend(T,L,Z).

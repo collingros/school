@@ -1,0 +1,17 @@
+% collin gros
+% 11-30-2020
+% cs471
+% prolog.mytreeuniq
+%
+% takes a binary tree and provides a unique list of leaves of the tree.
+% input: X (unflattened, non-unique binary tree list)
+% output: Y (flattened, unique binary tree list representing leaves)
+%
+
+% flatten the tree and store into temporary variable T1
+mytreeuniq(X, Y) :- flatten(X, T1), myuniq(T1, Y).
+
+
+% get a unique tree list from the flattened non-unique tree list
+
+

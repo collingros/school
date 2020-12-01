@@ -1,0 +1,11 @@
+% collin gros
+% 11-30-2020
+% cs471
+% prolog.length
+%
+% this program gives us the length of a list
+%
+% (largely based on cooper's code, 11-18-2020)
+
+mylength([],0).
+mylength([_|T], N) :- mylength(T, N1), N is N1 + 1.

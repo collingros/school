@@ -1,0 +1,13 @@
+% collin gros
+% 11-30-2020
+% cs471
+% prolog.append
+%
+% program that appends two lists
+%
+% (largely based off of cooper's code 11-18-2020)
+%
+
+myappend([], L, L).
+myappend([H | T], L1, [H | L2]) :- myappend(T, L1, L2).
+
