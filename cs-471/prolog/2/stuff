@@ -1,2 +1,0 @@
-largest(X,Y,Z) :- Z is max(X,Y).
-largestplus1(X,Y,Z) :- T is max(X,Y), Z is T+1.
