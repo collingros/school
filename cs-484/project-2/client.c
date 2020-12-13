@@ -3,143 +3,99 @@ collin gros
 12-12-2020
 cs484
 project-2
+
+
+this program contains the implementaiton of the client side of my
+udp-chat program.
+
+my implementation currently only supports 1 client 1 server.
+
+view 'udp-chat.h' for further documentation on many of the functions
+that i use here.
 */
 
+/*	note: other constants declared in 'udp-chat.h'	*/
+
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <pthread.h>
+#include <signal.h>
+#include <string.h>
 
-/*	max msg length is 1KB	*/
-#define MAX_MSG_LEN	1024
-
-
-/*	encapsulates all data needed for sending/receiving for passing
-	to threads	*/
-struct connection_info {
-	int socketfd;
-	struct sockaddr_in *serv_addr;
-	int serv_addr_len;
-};
-
-
-/*	transmit function for the transmitter thread. used to send chats
-	to the server.	*/
-void *transmit(void *connection_info)
-{
-	struct connection_info *connection = (struct connection_info *)
-										connection_info;
-	int socketfd = connection->socketfd;
-	struct sockaddr_in *serv_addr = connection->serv_addr;
-	int *serv_addr_len = connection->serv_addr_len;
-	char sendbuf[MAX_MSG_LEN];
-
-	/*	wipe the buffer and get user's message	*/
-	memset(sendbuf, 0, strlen(sendbuf));
-	printf("%:");
-	fgets(sendbuf, sizeof(sendbuf), stdin);
-	printf("\n");
-
-	printf("sending...");
-	/*	send msg	*/
-	int ret = sendto(socketfd, sendbuf, strlen(buf), 0,
-						(struct sockaddr *) serv_addr,
-						*serv_addr_len);
-
-}
-
-
-void *listen(void *connection_info)
-{
-	struct connection_info *connection = (struct connection_info *)
-										connection_info;
-	int socketfd = connection->socketfd;
-	struct sockaddr_in *serv_addr = connection->serv_addr;
-	int *serv_addr_len = connection->serv_addr_len;
-	char recvbuf[MAX_MSG_LEN];
-
-		/*	listen for msg from server	*/
-		int msg_len = recvfrom(socketfd, recvbuf,
-								MAX_MSG_LEN, 0, (struct sockaddr *)
-								serv_addr, serv_addr_len);
-		/*	print the sender's ip and port, and the message	*/
-		printf("from %s:%d:\n\t%s\n", inet_ntoa(
-									serv_addr->sin_addr),
-									ntohs(serv_addr->sin_port),
-									recvbuf);
-}
-
-
+#include "udp-chat.h"
 
 int main(int argc, char **argv)
 {
-	/*	confirm we have the correct number of command-line args	*/
-	if (argc != 3) {
-		fprintf(stderr, "ERROR: not enough arguments\n"
-						"USAGE: ./client [ip] [port]\n");
+	/*	signal handler for quitting - quit when any signal is sent	*/
+	signal(SIGINT, sighandler);
+	/*	disable stdout buffering	*/
+	setbuf(stdout, NULL);
+	listener = (pid_t) 0;
+
+	/*	create our structs and prepare them for initialization	*/
+	struct arg_info *parsed_args = malloc(sizeof(struct arg_info));
+	struct net_info *netwrk_info = malloc(sizeof(struct net_info));
+	/*	THESE ARE DEFINED IN 'udp-chat.h': used with cleanup()	*/
+	parsed_args_p = parsed_args;
+	netwrk_info_p = netwrk_info;
+
+	/*	we are the server.	*/
+	parsed_args->is_server = 0;
+	netwrk_info->is_server = 0;
+
+	/*	to allow netwrk_info to reference the parsed args later	*/
+	netwrk_info->parsed_args = parsed_args;
+
+
+	/*	parse args into 'parsed_args' struct	*/
+	int ret = init_args(parsed_args, argc, argv);
+	if (ret != 0) {
+		fprintf(stderr, "[main] ERROR: init_args() failed with code %d!\n",
+				ret);
 		return 1;
 	}
-
-	/*	get the port from the given argument. abort if error.	*/
-	int port = atoi(argv[2]);
-	if (port == 0) {
-		fprintf(stderr, "ERROR: could not convert '%s' to an integer!\n",
-				argv[2]);
+	/*	initialize network structs and
+		variables into 'netwrk_info' struct	*/
+	ret = init_netw(netwrk_info, parsed_args);
+	if (ret != 0) {
+		fprintf(stderr, "[main] ERROR: init_netw() failed with code %d!\n",
+				ret);
 		return 2;
 	}
 
-	/*	ask user for name to use and set it	*/
-	printf("Enter your username: ");
-	scanf("%s", buf);
-	const char *USERNAME;
-	strcpy(USERNAME, buf);
-	printf("\nYour username has been set to: %s\n", USERNAME);
 
+	/*	start listener thread; listener defined in 'udp-chat.h'	*/
+	pthread_create(&listener, NULL, listen_task, netwrk_info);
 
-	/*	get the ip from the given argument.	*/
-	const char *SERV_IP = argv[1];
+	while (1) {
+		/*	prompt user for input, then save it to buf	*/
+		printf("$%s:", parsed_args->username);
+		char buf[MAX_MSG_LEN] = "";
+		fgets(buf, MAX_MSG_LEN, stdin);
+		/*	strip newline	*/
+		strtok(buf, "\n");
 
+		/*	add our username to the outgoing message	*/
+		/*	prepare formatted buffer, with space for username and '$:'
+			*/
+		char fbuf[MAX_MSG_LEN+22];
+		sprintf(fbuf, "$%s:%s", parsed_args->username, buf);
 
-	/*	INITIALIZING STEP	*/
-	/*	initialize everything to prepare for listening/transmission	*/
-	int socketfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-	if (socketfd < 0) {
-		fprintf(stderr, "ERROR: could not create socket!\n");
-		return 3;
+		/*	send fbuf to appropriate addr	*/
+		send_msg(netwrk_info, fbuf);
 	}
 
-	struct sockaddr_in serv_addr;
-	memset(&serv_addr, 0, sizeof(serv_addr));
 
-	int serv_addr_len = sizeof(serv_addr);
+	printf("[main] begin cleanup...\n");
+	/*	cleanup	*/
+	cleanup(parsed_args, netwrk_info, listener);
+	printf("[main] done\n");
 
-	serv_addr.sin_family = AF_INET;
-	serv_addr.sin_port = htons(port);
-
-	/*	convert from string ip to binary in serv_addr	*/
-	int ret = inet_aton(SERV_IP, &serv_addr.sin_addr);
-	if (ret == 0) {
-		fprintf(stderr, "ERROR: could not convert ip '%s' to binary!\n",
-				SERV_IP);
-		return 4;
-	}
-	/*	END INITIALIZING STEP	*/
-
-	
-
-	/*	start listener and transmitter threads	*/
-	if (pthread_create(&listener, NULL, listen, connection)) {
-		fprintf(stderr, "ERROR: failed to create listener thread!\n");
-		return 5;
-	}
-
-	if (pthread_create(&transmitter, NULL, transmit, connection)) {
-		fprintf(stderr, "ERROR: failed to create listener thread!\n");
-		return 6;
-	}
-
+	printf("[main] exiting...\n");
 	return 0;
 }
+
+
+
+
+
 

@@ -39,9 +39,29 @@ int main(int argc, char **argv)
 	parsed_args_p = parsed_args;
 	netwrk_info_p = netwrk_info;
 
-	/*	we are the server.	*/
-	parsed_args->is_server = 1;
-	netwrk_info->is_server = 1;
+
+	/*	ask user to act as the client or the server	*/
+	char c;
+	do {
+		printf("[main] Run as the server(y/n)?: ");
+		scanf("%c\n", &c);
+		/*	tell both structs who we are (client or server)	*/
+		if (c == 'y') {
+			parsed_args->is_server = 1;
+			netwrk_info->is_server = 1;
+			printf("[main] will run as the server...\n");
+		}
+		/*	tell both structs who we are (client or server)	*/
+		else if (c == 'n') {
+			parsed_args->is_server = 0;
+			netwrk_info->is_server = 0;
+			printf("[main] will run as the client...\n");
+		}
+		else {
+			printf("[main] invalid input - try again.\n");
+		}
+	} while (c != 'y' && c != 'n');
+
 
 	/*	to allow netwrk_info to reference the parsed args later	*/
 	netwrk_info->parsed_args = parsed_args;
@@ -72,8 +92,6 @@ int main(int argc, char **argv)
 		printf("$%s:", parsed_args->username);
 		char buf[MAX_MSG_LEN] = "";
 		fgets(buf, MAX_MSG_LEN, stdin);
-		/*	strip newline	*/
-		strtok(buf, "\n");
 
 		/*	add our username to the outgoing message	*/
 		/*	prepare formatted buffer, with space for username and '$:'
@@ -81,8 +99,20 @@ int main(int argc, char **argv)
 		char fbuf[MAX_MSG_LEN+22];
 		sprintf(fbuf, "$%s:%s", parsed_args->username, buf);
 
-		/*	send fbuf to appropriate addr	*/
-		send_msg(netwrk_info, fbuf);
+		/*	send buf to appropriate addr	*/
+		printf("\n[main] sending\"%s\"\n", fbuf);
+		if (netwrk_info->is_server) {
+			sendto(netwrk_info->socketfd, buf, strlen(buf), 0,
+					(struct sockaddr *) &(netwrk_info->clin_addr),
+					netwrk_info->clin_addr_len);
+		}
+		else {
+			sendto(netwrk_info->socketfd, buf, strlen(buf), 0,
+					(struct sockaddr *) &(netwrk_info->serv_addr),
+					netwrk_info->serv_addr_len);
+		}
+
+		printf("\n[main] msg sent!\n");
 	}
 
 
