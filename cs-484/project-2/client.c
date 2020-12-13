@@ -10,9 +10,67 @@ project-2
 #include <stdlib.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
+#include <pthread.h>
 
 /*	max msg length is 1KB	*/
 #define MAX_MSG_LEN	1024
+
+
+/*	encapsulates all data needed for sending/receiving for passing
+	to threads	*/
+struct connection_info {
+	int socketfd;
+	struct sockaddr_in *serv_addr;
+	int serv_addr_len;
+};
+
+
+/*	transmit function for the transmitter thread. used to send chats
+	to the server.	*/
+void *transmit(void *connection_info)
+{
+	struct connection_info *connection = (struct connection_info *)
+										connection_info;
+	int socketfd = connection->socketfd;
+	struct sockaddr_in *serv_addr = connection->serv_addr;
+	int *serv_addr_len = connection->serv_addr_len;
+	char sendbuf[MAX_MSG_LEN];
+
+	/*	wipe the buffer and get user's message	*/
+	memset(sendbuf, 0, strlen(sendbuf));
+	printf("%:");
+	fgets(sendbuf, sizeof(sendbuf), stdin);
+	printf("\n");
+
+	printf("sending...");
+	/*	send msg	*/
+	int ret = sendto(socketfd, sendbuf, strlen(buf), 0,
+						(struct sockaddr *) serv_addr,
+						*serv_addr_len);
+
+}
+
+
+void *listen(void *connection_info)
+{
+	struct connection_info *connection = (struct connection_info *)
+										connection_info;
+	int socketfd = connection->socketfd;
+	struct sockaddr_in *serv_addr = connection->serv_addr;
+	int *serv_addr_len = connection->serv_addr_len;
+	char recvbuf[MAX_MSG_LEN];
+
+		/*	listen for msg from server	*/
+		int msg_len = recvfrom(socketfd, recvbuf,
+								MAX_MSG_LEN, 0, (struct sockaddr *)
+								serv_addr, serv_addr_len);
+		/*	print the sender's ip and port, and the message	*/
+		printf("from %s:%d:\n\t%s\n", inet_ntoa(
+									serv_addr->sin_addr),
+									ntohs(serv_addr->sin_port),
+									recvbuf);
+}
+
 
 
 int main(int argc, char **argv)
@@ -70,44 +128,17 @@ int main(int argc, char **argv)
 	/*	END INITIALIZING STEP	*/
 
 	
-	char buf[MAX_MSG_LEN];
-	/*	begin listening/transmitting	*/
-	/*	start LISTENING thread	*/
-	pthread_t listen_thread;
-	if (pthread_create(&listen_thread, NULL, listen
-	/*	start TRANSMITTING thread	*/
 
-
-	while (1) {
-		/*	wipe the buffer and get user's message	*/
-		memset(buf, 0, strlen(buf));
-		printf("%s:", USERNAME);
-		fgets(buf, sizeof(buf), stdin);
-		printf("\n");
-
-		printf("sending...");
-		/*	send msg	*/
-		int ret = sendto(socketfd, buf, strlen(buf), 0,
-							(struct sockaddr *) &serv_addr,
-							serv_addr_len);
-
-		printf("sent!\n");
-
-
-		/*	retrieve msg and put it into buffer (buf)	*/
-		int msg_len = recvfrom(socketfd, buf, MAX_MSG_LEN, 0,
-								(struct sockaddr *) &client_addr,
-								&client_addr_len);
-
-		/*	print the sender's ip and port, and the message	*/
-		printf("from %s:%d:\n\t%s\n", inet_ntoa(client_addr.sin_addr),
-									ntohs(client_addr.sin_port),
-									buf);
-
-
+	/*	start listener and transmitter threads	*/
+	if (pthread_create(&listener, NULL, listen, connection)) {
+		fprintf(stderr, "ERROR: failed to create listener thread!\n");
+		return 5;
 	}
 
-
+	if (pthread_create(&transmitter, NULL, transmit, connection)) {
+		fprintf(stderr, "ERROR: failed to create listener thread!\n");
+		return 6;
+	}
 
 	return 0;
 }
