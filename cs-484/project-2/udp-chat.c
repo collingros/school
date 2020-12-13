@@ -295,22 +295,18 @@ netwrk_info, whether we are the client or the server.
 */
 void send_msg(struct net_info *netwrk_info, char *msg)
 {
-	printf("\n[send_msg] sending \"%s\"\n", msg);
 	/*	use client address as dst if we are the server	*/
 	if (netwrk_info->is_server) {
-		printf("sending from server to client.\n");
 		sendto(netwrk_info->socketfd, msg, strlen(msg), 0,
 				(struct sockaddr *) &(netwrk_info->clin_addr),
 				netwrk_info->clin_addr_len);
 	}
 	/*	use server address as dst if we are the client	*/
 	else {
-		printf("sending from client to server.\n");
 		sendto(netwrk_info->socketfd, msg, strlen(msg), 0,
 				(struct sockaddr *) &(netwrk_info->serv_addr),
 				netwrk_info->serv_addr_len);
 	}
-	printf("\n[send_msg] msg sent!\n");
 }
 
 
