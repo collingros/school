@@ -8,11 +8,11 @@
 all: server client
 
 server: server.c udp-chat.o
-	gcc -lpthread server.c udp-chat.o -o server
+	gcc -g -lpthread server.c udp-chat.o -o server
 client: client.c udp-chat.o
-	gcc -lpthread client.c udp-chat.o -o client
+	gcc -g -lpthread client.c udp-chat.o -o client
 udp-chat.o: udp-chat.c udp-chat.h
-	gcc -c udp-chat.c
+	gcc -g -c udp-chat.c
 
 clean:
 	rm -rf *.o server client

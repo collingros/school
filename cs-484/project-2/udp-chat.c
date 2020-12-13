@@ -270,6 +270,8 @@ void cleanup(struct arg_info *parsed_args, struct net_info *netwrk_info,
 	/*	if the listener already started we want to kill it	*/
 	if (listener != (pid_t) 0) {
 		printf("[cleanup] killing listen_task(), waiting...\n");
+		/*	to avoid memory leaks	*/
+		pthread_detach(listener);
 		kill(listener, 9);
 		printf("[cleanup] listen_task() killed\n");
 	}
