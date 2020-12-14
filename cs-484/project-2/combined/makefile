@@ -10,13 +10,14 @@
 # run with:
 # 	./run
 
+cc=gcc
 
 all: run
 
 run: main.c udp-chat.o
-	gcc -g -lpthread main.c udp-chat.o -o run
+	$(cc) -lpthread main.c udp-chat.o -o run
 udp-chat.o: udp-chat.c udp-chat.h
-	gcc -g -c udp-chat.c
+	$(cc) -c udp-chat.c
 
 clean:
 	rm -rf *.o run

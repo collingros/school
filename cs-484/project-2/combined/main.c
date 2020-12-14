@@ -40,16 +40,17 @@ int main(int argc, char **argv)
 	netwrk_info_p = netwrk_info;
 
 	/*	find out who we are - server or client	*/
-	int i;
+	char c;
 	do {
 		printf("Enter 1 for server and 0 for client: ");
-		scanf("%d", &i);
-		if (i == 0 || i == 1) {
-			parsed_args->is_server = i;
-			netwrk_info->is_server = i;
+		c = getchar();
+		getchar(); /*	consume newline	*/
+		if (c == '0' || c == '1') {
+			parsed_args->is_server = (int) c;
+			netwrk_info->is_server = (int) c;
 		}
 		printf("\n");
-	} while (i != 1 && i != 0);
+	} while (c != '1' && c != '0');
 
 
 	/*	to allow netwrk_info to reference the parsed args later	*/
