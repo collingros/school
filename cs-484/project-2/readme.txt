@@ -8,6 +8,10 @@ this directory contains my code for running a UDP server and client
 through the use of sockets. various sources i referenced while making this
 can be seen in the ./sources directory.
 
+the ./combined directory contains an alternative version of the code,
+which combines the server and client into one executable. this was not
+part of the original task, but it's kinda cool so HA.
+
 to compile:
 	make
 to run as the server:
