@@ -43,14 +43,16 @@ int main(int argc, char **argv)
 	char c;
 	do {
 		printf("Enter 1 for server and 0 for client: ");
-		c = getchar();
+		/*	get number and convert it	*/
+		c = getchar() - '0';
 		getchar(); /*	consume newline	*/
-		if (c == '0' || c == '1') {
+		if (c == 0 || c == 1) {
+			printf("setting to %d\n", (int) c);
 			parsed_args->is_server = (int) c;
 			netwrk_info->is_server = (int) c;
 		}
 		printf("\n");
-	} while (c != '1' && c != '0');
+	} while (c != 1 && c != 0);
 
 
 	/*	to allow netwrk_info to reference the parsed args later	*/
