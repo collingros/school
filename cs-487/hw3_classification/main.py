@@ -104,6 +104,8 @@ def get_args():
 		args.cnum = 10.0
 		args.random_state = 1
 		args.gamma = 0.10
+		if args.kernel is None:
+			args.kernel = 'linear'
 
 		# PCPN
 		args.epochs = 40

@@ -5,7 +5,9 @@ hw3
 
 
 to run my code, do
-	python3 main.py {ARGS}
+	python3 main.py [classifier name] [dataset] [ARGS]
+you can also specify to use the defaults with
+	python3 main.py [classifier name] [dataset] -defaults=1
 to see the possible argument names, do
 	python3 main.py -h
 
