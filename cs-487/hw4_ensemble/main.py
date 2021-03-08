@@ -22,6 +22,7 @@ import argparse
 
 # the implemented algorithms
 import bagging_sk
+import random_forest_sk
 
 # pandas for data handling
 import pandas
@@ -52,6 +53,9 @@ def get_args():
 	parser.add_argument('-n_estimators', help='num estimators.', type=int)
 	parser.add_argument('-max_depth', help='maximumd depth.', type=int)
 
+	# RFC specific args
+	parser.add_argument('-n_jobs', help='number of jobs(prlell)', type=int)
+
 	# defaults
 	parser.add_argument('-defaults', help='can be 1 or 0. 1 will make '
 				'all required arguments their default vals.',
@@ -60,11 +64,14 @@ def get_args():
 	args = parser.parse_args()
 
 	if args.defaults == 1:
-		# DT
+		# DT/Bagging/RFC
 		args.criterion = 'gini'
 		args.max_depth = 4
 		args.random_state = 1
 		args.n_estimators = 500
+
+		# RFC
+		args.n_jobs = 2
 
 	return args
 
@@ -169,6 +176,31 @@ if args.classifier == 'bagging':
 	end_t = time.time()
 	elapsed = end_t - begin_t
 	print('bagging:\t\t{0:.2f}%\t{1:.2f}s\n'
+		''.format(acc, elapsed))
+if args.classifier == 'random_forest':
+	# load RFC
+	rfc = random_forest_sk.skRFC(args.criterion, args.n_estimators,
+						args.random_state,
+						args.n_jobs)
+
+	# *** TRAIN RFC ***
+	begin_t = time.time()
+	# train, does NOT require feature scaling
+	rfc.fit(X_train, y_train)
+	# report time to train
+	end_t = time.time()
+	elapsed = end_t - begin_t
+	print('rfc training time: {0:.2f}s'
+		''.format(elapsed))
+
+
+	# *** TEST RFC ***
+	begin_t = time.time()
+	# predict and get accuracy from DT
+	acc = 100 * rfc.predict_score(X_test, y_test)
+	end_t = time.time()
+	elapsed = end_t - begin_t
+	print('rfc:\t\t\t{0:.2f}%\t{1:.2f}s\n'
 		''.format(acc, elapsed))
 else:
 	print('classifier \"{0}\" is not implemented! aborting...'
