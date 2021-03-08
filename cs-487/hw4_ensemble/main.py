@@ -23,6 +23,7 @@ import argparse
 # the implemented algorithms
 import bagging_sk
 import random_forest_sk
+import adaboost_sk
 
 # pandas for data handling
 import pandas
@@ -53,6 +54,9 @@ def get_args():
 	parser.add_argument('-n_estimators', help='num estimators.', type=int)
 	parser.add_argument('-max_depth', help='maximumd depth.', type=int)
 
+	# ABC specific args
+	parser.add_argument('-learning_rate', help='learning rate.', type=float)
+
 	# RFC specific args
 	parser.add_argument('-n_jobs', help='number of jobs(prlell)', type=int)
 
@@ -65,13 +69,16 @@ def get_args():
 
 	if args.defaults == 1:
 		# DT/Bagging/RFC
-		args.criterion = 'gini'
+		args.criterion = 'entropy'
 		args.max_depth = 4
 		args.random_state = 1
 		args.n_estimators = 500
 
 		# RFC
 		args.n_jobs = 2
+
+		# ADA
+		args.learning_rate = 0.1
 
 	return args
 
@@ -146,7 +153,8 @@ if args.classifier == 'bagging':
 	# load DT/Bagging
 	bag_model = bagging_sk.skBagging(args.criterion, args.max_depth,
 						args.random_state,
-						args.n_estimators)
+						args.n_estimators,
+						args.n_jobs)
 
 	# *** TRAIN DT/BAGGING ***
 	begin_t = time.time()
@@ -201,6 +209,41 @@ if args.classifier == 'random_forest':
 	end_t = time.time()
 	elapsed = end_t - begin_t
 	print('rfc:\t\t\t{0:.2f}%\t{1:.2f}s\n'
+		''.format(acc, elapsed))
+if args.classifier == 'adaboost':
+	# load DT/AdaBoost
+	ada_model = adaboost_sk.skABC(args.criterion, args.max_depth,
+					args.random_state, args.n_estimators,
+					args.learning_rate)
+
+	# *** TRAIN DT/BAGGING ***
+	begin_t = time.time()
+	# train, does NOT require feature scaling
+	ada_model.fit(X_train, y_train)
+	# report time to train
+	end_t = time.time()
+	elapsed = end_t - begin_t
+	print('dt/ada training time: {0:.2f}s'
+		''.format(elapsed))
+
+
+	# *** TEST DT ***
+	begin_t = time.time()
+	# predict and get accuracy from DT
+	acc = 100 * ada_model.predict_tree_score(X_test, y_test)
+	end_t = time.time()
+	elapsed = end_t - begin_t
+	print('dt:\t\t\t{0:.2f}%\t{1:.2f}s\n'
+		''.format(acc, elapsed))
+
+
+	# *** TEST BAGGING ***
+	# predict and get accuracy from Bagging
+	begin_t = time.time()
+	acc = 100 * ada_model.predict_ada_score(X_test, y_test)
+	end_t = time.time()
+	elapsed = end_t - begin_t
+	print('ada:\t\t\t{0:.2f}%\t{1:.2f}s\n'
 		''.format(acc, elapsed))
 else:
 	print('classifier \"{0}\" is not implemented! aborting...'

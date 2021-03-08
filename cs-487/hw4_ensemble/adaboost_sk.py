@@ -4,34 +4,34 @@
 # hw4_ensemble
 #
 #
-# bagging_sk.py
+# adaboost_sk.py
 #
-# this code uses the sk BaggingClassifier class
-# to implement a bagging ensemble algorithm, used
+# this code uses the sk AdaBoostClassifier class
+# to implement an AdaBoost ensemble algorithm, used
 # by main.py to train and test on datasets.
 #
 # NOTE: if things look weird, make your tabsize=8
 #
 
-# BaggingClassifier
-from sklearn.ensemble import BaggingClassifier as BC
+# AdaBoostClassifier
+from sklearn.ensemble import AdaBoostClassifier as ABC
 # DecisionTreeClassifier
 from sklearn.tree import DecisionTreeClassifier as DTC
 
 
-# class skBagging
+# class skABC
 #
-# the class for the BaggingClassifier from
+# the class for the AdaBoostClassifier from
 # scikit learn.
 #
 # is initialized with training data and training
 # labels with the constructor()
 #
-class skBagging:
+class skABC:
 	# DT object to use
 	tree = None
-	# BaggingClassifier object
-	bag = None
+	# AdaBoostClassifier object
+	ada = None
 
 
 	# __init__()
@@ -39,16 +39,16 @@ class skBagging:
 	# input:
 	#
 	def __init__(self, criterion_, max_depth_, random_state_,
-			n_estimators_, n_jobs_):
+			n_estimators_, learning_rate_):
 		# initialize DTC
 		self.tree = DTC(criterion=criterion_, max_depth=max_depth_,
 				random_state=random_state_)
 
-		# initialize BaggingClassifier, with
-		# n_estimators being the only adjustable value
-		self.bag = BC(base_estimator=self.tree,
+		# initialize AdaBoostClassifier, with
+		# n_estimators and learning_rate being adjustable
+		self.ada = ABC(base_estimator=self.tree,
 				n_estimators=n_estimators_,
-				n_jobs=n_jobs_,
+				learning_rate=learning_rate_,
 				random_state=random_state_)
 
 
@@ -56,13 +56,13 @@ class skBagging:
 	# input: X_train (the data from dataset), y_train (the labels)
 	# output:
 	#
-	# trains the DTC tree and BaggingClassifier on the data provided
+	# trains the DTC tree and AdaBoostClassifier on the data provided
 	#
 	def fit(self, X_train, y_train):
 		# train DTC tree
 		self.tree.fit(X_train, y_train)
-		# train BC
-		self.bag.fit(X_train, y_train)
+		# train ABC
+		self.ada.fit(X_train, y_train)
 
 
 	# predict_tree_score()
@@ -77,16 +77,16 @@ class skBagging:
 		return self.tree.score(X_test, y_test)
 
 
-	# predict_bag_score()
+	# predict_ada_score()
 	# input: X_test (the testing data from the dataset),
 	#		y_test (the testing labels from the dataset)
 	# output: the accuracy of the predictions (in percents)
 	#
-	# this function returns the accuracy of testing the bagging model
+	# this function returns the accuracy of testing the ABC model
 	# against the test data
 	#
-	def predict_bag_score(self, X_test, y_test):
-		return self.bag.score(X_test, y_test)
+	def predict_ada_score(self, X_test, y_test):
+		return self.ada.score(X_test, y_test)
 
 
 
