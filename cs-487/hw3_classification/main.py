@@ -81,8 +81,33 @@ def get_args():
 	parser.add_argument('-kernel', help='kernel. can be rbf or linear.')
 	parser.add_argument('-cnum', help='c value for svm.', type=float)
 	parser.add_argument('-gamma', help='gamma value for svm.', type=float)
+
+	# defaults
+	parser.add_argument('-defaults', help='can be 1 or 0. 1 will make '
+				'all required arguments their default vals.',
+				type=int)
 	
 	args = parser.parse_args()
+
+	if args.defaults == 1:
+		# DT
+		args.criterion = 'gini'
+		args.max_depth = 4
+		args.random_state = 1
+
+		# KNN
+		args.neighbors = 5
+		args.p = 2
+		args.metric = 'minkowski'
+
+		# SVM
+		args.cnum = 10.0
+		args.random_state = 1
+		args.gamma = 0.10
+
+		# PCPN
+		args.epochs = 40
+		args.eta = 0.1
 
 	return args
 
