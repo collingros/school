@@ -3,3 +3,4 @@
 run
 *.class
 realistic_sensor_displacement
+__pycache__
