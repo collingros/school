@@ -60,7 +60,8 @@ def get_args():
 				'in the last column. other formats are not '
 				'implemented yet.')
 	# KNN specific arguments
-	parser.add_argument('-k', help='number of neighbors to use with KNN'
+	parser.add_argument('-neighbors', help='number of neighbors to use '
+				'with KNN'
 				'. must be an integer.', type=int)
 	parser.add_argument('-p', help='p argument for scikit-learn KNN. must '
 				'be an integer.', type=int)
@@ -73,13 +74,13 @@ def get_args():
 	parser.add_argument('-random_state', help='random state.', type=int)
 
 	# DT specific arguments
-	parser.add_argument('-gini', help='gini.')
+	parser.add_argument('-criterion', help='criterion, e.g., gini.')
 	parser.add_argument('-max_depth', help='maximumd depth.', type=int)
 
 	# SVM specific arguments
 	parser.add_argument('-kernel', help='kernel. can be rbf or linear.')
-	parser.add_argument('-c', help='c value for svm.', type=float)
-	parser.add_argument('-g', help='gamma value for svm.', type=float)
+	parser.add_argument('-cnum', help='c value for svm.', type=float)
+	parser.add_argument('-gamma', help='gamma value for svm.', type=float)
 	
 	args = parser.parse_args()
 
@@ -316,7 +317,7 @@ elif args.classifier == 'knn':
 	begin_t = time.time()
 
 	# load KNN
-	knn = k_nearest_sk.skKNN(n_neighbors_=args.k, p_=args.p,
+	knn = k_nearest_sk.skKNN(n_neighbors_=args.neighbors, p_=args.p,
 					metric_=args.metric)
 	# train 
 	knn.fit(X_train_std, y_train)
@@ -355,7 +356,7 @@ elif args.classifier == 'svm':
 	# load SVM
 	svm = svm_sk.skSVM(kernel_=args.kernel,
 				random_state_=args.random_state,
-				C_=args.c)
+				C_=args.cnum, gamma_=args.gamma)
 	# train SVM 
 	svm.fit(X_train_std, y_train)
 	# predict using SVM
