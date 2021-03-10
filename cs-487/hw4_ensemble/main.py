@@ -13,6 +13,10 @@
 # all possible test cases are used for thourough
 # testing.
 #
+# additional sources (besides lecture):
+#	# reading chronic kidney dataset
+# 	https://mclguide.readthedocs.io/en/latest/sklearn/preprocessing.html
+#
 # NOTE: if things look weird, make your tabsize=8
 #
 
@@ -35,6 +39,9 @@ from sklearn.model_selection import train_test_split
 # for feature scaling
 from sklearn.preprocessing import StandardScaler
 
+# for array manipulation
+import numpy as np
+
 # for timing
 import time
 
@@ -47,7 +54,7 @@ def get_args():
 				'random_forest, adaboost')
 	parser.add_argument('dataset', help='the dataset to use. can be one '
 				'of the presets, e.g., iris, digits, '
-				'or chronickidneydisease.')
+				'or kidney.')
 	# DT/Bagging specific arguments
 	parser.add_argument('-random_state', help='random state.', type=int)
 	parser.add_argument('-criterion', help='criterion, e.g., gini.')
@@ -83,6 +90,37 @@ def get_args():
 	return args
 
 
+# print_settings()
+#
+# input: arguments
+# output: prints what arguments are passed to the classifier
+#
+def print_settings(args):
+	if args.classifier == 'bagging':
+		print('criterion:\t{0}\nmax_depth:\t{1}\nrandom_state:\t{2}\n'
+			'n_estimators:\t{3}\nn_jobs:\t{4}\n'
+			''.format(args.criterion, args.max_depth,
+					args.random_state, args.n_estimators,
+					args.n_jobs))
+	elif args.classifier == 'random_forest':
+		print('criterion:\t{0}\nrandom_state:\t{1}\n'
+			'n_estimators:\t{2}\nn_jobs:\t{3}\n'
+			''.format(args.criterion,
+					args.random_state, args.n_estimators,
+					args.n_jobs))
+	elif args.classifier == 'adaboost':
+		print('criterion:\t{0}\nmax_depth:\t{1}\nrandom_state:\t{2}\n'
+			'n_estimators:\t{3}\nlearning_rate:\t{4}\n'
+			''.format(args.criterion, args.max_depth,
+					args.random_state, args.n_estimators,
+					args.learning_rate))
+	else:
+		print('cannot print settings for classifier \'{0}\', as it'
+			' has not been implemented yet.\n'
+			''.format(args.classifier))
+		exit()
+
+
 # prepare_data()
 #
 # input:
@@ -108,25 +146,46 @@ def prepare_data(dataset=''):
 		# transform from 8x8 to feature vector of length 64
 		X = digits.images.reshape((len(digits.images), -1))
 		y = digits.target
+	elif dataset == 'kidney':
+		fpath = 'Chronic_Kidney_Disease/chronic_kidney_disease.arff'
+		header = [
+				'age','bp','sg','al','su','rbc','pc','pcc',
+				'ba','bgr','bu','sc','sod','pot','hemo','pcv',
+				'wbcc','rbcc','htn','dm','cad','appet','pe',
+				'ane','class'
+				]
+		kidney = pandas.read_csv(fpath, header=None, names=header,
+						comment='@')
+		# throw away '?'
+		kidney.replace('?',  np.nan, inplace=True)
+		kidney = kidney.dropna(axis=0, how='any')
+
+		# replace all nominal values with 1 or -1
+		kidney.replace('yes',  1, inplace=True)
+		kidney.replace('no',  -1, inplace=True)
+		kidney.replace('good',  1, inplace=True)
+		kidney.replace('poor',  -1, inplace=True)
+		kidney.replace('normal',  1, inplace=True)
+		kidney.replace('abnormal',  -1, inplace=True)
+		kidney.replace('present',  1, inplace=True)
+		kidney.replace('notpresent',  -1, inplace=True)
+
+		X = kidney.iloc[:, :-1]
+		# flatten
+		y = kidney.iloc[:, -1].values.ravel()
+
+		# convert all nominal values to 1 or -1
+		y = np.where(y == 'ckd', 1, -1)
+	else:
+		print('ERROR: this implementation does not allow custom'
+			' datasets. please use one of the implemented ones,'
+			' listed in \'python3 main.py -h\'  under'
+			' datasets.')
+		exit()
+		
 
 	return X, y
 
-
-# do_feature_scaling()
-#
-# preforms feature scaling on training/testing data and returns them
-#
-# input: training data, testing daya
-# output: training data feature scaled, testing data feature scaled
-#
-def do_feature_scaling(X_train, X_test):
-	# perform feature scaling on train and testing sets
-	sc = StandardScaler()
-	sc.fit(X_train)
-	X_train_std = sc.transform(X_train)
-	X_test_std = sc.transform(X_test)
-
-	return X_train_std, X_test_std
 
 
 # get our command-line arguments.
@@ -143,10 +202,8 @@ X, y = prepare_data(dataset=args.dataset)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3,
 							random_state=1,
 							stratify=y)
-
-# perform feature scaling
-X_train_std, X_test_std = do_feature_scaling(X_train, X_test)
-
+# print the settings used for the classifier
+print_settings(args)
 
 # use the correct classifier based on args
 if args.classifier == 'bagging':
@@ -185,7 +242,7 @@ if args.classifier == 'bagging':
 	elapsed = end_t - begin_t
 	print('bagging:\t\t{0:.2f}%\t{1:.2f}s\n'
 		''.format(acc, elapsed))
-if args.classifier == 'random_forest':
+elif args.classifier == 'random_forest':
 	# load RFC
 	rfc = random_forest_sk.skRFC(args.criterion, args.n_estimators,
 						args.random_state,
@@ -210,7 +267,7 @@ if args.classifier == 'random_forest':
 	elapsed = end_t - begin_t
 	print('rfc:\t\t\t{0:.2f}%\t{1:.2f}s\n'
 		''.format(acc, elapsed))
-if args.classifier == 'adaboost':
+elif args.classifier == 'adaboost':
 	# load DT/AdaBoost
 	ada_model = adaboost_sk.skABC(args.criterion, args.max_depth,
 					args.random_state, args.n_estimators,
