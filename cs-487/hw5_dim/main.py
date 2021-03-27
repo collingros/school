@@ -11,7 +11,9 @@ import sys
 import argparse
 
 # the implemented algorithms
-import dec_tree_sk
+import mypca
+import mylda
+import mykpca
 
 # using small datasets (iris)
 from sklearn import datasets
@@ -39,6 +41,11 @@ def get_args():
 	parser.add_argument('-max_depth', help='maximumd depth.', type=int)
 	parser.add_argument('-random_state', help='random state.', type=int)
 
+	# PCA/LDA/KPCA
+	parser.add_argument('-n_components', help='num components to use with '
+							'PCA/LDA/KPCA',
+						type=int)
+
 	# defaults
 	parser.add_argument('-defaults', help='can be 1 or 0. 1 will make '
 				'all required arguments their default vals.',
@@ -46,11 +53,14 @@ def get_args():
 	
 	args = parser.parse_args()
 
+	# set defaults if desired (usually for testing)
 	if args.defaults == 1:
 		# DT
 		args.criterion = 'gini'
 		args.max_depth = 4
 		args.random_state = 1
+		# PCA/LDA/KPCA
+		args.n_components = 2
 
 	return args
 
@@ -119,13 +129,23 @@ def do_feature_scaling(X_train, X_test):
 def print_settings(args):
 	if args.dimreduc == 'pca':
 		print('criterion:\t{0}\nmax_depth:\t{1}\nrandom_state:\t{2}\n'
+			'n_components:\t{3}\n'
 			''.format(args.criterion, args.max_depth,
-					args.random_state))
+					args.random_state, args.n_components))
+	if args.dimreduc == 'lda':
+		print('criterion:\t{0}\nmax_depth:\t{1}\nrandom_state:\t{2}\n'
+			'n_components:\t{3}\n'
+			''.format(args.criterion, args.max_depth,
+					args.random_state, args.n_components))
+	if args.dimreduc == 'kpca':
+		print('criterion:\t{0}\nmax_depth:\t{1}\nrandom_state:\t{2}\n'
+			'n_components:\t{3}\n'
+			''.format(args.criterion, args.max_depth,
+					args.random_state, args.n_components))
 	else:
 		print('cannot print settings for classifier \'{0}\', as it'
 			' has not been implemented yet.\n'
 			''.format(args.dimreduc))
-		exit()
 
 
 # get our command-line arguments.
@@ -145,10 +165,82 @@ print_settings(args)
 # start training/testing and use correct dimreduc
 if args.dimreduc == 'pca':
 	# load PCA
-	pca_model = mypca.skPCA(args.
+	pca_model = mypca.skPCA(criterion_=args.criterion,
+				max_depth_=args.max_depth,
+				random_state_=args.random_state,
+				n_components_=args.n_components)
 
+	# *** TRAIN ***
+	begin_t = time.time()
+	pca_model.fit(X_train_std, y_train)
+	end_t = time.time()
+	elapsed = end_t - begin_t
+	print('pca training time: {0:.2f}s'
+		''.format(elapsed))
 
+	# *** TEST ***
+	# transform test data
+	X_test_pca = pca_model.transform_test(X_test_std)
+	begin_t = time.time()
+	# actually test and get result
+	y_pred = pca_model.predict(X_test_pca)
+	acc = 100 * pca_model.score(y_pred, y_test)
+	end_t = time.time()
+	elapsed = end_t - begin_t
+	print('pca:\t\t\t{0:.2f}%\t{1:.2f}s\n'
+		''.format(acc, elapsed))
+elif args.dimreduc == 'lda':
+	# load LDA
+	lda_model = mylda.skLDA(criterion_=args.criterion,
+				max_depth_=args.max_depth,
+				random_state_=args.random_state,
+				n_components_=args.n_components)
 
+	# *** TRAIN ***
+	begin_t = time.time()
+	lda_model.fit(X_train_std, y_train)
+	end_t = time.time()
+	elapsed = end_t - begin_t
+	print('lda training time: {0:.2f}s'
+		''.format(elapsed))
+
+	# *** TEST ***
+	# transform test data
+	X_test_lda = lda_model.transform_test(X_test_std)
+	begin_t = time.time()
+	# actually test and get result
+	y_pred = lda_model.predict(X_test_lda)
+	acc = 100 * lda_model.score(y_pred, y_test)
+	end_t = time.time()
+	elapsed = end_t - begin_t
+	print('lda:\t\t\t{0:.2f}%\t{1:.2f}s\n'
+		''.format(acc, elapsed))
+if args.dimreduc == 'kpca':
+	# load KPCA
+	kpca_model = mykpca.skKPCA(criterion_=args.criterion,
+				max_depth_=args.max_depth,
+				random_state_=args.random_state,
+				n_components_=args.n_components)
+
+	# *** TRAIN ***
+	begin_t = time.time()
+	kpca_model.fit(X_train_std, y_train)
+	end_t = time.time()
+	elapsed = end_t - begin_t
+	print('kpca training time: {0:.2f}s'
+		''.format(elapsed))
+
+	# *** TEST ***
+	# transform test data
+	X_test_kpca = kpca_model.transform_test(X_test_std)
+	begin_t = time.time()
+	# actually test and get result
+	y_pred = kpca_model.predict(X_test_kpca)
+	acc = 100 * kpca_model.score(y_pred, y_test)
+	end_t = time.time()
+	elapsed = end_t - begin_t
+	print('kpca:\t\t\t{0:.2f}%\t{1:.2f}s\n'
+		''.format(acc, elapsed))
 
 
 

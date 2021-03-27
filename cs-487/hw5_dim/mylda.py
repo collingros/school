@@ -4,15 +4,15 @@
 # hw5
 #
 #
-# mypca.py
+# mylda.py
 #
-# this file contains the code for the PCA dimension reduction technique.
+# this file contains the code for the LDA dimension reduction technique.
 #
 # NOTE: if things look weird, make your tabsize=8
 #
 
-# PCA
-from sklearn.decomposition import PCA
+# LDA
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 # my decision tree wrapper
 import dec_tree_sk
 
@@ -20,16 +20,16 @@ import dec_tree_sk
 from sklearn.metrics import accuracy_score
 
 
-# class skPCA
+# class skLDA
 #
-# the class for the PCA dimreduc from
+# the class for the LDA dimreduc from
 # scikit learn.
 #
 # is initialized with training data and training labels
 # with the constructor()
 #
-class skPCA:
-	# the PCA object to use from scikit
+class skLDA:
+	# the LDA object to use from scikit
 	model = None
 	# the DT object to use
 	tree_model = None
@@ -43,7 +43,7 @@ class skPCA:
 	#
 	def __init__(self, criterion_='gini', max_depth_=4,
 			random_state_=1, n_components_=2):
-		self.model = PCA(n_components=n_components_)
+		self.model = LDA(n_components=n_components_)
 		self.tree_model = dec_tree_sk.skDT(criterion_, max_depth_,
 							random_state_)
 
@@ -57,18 +57,18 @@ class skPCA:
 	#
 	def fit(self, X_train, y_train):
 		# get transformed train data
-		X_train_pca = self.model.fit_transform(X_train)
+		X_train_lda = self.model.fit_transform(X_train, y_train)
 		# use it to train DT
-		self.tree_model.fit(X_train_pca, y_train)
+		self.tree_model.fit(X_train_lda, y_train)
 
 
 	# predict()
 	#
-	# input: the pca test data
+	# input: the lda test data
 	# output: the predicted labels
 	#
-	def predict(self, X_test_pca):
-		return self.tree_model.predict(X_test_pca)
+	def predict(self, X_test_lda):
+		return self.tree_model.predict(X_test_lda)
 
 
 	# score()
@@ -92,7 +92,7 @@ class skPCA:
 	# transform_test()
 	#
 	# input: X_test_std (the feature scaled version of test data)
-	# output: X_test_pca (pca.transform of that data)
+	# output: X_test_lda (lda.transform of that data)
 	#
 	def transform_test(self, X_test_std):
 		return self.model.transform(X_test_std)

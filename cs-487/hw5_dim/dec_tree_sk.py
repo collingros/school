@@ -65,6 +65,15 @@ class skDT:
 		return self.tree_model.score(X_test, y_test)
 
 
+	# predict()
+	#
+	# input: the test data
+	# output: the predicted labels
+	#
+	def predict(self, X_test):
+		return self.tree_model.predict(X_test)
+
+
 
 
 
