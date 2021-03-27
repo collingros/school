@@ -46,6 +46,12 @@ def get_args():
 							'PCA/LDA/KPCA',
 						type=int)
 
+	# test mode: changes the way output is displayed to be script-friendly
+	parser.add_argument('-t', help='test mode: changes the way output '
+					'is displayed to be script-friendly. '
+					'0 is default, 1 to turn on',
+				type=int)
+
 	# defaults
 	parser.add_argument('-defaults', help='can be 1 or 0. 1 will make '
 				'all required arguments their default vals.',
@@ -132,12 +138,12 @@ def print_settings(args):
 			'n_components:\t{3}\n'
 			''.format(args.criterion, args.max_depth,
 					args.random_state, args.n_components))
-	if args.dimreduc == 'lda':
+	elif args.dimreduc == 'lda':
 		print('criterion:\t{0}\nmax_depth:\t{1}\nrandom_state:\t{2}\n'
 			'n_components:\t{3}\n'
 			''.format(args.criterion, args.max_depth,
 					args.random_state, args.n_components))
-	if args.dimreduc == 'kpca':
+	elif args.dimreduc == 'kpca':
 		print('criterion:\t{0}\nmax_depth:\t{1}\nrandom_state:\t{2}\n'
 			'n_components:\t{3}\n'
 			''.format(args.criterion, args.max_depth,
@@ -146,6 +152,18 @@ def print_settings(args):
 		print('cannot print settings for classifier \'{0}\', as it'
 			' has not been implemented yet.\n'
 			''.format(args.dimreduc))
+
+
+# store_results()
+#
+# input: the results dict to store results in, time it took to train,
+# 	time it took to test, accuracy
+# output: the times and accuracy are stored in the results dict
+#
+def store_results(results, train_t, test_t, acc):
+	results['train_t'] = train_t
+	results['test_t'] = test_t
+	results['acc'] = acc
 
 
 # get our command-line arguments.
@@ -158,10 +176,20 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3,
 							stratify=y)
 # perform feature scaling
 X_train_std, X_test_std = do_feature_scaling(X_train, X_test)
-# print settings
-print_settings(args)
+
+# if script mode isn't enabled, then print settings
+if args.t != 1:
+	# print settings
+	print_settings(args)
 
 
+# results dict contains accuracy, and time values
+# for train time, test time, and accuracy
+results = {
+	'train_t':-1,
+	'test_t':-1,
+	'acc': -1
+}
 # start training/testing and use correct dimreduc
 if args.dimreduc == 'pca':
 	# load PCA
@@ -174,9 +202,12 @@ if args.dimreduc == 'pca':
 	begin_t = time.time()
 	pca_model.fit(X_train_std, y_train)
 	end_t = time.time()
-	elapsed = end_t - begin_t
-	print('pca training time: {0:.2f}s'
-		''.format(elapsed))
+	train_t = end_t - begin_t
+
+	# print if script mode is off
+	if args.t != 1:
+		print('pca training time: {0:.2f}s'
+			''.format(train_t))
 
 	# *** TEST ***
 	# transform test data
@@ -186,9 +217,14 @@ if args.dimreduc == 'pca':
 	y_pred = pca_model.predict(X_test_pca)
 	acc = 100 * pca_model.score(y_pred, y_test)
 	end_t = time.time()
-	elapsed = end_t - begin_t
-	print('pca:\t\t\t{0:.2f}%\t{1:.2f}s\n'
-		''.format(acc, elapsed))
+	test_t = end_t - begin_t
+
+	# print if script mode is off
+	if args.t != 1:
+		print('pca:\t\t\t{0:.2f}%\t{1:.2f}s\n'
+			''.format(acc, test_t))
+
+	store_results(results, train_t, test_t, acc)
 elif args.dimreduc == 'lda':
 	# load LDA
 	lda_model = mylda.skLDA(criterion_=args.criterion,
@@ -200,9 +236,12 @@ elif args.dimreduc == 'lda':
 	begin_t = time.time()
 	lda_model.fit(X_train_std, y_train)
 	end_t = time.time()
-	elapsed = end_t - begin_t
-	print('lda training time: {0:.2f}s'
-		''.format(elapsed))
+	train_t = end_t - begin_t
+
+	# print if script mode is off
+	if args.t != 1:
+		print('lda training time: {0:.2f}s'
+			''.format(train_t))
 
 	# *** TEST ***
 	# transform test data
@@ -212,9 +251,14 @@ elif args.dimreduc == 'lda':
 	y_pred = lda_model.predict(X_test_lda)
 	acc = 100 * lda_model.score(y_pred, y_test)
 	end_t = time.time()
-	elapsed = end_t - begin_t
-	print('lda:\t\t\t{0:.2f}%\t{1:.2f}s\n'
-		''.format(acc, elapsed))
+	test_t = end_t - begin_t
+
+	# print if script mode is off
+	if args.t != 1:
+		print('lda:\t\t\t{0:.2f}%\t{1:.2f}s\n'
+			''.format(acc, test_t))
+
+	store_results(results, train_t, test_t, acc)
 if args.dimreduc == 'kpca':
 	# load KPCA
 	kpca_model = mykpca.skKPCA(criterion_=args.criterion,
@@ -226,9 +270,12 @@ if args.dimreduc == 'kpca':
 	begin_t = time.time()
 	kpca_model.fit(X_train_std, y_train)
 	end_t = time.time()
-	elapsed = end_t - begin_t
-	print('kpca training time: {0:.2f}s'
-		''.format(elapsed))
+	train_t = end_t - begin_t
+
+	# print if script mode is off
+	if args.t != 1:
+		print('kpca training time: {0:.2f}s'
+			''.format(train_t))
 
 	# *** TEST ***
 	# transform test data
@@ -238,10 +285,21 @@ if args.dimreduc == 'kpca':
 	y_pred = kpca_model.predict(X_test_kpca)
 	acc = 100 * kpca_model.score(y_pred, y_test)
 	end_t = time.time()
-	elapsed = end_t - begin_t
-	print('kpca:\t\t\t{0:.2f}%\t{1:.2f}s\n'
-		''.format(acc, elapsed))
+	test_t = end_t - begin_t
 
+	# print if script mode is off
+	if args.t != 1:
+		print('kpca:\t\t\t{0:.2f}%\t{1:.2f}s\n'
+			''.format(acc, test_t))
+
+	store_results(results, train_t, test_t, acc)
+
+
+# print if script mode is on
+if args.t == 1:
+	# print results for script friendliness
+	for key, value in results.items():
+		print(value)
 
 
 
