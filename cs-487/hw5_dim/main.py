@@ -92,7 +92,6 @@ def prepare_data(dataset=''):
 		# petal width features
 		X = iris.data[:, [2, 3]]
 		y = iris.target
-
 	elif dataset == 'digits':
 		digits = datasets.load_digits()
 		# transform from 8x8 to feature vector of length 64
@@ -170,10 +169,25 @@ def store_results(results, train_t, test_t, acc):
 args = get_args()
 # extract data into X (data) and y (labels) from the given dataset
 X, y = prepare_data(dataset=args.dataset)
+
+
 # split newly aquired X and y into seperate datasets for training and testing
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3,
+X_train = None
+X_test = None
+y_train = None
+y_test = None
+# if dataset is mnist, we want to make it smaller since it is so big
+if args.dataset != 'mnist':
+	X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3,
+								random_state=1,
+								stratify=y)
+else:
+	X_train, X_test, y_train, y_test = train_test_split(X, y,
+							train_size=5000,
+							test_size=10000,
 							random_state=1,
 							stratify=y)
+	
 # perform feature scaling
 X_train_std, X_test_std = do_feature_scaling(X_train, X_test)
 
@@ -299,7 +313,7 @@ if args.dimreduc == 'kpca':
 if args.t == 1:
 	# print results for script friendliness
 	for key, value in results.items():
-		print(value)
+		print(value, end='\t')
 
 
 
