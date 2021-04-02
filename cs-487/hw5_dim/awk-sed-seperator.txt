@@ -1,1 +1,0 @@
-cat mnist.txt | awk -vORS=, '{print $2}' | sed 's/,$/\n/'
