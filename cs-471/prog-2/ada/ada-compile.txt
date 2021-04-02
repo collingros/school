@@ -1,1 +1,0 @@
-gcc -c main.adb; gnatmake --GNATBIND=gnatbind --GNATLINK=gnatlink main

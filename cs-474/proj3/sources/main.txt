@@ -1,1 +1,0 @@
-https://stackoverflow.com/questions/33853480/segfault-when-using-pthreads
