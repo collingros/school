@@ -24,6 +24,10 @@ from sklearn.preprocessing import StandardScaler
 # for timing
 import time
 
+# for handling dataset
+import pandas
+import numpy as np
+
 
 # filepaths for datasets
 HOUSE_CSV = './house/house.csv'
@@ -74,6 +78,9 @@ def get_args():
 		# Ridge/Lasso
 		args.alpha = 1.0
 
+		# disable script-friendly output
+		args.t = 0
+
 	return args
 
 
@@ -91,17 +98,36 @@ def prepare_data(dataset=''):
 	# handle specific datasets
 	if dataset == 'house':
 		df = pandas.read_csv(HOUSE_CSV)
-		print(df.shape)
+		# convert dates to integers
+		df['date'] = pandas.to_datetime(df['date']).astype(int)
+
+		# get everything except prices as data
+		X = df.iloc[:, np.arange(0, 2).tolist() +
+				np.arange(3, df.shape[1]).tolist()]
+		#X = df.iloc[:, 3:]
+
+		# get prices as our target
+		y = df.iloc[:, 2]
+		# turn into 2D array from 1D
+		y = y.values.reshape(-1, 1)
 	elif dataset == 'cali':
 		df = pandas.read_csv(CALI_CSV)
-		print(df.shape)
+		# convert dates to integers
+		df['TIMESTAMP'] = df['TIMESTAMP'].astype(int)
+
+		# get everything except wind power generation as data
+		X = df.iloc[:, 0:-1]
+		#X = df.iloc[:, 3:]
+
+		# get prices as our target
+		y = df.iloc[:, -1]
+		# turn into 2D array from 1D
+		y = y.values.reshape(-1, 1)
 	else:
 		print('ERROR: no implemented dataset specified. you must '
 			'specify an implemented dataset (e.g., house, cali)!')
 		exit()
 
-	#XXX
-	exit()
 
 	return X, y
 
@@ -151,42 +177,63 @@ def print_settings(args):
 # 	time it took to test, mean squared error, r2 score
 # output: the results are stored in the results dict
 #
-def store_results(results, train_t, test_t, mse, r2):
+def store_results(results, train_t, test_t, mse_train, mse_test, r2_train,
+			r2_test):
 	results['train_t'] = train_t
 	results['test_t'] = test_t
-	results['mse'] = mse
-	results['r2'] = r2
+	results['mse_train'] = mse_train
+	results['mse_test'] = mse_test
+	results['r2_train'] = r2_train
+	results['r2_test'] = r2_test
+
+
+# print_results()
+#
+# input: results dict, script mode (args.t)
+# output: prints the results dict to the screen either in script-friendly mode
+#	or human-readable mode
+#
+def print_results(results, script_mode=0):
+	# print if script mode is on (==1)
+	if script_mode:
+		# print results for script friendliness
+		for key, value in results.items():
+			print(value, end='\t')
+	else:
+		print('results:')
+		for key, value in results.items():
+			print('\t{0}:\t{1}'.format(key, value))
+		
 
 
 # test_method()
 #
-# input: arguments, the name of method, results dict, X (data), y (target)
+# input: arguments, results dict, X (data), y (target)
 # output: stores statistic results in results
 #
-def test_method(args, method_name, results, X, y):
+def test_method(args, results, X, y):
 	# initialize the method to correct one given the name
 	method = None
-	if method_name == 'linear':
+	if args.method == 'linear':
 		method = mylinear.skLR()
-	elif method_name == 'ransac':
+	elif args.method == 'ransac':
 		method = myransac.skRANSAC(max_trials_=args.max_trials,
 				min_samples_=args.min_samples, loss_=args.loss,
 				residual_threshold_=args.residual_threshold,
 				random_state_=args.random_state)
-	elif method_name == 'ridge':
+	elif args.method == 'ridge':
 		method = myridge.skRidge(alpha_=args.alpha)
-	elif method_name == 'lasso':
+	elif args.method == 'lasso':
 		method = mylasso.skLasso(alpha_=args.alpha)
 	else:
 		print('ERROR: method \'{0}\' not implemented yet.'
-			''.format(method_name))
+			''.format(args.method))
 		exit()
 
 	# *** DATA PREPROCESSING ***
 	# split newly aquired X and y into seperate datasets for training and testing
 	X_train, X_test, y_train, y_test = train_test_split(X, y,
-						test_size=0.3, random_state=1,
-						stratify=y)
+						test_size=0.3, random_state=1)
 	# perform feature scaling
 	X_train_std = do_feature_scaling(X_train)
 	X_test_std = do_feature_scaling(X_test)
@@ -197,7 +244,7 @@ def test_method(args, method_name, results, X, y):
 	# *** TRAIN ***
 	begin_t = time.time()
 	# use feature scaled data for these specific methods
-	#if method_name == 'linear' or method_name == 'ransac':
+	#if args.method == 'linear' or args.method == 'ransac':
 #		method.fit(X_train_std, y_train_std)
 	method.fit(X_train_std, y_train_std)
 
@@ -208,22 +255,20 @@ def test_method(args, method_name, results, X, y):
 	# *** TEST ***
 	begin_t = time.time()
 	# actually test and get result
-	#TODO
-	y_test_pred = method.predict(X_test_std)
+	y_train_std_pred = method.predict(X_train_std)
+	y_test_std_pred = method.predict(X_test_std)
 	end_t = time.time()
 	test_t = end_t - begin_t
 
+	# get results
+	mse_train = method.mse(y_train_std, y_train_std_pred)
+	mse_test = method.mse(y_test_std, y_test_std_pred)
+	r2_train = method.r2(y_train_std, y_train_std_pred)
+	r2_test = method.r2(y_test_std, y_test_std_pred)
 
-	# print if script mode is off
-	if args.t != 1:
-		print('pca:\t\t\t{0:.2f}%\t{1:.2f}s\n'
-			''.format(acc, test_t))
+	store_results(results, train_t, test_t, mse_train, mse_test, r2_train,
+		r2_test)
 
-	# print if script mode is off
-	if args.t != 1:
-		print('pca training time: {0:.2f}s'
-			''.format(train_t))
-	store_results(results, train_t, test_t, acc)
 
 # -------------------------------------
 #		BEGIN
@@ -234,30 +279,27 @@ args = get_args()
 # extract data into X (data) and y (labels) from the given dataset
 X, y = prepare_data(dataset=args.dataset)
 
-
-
 # if script mode isn't enabled, then print settings
 if args.t != 1:
 	# print settings
 	print_settings(args)
 
-
 # results dict contains mse, r2, and time values
 results = {
 	'train_t':-1,
 	'test_t':-1,
-	'mse': -1,
-	'r2': -1
+	'mse_train': -1,
+	'mse_test': -1,
+	'r2_train': -1,
+	'r2_test': -1
 }
 
+# get our results
+test_method(args, results, X, y)
+# print results
+print_results(results, args.t)
 
 
-
-# print if script mode is on
-if args.t == 1:
-	# print results for script friendliness
-	for key, value in results.items():
-		print(value, end='\t')
 
 
 
