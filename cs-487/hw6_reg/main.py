@@ -6,6 +6,7 @@
 #
 # NOTE: if things look weird, make your tabsize=8
 
+import datetime as dt
 # arg handling
 import sys
 import argparse
@@ -113,16 +114,21 @@ def prepare_data(dataset=''):
 	elif dataset == 'cali':
 		df = pandas.read_csv(CALI_CSV)
 		# convert dates to integers
-		df['TIMESTAMP'] = df['TIMESTAMP'].astype(int)
+		df['TIMESTAMP'] = pandas.to_datetime(df['TIMESTAMP']).astype(int)
+		#df.set_index(['TIMESTAMP', 'Hour'])
 
-		# get everything except wind power generation as data
-		X = df.iloc[:, 0:-1]
-		#X = df.iloc[:, 3:]
-
-		# get prices as our target
+		# get dates as data
+		#X = df.iloc[:, 0]
+		X = df.iloc[:, 0]
+		# get wind power generation as our target
 		y = df.iloc[:, -1]
 		# turn into 2D array from 1D
+		X = X.values.reshape(-1, 1)
 		y = y.values.reshape(-1, 1)
+
+		#print(X)
+		#print(y)
+		#exit()
 	else:
 		print('ERROR: no implemented dataset specified. you must '
 			'specify an implemented dataset (e.g., house, cali)!')
