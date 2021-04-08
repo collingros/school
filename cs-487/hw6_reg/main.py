@@ -16,6 +16,7 @@ import mylinear
 import myridge
 import myransac
 import mylasso
+import mydec
 
 # for splitting data into training and testing data
 from sklearn.model_selection import train_test_split
@@ -29,6 +30,9 @@ import time
 import pandas
 import numpy as np
 
+# for graphs
+import matplotlib.pyplot as plt
+
 
 # filepaths for datasets
 HOUSE_CSV = './house/house.csv'
@@ -39,7 +43,7 @@ CALI_CSV = './cali/cali.csv'
 def get_args():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('method', help='what to use. can be linear, '
-				'ridge, ransac, or lasso')
+				'ridge, ransac, lasso, or dec')
 	parser.add_argument('dataset', help='the dataset to use. can be house'
 				' or cali')
 
@@ -60,6 +64,9 @@ def get_args():
 					'0 is default, 1 to turn on',
 				type=int)
 
+	# Dec
+	parser.add_argument('-max_depth', help='max depth for dec.', type=int)
+
 	# defaults
 	parser.add_argument('-defaults', help='can be 1 or 0. 1 will make '
 				'all required arguments their default vals.',
@@ -78,6 +85,9 @@ def get_args():
 
 		# Ridge/Lasso
 		args.alpha = 1.0
+
+		# Dec
+		args.max_depth = 3
 
 		# disable script-friendly output
 		args.t = 0
@@ -180,17 +190,18 @@ def print_settings(args):
 # store_results()
 #
 # input: the results dict to store results in, time it took to train,
-# 	time it took to test, mean squared error, r2 score
+# 	time it took to test, mean squared error, r2 score, method name
 # output: the results are stored in the results dict
 #
 def store_results(results, train_t, test_t, mse_train, mse_test, r2_train,
-			r2_test):
+			r2_test, method):
 	results['train_t'] = train_t
 	results['test_t'] = test_t
 	results['mse_train'] = mse_train
 	results['mse_test'] = mse_test
 	results['r2_train'] = r2_train
 	results['r2_test'] = r2_test
+	results['method_name'] = method
 
 
 # print_results()
@@ -217,23 +228,25 @@ def print_results(results, script_mode=0):
 # input: arguments, results dict, X (data), y (target)
 # output: stores statistic results in results
 #
-def test_method(args, results, X, y):
+def test_method(method_name, args, results, X, y):
 	# initialize the method to correct one given the name
 	method = None
-	if args.method == 'linear':
+	if method_name == 'linear':
 		method = mylinear.skLR()
-	elif args.method == 'ransac':
+	elif method_name == 'ransac':
 		method = myransac.skRANSAC(max_trials_=args.max_trials,
 				min_samples_=args.min_samples, loss_=args.loss,
 				residual_threshold_=args.residual_threshold,
 				random_state_=args.random_state)
-	elif args.method == 'ridge':
+	elif method_name == 'ridge':
 		method = myridge.skRidge(alpha_=args.alpha)
-	elif args.method == 'lasso':
+	elif method_name == 'lasso':
 		method = mylasso.skLasso(alpha_=args.alpha)
+	elif method_name == 'dec':
+		method = mydec.skDec(max_depth_=args.max_depth)
 	else:
 		print('ERROR: method \'{0}\' not implemented yet.'
-			''.format(args.method))
+			''.format(method))
 		exit()
 
 	# *** DATA PREPROCESSING ***
@@ -250,7 +263,7 @@ def test_method(args, results, X, y):
 	# *** TRAIN ***
 	begin_t = time.time()
 	# use feature scaled data for these specific methods
-	#if args.method == 'linear' or args.method == 'ransac':
+	#if method == 'linear' or method == 'ransac':
 #		method.fit(X_train_std, y_train_std)
 	method.fit(X_train_std, y_train_std)
 
@@ -273,12 +286,98 @@ def test_method(args, results, X, y):
 	r2_test = method.r2(y_test_std, y_test_std_pred)
 
 	store_results(results, train_t, test_t, mse_train, mse_test, r2_train,
-		r2_test)
+		r2_test, method_name)
+
+
+# graph_results()
+#
+# input: dataset name, results dict for each method, color for graph
+# output: saves graphs comparing training times,
+#	testing times, mse, and r2 for each method
+#	on each dataset
+#
+def graph_results(dataset, all_results, color_):
+	# all of the data to be plotted on Y axis
+	data = {}
+	# fill data dict with all test results
+	for results in all_results:
+		for key, value in results.items():
+			print('key: {0}\tval: {1}'.format(key, value))
+			try:
+				data[key].append(value)
+			except:
+				data[key] = []
+				data[key].append(value)
+
+	print(data)
+
+	# plot the data vs method used
+	for key, value in data.items():
+		# skip method_name
+		if key == 'method_name':
+			continue
+
+		# set labels of axis/title
+		plt.xlabel('Method Used')
+		plt.ylabel(key)
+		plt.title('{0}: {1} vs Method Used'.format(dataset, key))
+
+		# plot data
+		plt.bar(data['method_name'], value, color=color_)
+
+		# replace spaces in Y label name with underscores for
+		# the filename
+		plt.savefig('{0}-{1}.png'.format(dataset, key))
+
+		# write
+		plt.show()
+		# erase
+		plt.clf()
+
+
+# test_all()
+#
+# input: arguments
+# output: runs all algorithms on datasets and saves graphs of the results
+#
+def test_all(args):
+	methods = ['linear', 'ridge', 'ransac', 'lasso', 'dec']
+	datasets = ['house', 'cali']
+	# colors for the graph
+	colors = ['b', 'r', 'g']
+
+	for d in datasets:
+		all_results = []
+		X, y = prepare_data(dataset=d)
+		for method in methods:
+			print('now doing {0}.'.format(method))
+			# results dict contains mse, r2, and time values
+			results = {
+				'train_t':-1,
+				'test_t':-1,
+				'mse_train': -1,
+				'mse_test': -1,
+				'r2_train': -1,
+				'r2_test': -1,
+				'method_name':''
+			}
+
+			test_method(method, args, results, X, y)
+			# add this current test to the list of test
+			# results
+			all_results.append(results)
+
+		graph_results(d, all_results, colors.pop(1))
+	
+
 
 
 # -------------------------------------
 #		BEGIN
 # -------------------------------------
+
+# test all methods and graph all of them
+#test_all(args)
 
 # get our command-line arguments.
 args = get_args()
@@ -297,13 +396,18 @@ results = {
 	'mse_train': -1,
 	'mse_test': -1,
 	'r2_train': -1,
-	'r2_test': -1
+	'r2_test': -1,
+	'method_name':''
 }
 
 # get our results
-test_method(args, results, X, y)
+test_method(args.method, args, results, X, y)
 # print results
 print_results(results, args.t)
+
+
+
+
 
 
 
