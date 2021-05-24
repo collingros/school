@@ -9,3 +9,5 @@ branches:
 	junior_1:	fifth semester in college
 	junior_2:	sixth semester in college
 	senior_1:	seventh semester in college
+	senior_2:	eighth (last) semester in college
+05-24-2021: graduated with a BS in CS!
